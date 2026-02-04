@@ -35,7 +35,7 @@ interface UIState {
   sidebarOpen: boolean
 
   // Theme
-  theme: 'light' | 'dark'
+  theme: 'light' | 'dark' | 'blue' | 'green'
 
   // Preferences
   crtEffects: boolean
@@ -63,7 +63,7 @@ interface UIState {
   setSidebarOpen: (open: boolean) => void
 
   // Theme actions
-  setTheme: (theme: 'light' | 'dark') => void
+  setTheme: (theme: 'light' | 'dark' | 'blue' | 'green') => void
 
   // Preference actions
   setPreference: (key: 'crtEffects' | 'phosphorGlow' | 'autoScrollChat' | 'soundEffects', value: boolean) => void
@@ -197,15 +197,12 @@ export const useUIStore = create<UIState>((set, get) => ({
   },
 
   // Theme
-  setTheme: (theme: 'light' | 'dark') => {
+  setTheme: (theme: 'light' | 'dark' | 'blue' | 'green') => {
     set({ theme })
     
     // Apply theme to document
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    document.documentElement.classList.remove('dark', 'light', 'blue', 'green')
+    document.documentElement.classList.add(theme)
     
     // Persist to localStorage
     localStorage.setItem('genie-theme', theme)
@@ -269,7 +266,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 // Initialize preferences on load
 if (typeof window !== 'undefined') {
   // Load theme from localStorage
-  const savedTheme = localStorage.getItem('genie-theme') as 'light' | 'dark' | null
+  const savedTheme = localStorage.getItem('genie-theme') as 'light' | 'dark' | 'blue' | 'green' | null
   if (savedTheme) {
     useUIStore.getState().setTheme(savedTheme)
   }
