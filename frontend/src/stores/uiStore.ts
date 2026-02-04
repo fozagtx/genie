@@ -34,6 +34,9 @@ interface UIState {
   // Sidebar state
   sidebarOpen: boolean
 
+  // Theme
+  theme: 'light' | 'dark'
+
   // Preferences
   crtEffects: boolean
   phosphorGlow: boolean
@@ -59,6 +62,9 @@ interface UIState {
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
 
+  // Theme actions
+  setTheme: (theme: 'light' | 'dark') => void
+
   // Preference actions
   setPreference: (key: 'crtEffects' | 'phosphorGlow' | 'autoScrollChat' | 'soundEffects', value: boolean) => void
   loadPreferences: (preferences: { crtEffects?: boolean; phosphorGlow?: boolean; autoScrollChat?: boolean; soundEffects?: boolean }) => void
@@ -72,6 +78,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   toasts: [],
   modals: [],
   sidebarOpen: true,
+  theme: 'dark',
   crtEffects: false,
   phosphorGlow: true,
   autoScrollChat: true,
@@ -189,6 +196,21 @@ export const useUIStore = create<UIState>((set, get) => ({
     set({ sidebarOpen: open })
   },
 
+  // Theme
+  setTheme: (theme: 'light' | 'dark') => {
+    set({ theme })
+    
+    // Apply theme to document
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    
+    // Persist to localStorage
+    localStorage.setItem('genie-theme', theme)
+  },
+
   // Preferences
   setPreference: (key: 'crtEffects' | 'phosphorGlow' | 'autoScrollChat' | 'soundEffects', value: boolean) => {
     set({ [key]: value })
@@ -246,6 +268,12 @@ export const useUIStore = create<UIState>((set, get) => ({
 
 // Initialize preferences on load
 if (typeof window !== 'undefined') {
+  // Load theme from localStorage
+  const savedTheme = localStorage.getItem('genie-theme') as 'light' | 'dark' | null
+  if (savedTheme) {
+    useUIStore.getState().setTheme(savedTheme)
+  }
+
   // Load preferences from localStorage
   const savedCrtEffects = localStorage.getItem('genie-crtEffects')
   const savedPhosphorGlow = localStorage.getItem('genie-phosphorGlow')
