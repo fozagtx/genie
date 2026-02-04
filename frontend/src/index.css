@@ -1,0 +1,36 @@
+/* Basic Tailwind CSS setup */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Sticky header offset and anchor fixes */
+:root {
+  --header-height: 72px;
+}
+
+/* Ensure in-page anchors and programmatic scrolling don't hide content behind sticky header */
+html, body {
+  scroll-padding-top: var(--header-height);
+}
+
+/* Elements that are often targets for in-page anchors */
+[id],
+section,
+h1, h2, h3, h4, h5, h6 {
+  scroll-margin-top: var(--header-height);
+}
