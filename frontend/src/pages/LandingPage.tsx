@@ -17,15 +17,23 @@ export const LandingPage: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#000000',
+      background: 'linear-gradient(180deg, #000000 0%, #0A0A0A 100%)',
       color: '#ffffff',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Genie AI</h1>
+      <div style={{ textAlign: 'center', maxWidth: '800px', padding: '2rem' }}>
+        <h1 style={{ 
+          fontSize: '4rem', 
+          marginBottom: '1rem',
+          fontWeight: '800',
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text'
+        }}>Genie AI</h1>
         <p style={{ fontSize: '1.2rem', opacity: 0.8, marginBottom: '2rem' }}>
           Next-Generation AI Development Platform
         </p>
