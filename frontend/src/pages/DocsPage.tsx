@@ -967,7 +967,7 @@ Agent Workflow:
   ]
 
   return (
-    <div className="docs-page crt-screen">
+    <div className="docs-page">
       <div className="docs-container">
         {/* Header */}
         <div className="docs-header">

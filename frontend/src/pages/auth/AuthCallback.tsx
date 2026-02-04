@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import '../../styles/theme.css'
+import { Card, CardContent } from '../../components/ui/card'
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import './AuthCallback.css'
 
 export const AuthCallback: React.FC = () => {
@@ -12,7 +13,6 @@ export const AuthCallback: React.FC = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the session from the URL hash
         const hashParams = new URLSearchParams(window.location.hash.substring(1))
         const accessToken = hashParams.get('access_token')
         const refreshToken = hashParams.get('refresh_token')
@@ -24,24 +24,18 @@ export const AuthCallback: React.FC = () => {
         }
 
         if (accessToken) {
-          // Set the session with the tokens
           const { data, error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken || '',
           })
 
-          if (sessionError) {
-            throw sessionError
-          }
+          if (sessionError) throw sessionError
 
           if (data.session) {
             setStatus('success')
             setMessage('Authentication successful! Redirecting...')
 
-            // Check if there's a Telegram auth return URL
             const returnUrl = sessionStorage.getItem('telegram_auth_return_url');
-
-            // Redirect after a brief delay
             setTimeout(() => {
               if (returnUrl) {
                 sessionStorage.removeItem('telegram_auth_return_url');
@@ -54,7 +48,6 @@ export const AuthCallback: React.FC = () => {
             throw new Error('Failed to establish session')
           }
         } else {
-          // Try to get session from supabase (in case of page refresh)
           const { data, error: sessionError } = await supabase.auth.getSession()
 
           if (sessionError || !data.session) {
@@ -64,9 +57,7 @@ export const AuthCallback: React.FC = () => {
           setStatus('success')
           setMessage('Session restored! Redirecting...')
 
-          // Check if there's a Telegram auth return URL
           const returnUrl = sessionStorage.getItem('telegram_auth_return_url');
-
           setTimeout(() => {
             if (returnUrl) {
               sessionStorage.removeItem('telegram_auth_return_url');
@@ -81,7 +72,6 @@ export const AuthCallback: React.FC = () => {
         setStatus('error')
         setMessage(err.message || 'Authentication failed')
 
-        // Redirect to login after showing error
         setTimeout(() => {
           navigate('/login')
         }, 3000)
@@ -92,104 +82,46 @@ export const AuthCallback: React.FC = () => {
   }, [navigate])
 
   return (
-    <div className="auth-callback crt-screen auth-page full-height flex items-center justify-center">
-      <div className="callback-container">
-        <div className="terminal-window">
-          <div className="terminal-header">
-            <div className="terminal-button close"></div>
-            <div className="terminal-button minimize"></div>
-            <div className="terminal-button maximize"></div>
-            <div className="terminal-title">AUTHENTICATION PROTOCOL</div>
-          </div>
-
-          <div className="terminal-content text-center">
-            {/* Processing Status */}
-            {status === 'processing' && (
-              <div className="processing-state">
-                <div className="ascii-spinner phosphor-glow">
-                  <pre>
-{`    ╔═══════════════════════════╗
-    ║                           ║
-    ║    [▓▓▓▓▓▓▓▓░░░░░░░░]    ║
-    ║                           ║
-    ║   PROCESSING OAUTH...     ║
-    ║                           ║
-    ╚═══════════════════════════╝`}
-                  </pre>
-                </div>
-                <div className="status-message mt-lg phosphor-glow">
-                  {message}
-                </div>
-                <div className="loading-dots mt-md">
-                  <span>.</span><span>.</span><span>.</span>
-                </div>
-              </div>
-            )}
-
-            {/* Success Status */}
-            {status === 'success' && (
-              <div className="success-state">
-                <div className="ascii-check phosphor-glow text-success">
-                  <pre>
-{`    ╔═══════════════════════════╗
-    ║                           ║
-    ║         ✓  SUCCESS        ║
-    ║                           ║
-    ║   AUTHENTICATION VALID    ║
-    ║                           ║
-    ║   ACCESS GRANTED          ║
-    ║                           ║
-    ╚═══════════════════════════╝`}
-                  </pre>
-                </div>
-                <div className="status-message mt-lg text-success phosphor-glow">
-                  {message}
-                </div>
-                <div className="progress-bar mt-md">
-                  <div className="progress-fill success-fill"></div>
-                </div>
-              </div>
-            )}
-
-            {/* Error Status */}
-            {status === 'error' && (
-              <div className="error-state">
-                <div className="ascii-error phosphor-glow text-error">
-                  <pre>
-{`    ╔═══════════════════════════╗
-    ║                           ║
-    ║         ✗  ERROR          ║
-    ║                           ║
-    ║   AUTHENTICATION FAILED   ║
-    ║                           ║
-    ║   ACCESS DENIED           ║
-    ║                           ║
-    ╚═══════════════════════════╝`}
-                  </pre>
-                </div>
-                <div className="status-message mt-lg text-error phosphor-glow">
-                  {message}
-                </div>
-                <div className="error-details mt-md text-muted">
-                  &gt; Redirecting to login screen...
-                </div>
-              </div>
-            )}
-
-            {/* System Info Footer */}
-            <div className="system-info mt-xl">
-              <div className="info-divider text-muted">
-                ═══════════════════════════════════════
-              </div>
-              <div className="info-lines text-muted mt-sm">
-                <div>&gt; PROTOCOL: OAuth 2.0</div>
-                <div>&gt; ENCRYPTION: AES-256</div>
-                <div>&gt; STATUS: {status.toUpperCase()}</div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-8 pb-8 text-center">
+          {status === 'processing' && (
+            <div className="space-y-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+              <p className="text-foreground font-medium">{message}</p>
+              <div className="flex justify-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:0ms]"></span>
+                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:150ms]"></span>
+                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:300ms]"></span>
               </div>
             </div>
+          )}
+
+          {status === 'success' && (
+            <div className="space-y-4">
+              <CheckCircle2 className="h-12 w-12 text-emerald-400 mx-auto" />
+              <p className="text-emerald-400 font-medium">{message}</p>
+              <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-400 rounded-full animate-[progressFill_1.5s_ease-out_forwards]"></div>
+              </div>
+            </div>
+          )}
+
+          {status === 'error' && (
+            <div className="space-y-4">
+              <XCircle className="h-12 w-12 text-destructive mx-auto" />
+              <p className="text-destructive font-medium">{message}</p>
+              <p className="text-sm text-muted-foreground">Redirecting to login...</p>
+            </div>
+          )}
+
+          <div className="mt-8 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground">
+              OAuth 2.0 | Status: {status.toUpperCase()}
+            </p>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -3,23 +3,23 @@ import { Layout } from '../components/Layout'
 import { useAuth } from '../hooks/useAuth'
 import { useUIStore } from '../stores/uiStore'
 import apiClient from '../services/apiClient'
-import '../styles/theme.css'
+import { Card, CardContent } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 import './SettingsPage.css'
 
 export const SettingsPage: React.FC = () => {
   const { user } = useAuth()
-  const { theme, setTheme, showToast } = useUIStore()
+  const { showToast } = useUIStore()
   const [apiKey, setApiKey] = useState('')
   const [hasApiKey, setHasApiKey] = useState(false)
   const [preferences, setPreferences] = useState({
-    crtEffects: false,
-    phosphorGlow: true,
     autoScrollChat: true,
     soundEffects: false,
   })
   const [loading, setLoading] = useState(true)
 
-  // Load settings on mount
   useEffect(() => {
     loadSettings()
   }, [])
@@ -31,15 +31,7 @@ export const SettingsPage: React.FC = () => {
 
       if (response.data) {
         setHasApiKey(response.data.hasApiKey || false)
-        
-        // Load theme from backend
-        if (response.data.theme) {
-          setTheme(response.data.theme)
-        }
-        
         setPreferences({
-          crtEffects: response.data.crtEffects ?? false,
-          phosphorGlow: response.data.phosphorGlow ?? true,
           autoScrollChat: response.data.autoScrollChat ?? true,
           soundEffects: response.data.soundEffects ?? false,
         })
@@ -48,31 +40,6 @@ export const SettingsPage: React.FC = () => {
       console.error('Failed to load settings:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleThemeToggle = async () => {
-    const newTheme = theme === 'blue' ? 'green' : 'blue'
-    setTheme(newTheme)
-    const themeName = newTheme === 'blue' ? 'BLUE MODE' : 'GREEN PHOSPHOR'
-    
-    try {
-      await apiClient.updatePreferences({ theme: newTheme })
-      showToast('success', `Theme changed to ${themeName}`)
-    } catch (error: any) {
-      showToast('error', error.message || 'Failed to save theme')
-    }
-  }
-
-  const handleThemeSelect = async (selectedTheme: 'blue' | 'green') => {
-    setTheme(selectedTheme)
-    const themeName = selectedTheme === 'blue' ? 'BLUE MODE' : 'GREEN PHOSPHOR'
-    
-    try {
-      await apiClient.updatePreferences({ theme: selectedTheme })
-      showToast('success', `Theme changed to ${themeName}`)
-    } catch (error: any) {
-      showToast('error', error.message || 'Failed to save theme')
     }
   }
 
@@ -101,7 +68,6 @@ export const SettingsPage: React.FC = () => {
       await apiClient.updatePreferences({ [key]: newPreferences[key] })
       showToast('success', 'Preferences updated')
     } catch (error: any) {
-      // Revert on error
       setPreferences(preferences)
       showToast('error', error.message || 'Failed to update preferences')
     }
@@ -109,14 +75,7 @@ export const SettingsPage: React.FC = () => {
 
   const handleClearData = async () => {
     const confirmed = window.confirm(
-      '⚠️ WARNING ⚠️\n\n' +
-      'This will delete:\n' +
-      '• All chat history (all conversations in sidebar)\n' +
-      '• All generation history\n' +
-      '• All saved preferences\n' +
-      '• API keys and settings\n\n' +
-      'This action CANNOT be undone!\n\n' +
-      'Are you absolutely sure you want to continue?'
+      'Warning: This will delete all chat history, generation history, saved preferences, and API keys. This action cannot be undone. Continue?'
     );
 
     if (!confirmed) return;
@@ -124,16 +83,9 @@ export const SettingsPage: React.FC = () => {
     try {
       setLoading(true);
       await apiClient.deleteSettings();
-      
-      // Clear local storage and stores
       localStorage.clear();
-      
       showToast('success', 'All data cleared successfully. Reloading...');
-      
-      // Reload the page to clear all state
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      setTimeout(() => { window.location.reload(); }, 1500);
     } catch (error: any) {
       showToast('error', error.message || 'Failed to clear data');
       setLoading(false);
@@ -142,22 +94,13 @@ export const SettingsPage: React.FC = () => {
 
   const handleDeleteAccount = async () => {
     const firstConfirm = window.confirm(
-      '⚠️ DANGER: ACCOUNT DELETION ⚠️\n\n' +
-      'This will PERMANENTLY delete:\n' +
-      '• Your entire account\n' +
-      '• All generation history\n' +
-      '• All chat conversations\n' +
-      '• All saved data and preferences\n\n' +
-      'This action is IRREVERSIBLE and CANNOT be undone!\n\n' +
-      'Do you want to proceed?'
+      'DANGER: This will permanently delete your entire account and all associated data. This action is irreversible. Do you want to proceed?'
     );
 
     if (!firstConfirm) return;
 
     const confirmation = window.prompt(
-      'To confirm account deletion, please type exactly:\n\n' +
-      'DELETE MY ACCOUNT\n\n' +
-      '(Case sensitive)'
+      'To confirm account deletion, please type exactly:\n\nDELETE MY ACCOUNT\n\n(Case sensitive)'
     );
 
     if (confirmation !== 'DELETE MY ACCOUNT') {
@@ -170,13 +113,8 @@ export const SettingsPage: React.FC = () => {
     try {
       setLoading(true);
       await apiClient.deleteAccount('DELETE MY ACCOUNT');
-      
       showToast('success', 'Account data deleted successfully');
-      
-      // Sign out after a brief delay
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 2000);
+      setTimeout(() => { window.location.href = '/login'; }, 2000);
     } catch (error: any) {
       showToast('error', error.message || 'Failed to delete account');
       setLoading(false);
@@ -187,11 +125,7 @@ export const SettingsPage: React.FC = () => {
     return (
       <Layout>
         <div className="settings-page">
-          <div className="terminal-window">
-            <div className="terminal-content">
-              <p className="text-muted">&gt; Loading settings...</p>
-            </div>
-          </div>
+          <p className="text-muted-foreground">Loading settings...</p>
         </div>
       </Layout>
     )
@@ -200,208 +134,118 @@ export const SettingsPage: React.FC = () => {
   return (
     <Layout>
       <div className="settings-page">
-      {/* Header */}
-      <div className="page-header terminal-window">
-        <div className="terminal-header">
-          <div className="terminal-button close"></div>
-          <div className="terminal-button minimize"></div>
-          <div className="terminal-button maximize"></div>
-          <div className="terminal-title">SYSTEM CONFIGURATION</div>
-        </div>
-        <div className="terminal-content">
-          <h1 className="page-title phosphor-glow">◆ OPERATOR SETTINGS</h1>
-          <p className="page-description">&gt; Configure system preferences and credentials</p>
-        </div>
-      </div>
+        <h1 className="text-2xl font-semibold text-foreground mb-6">Settings</h1>
 
-      <div className="settings-grid">
-        {/* Account Section */}
-        <div className="settings-section terminal-window">
-          <div className="terminal-content">
-            <h2 className="section-title phosphor-glow">◆ ACCOUNT INFORMATION</h2>
-
-            <div className="setting-group mt-md">
-              <div className="setting-label text-muted">&gt; OPERATOR ID:</div>
-              <div className="setting-value text-primary">{user?.email || 'Not authenticated'}</div>
-            </div>
-
-            <div className="setting-group mt-md">
-              <div className="setting-label text-muted">&gt; USER ID:</div>
-              <div className="setting-value text-primary">{user?.id || 'N/A'}</div>
-            </div>
-          </div>
-          </div>
-        </div>
-
-        {/* Theme Section */}
-        <div className="settings-section terminal-window">
-          <div className="terminal-content">
-            <h2 className="section-title phosphor-glow">◆ DISPLAY THEME</h2>
-
-            <div className="theme-preview mt-md">
-              <div className="theme-option">
-                <div className="theme-sample blue-theme">
-                  <div className="sample-text phosphor-glow">BLUE MODE</div>
-                  <div className="sample-bar"></div>
-                </div>
-                <button
-                  className={`btn ${theme === 'blue' ? 'btn-primary' : ''}`}
-                  onClick={() => handleThemeSelect('blue')}
-                  disabled={theme === 'blue'}
-                >
-                  {theme === 'blue' ? '◉ ACTIVE' : 'SELECT'}
-                </button>
-              </div>
-
-              <div className="theme-option mt-md">
-                <div className="theme-sample green-theme">
-                  <div className="sample-text phosphor-glow">GREEN PHOSPHOR</div>
-                  <div className="sample-bar"></div>
-                </div>
-                <button
-                  className={`btn ${theme === 'green' ? 'btn-primary' : ''}`}
-                  onClick={() => handleThemeSelect('green')}
-                  disabled={theme === 'green'}
-                >
-                  {theme === 'green' ? '◉ ACTIVE' : 'SELECT'}
-                </button>
-              </div>
-            </div>
-
-            <button className="btn full-width mt-lg" onClick={handleThemeToggle}>
-              ► TOGGLE THEME
-            </button>
-          </div>
-        </div>
-
-        {/* API Keys Section */}
-        <div className="settings-section terminal-window">
-          <div className="terminal-content">
-            <h2 className="section-title phosphor-glow">◆ API CONFIGURATION</h2>
-
-            <div className="setting-group mt-md">
-              <label className="setting-label text-muted">&gt; OPENAI API KEY:</label>
-              <div className="input-wrapper mt-sm">
-                <input
-                  type="password"
-                  className="input"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder={hasApiKey ? '••••••••••••••' : 'sk-...'}
-                />
-              </div>
-              <div className="setting-hint text-muted mt-sm">
-                &gt; Required for code generation. Keys are encrypted.
-                {hasApiKey && ' (Current key saved)'}
-              </div>
-            </div>
-
-            <button className="btn btn-primary mt-md" onClick={handleSaveApiKey}>
-              ► SAVE CONFIGURATION
-            </button>
-          </div>
-        </div>
-
-        {/* Preferences Section */}
-        <div className="settings-section terminal-window">
-          <div className="terminal-content">
-            <h2 className="section-title phosphor-glow">◆ SYSTEM PREFERENCES</h2>
-
-            <div className="preference-list mt-md">
-              <div className="preference-item">
-                <div className="preference-info">
-                  <div className="preference-title">CRT EFFECTS</div>
-                  <div className="preference-desc text-muted">Scanlines and flicker animation</div>
-                </div>
-                <label className="preference-toggle">
-                  <input
-                    type="checkbox"
-                    checked={preferences.crtEffects}
-                    onChange={() => handlePreferenceChange('crtEffects')}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="preference-item mt-md">
-                <div className="preference-info">
-                  <div className="preference-title">PHOSPHOR GLOW</div>
-                  <div className="preference-desc text-muted">Text glow effects</div>
-                </div>
-                <label className="preference-toggle">
-                  <input
-                    type="checkbox"
-                    checked={preferences.phosphorGlow}
-                    onChange={() => handlePreferenceChange('phosphorGlow')}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="preference-item mt-md">
-                <div className="preference-info">
-                  <div className="preference-title">AUTO-SCROLL CHAT</div>
-                  <div className="preference-desc text-muted">Automatically scroll agent messages</div>
-                </div>
-                <label className="preference-toggle">
-                  <input
-                    type="checkbox"
-                    checked={preferences.autoScrollChat}
-                    onChange={() => handlePreferenceChange('autoScrollChat')}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="preference-item mt-md">
-                <div className="preference-info">
-                  <div className="preference-title">SOUND EFFECTS</div>
-                  <div className="preference-desc text-muted">Terminal sound effects</div>
-                </div>
-                <label className="preference-toggle">
-                  <input
-                    type="checkbox"
-                    checked={preferences.soundEffects}
-                    onChange={() => handlePreferenceChange('soundEffects')}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Danger Zone */}
-        <div className="settings-section terminal-window danger-section">
-          <div className="terminal-content">
-            <h2 className="section-title text-error phosphor-glow">◆ DANGER ZONE</h2>
-
-            <div className="danger-actions mt-md">
-              <div className="danger-item">
+        <div className="settings-grid">
+          {/* Account Section */}
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-base font-semibold text-foreground mb-4">Account</h2>
+              <div className="space-y-3">
                 <div>
-                  <div className="danger-title">CLEAR ALL DATA</div>
-                  <div className="danger-desc text-muted">
+                  <Label className="text-muted-foreground text-xs">Email</Label>
+                  <p className="text-sm text-foreground mt-1">{user?.email || 'Not authenticated'}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">User ID</Label>
+                  <p className="text-sm text-foreground font-mono mt-1">{user?.id || 'N/A'}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* API Keys */}
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-base font-semibold text-foreground mb-4">API Configuration</h2>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="apiKey" className="text-muted-foreground text-xs">OpenAI API Key</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder={hasApiKey ? '••••••••••••••' : 'sk-...'}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Required for code generation. Keys are encrypted.
+                    {hasApiKey && ' (Current key saved)'}
+                  </p>
+                </div>
+                <Button size="sm" onClick={handleSaveApiKey}>
+                  Save Key
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Preferences */}
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-base font-semibold text-foreground mb-4">Preferences</h2>
+              <div className="space-y-3">
+                <div className="preference-item">
+                  <div className="preference-info">
+                    <div className="preference-title">Auto-scroll Chat</div>
+                    <div className="preference-desc">Automatically scroll to new messages</div>
+                  </div>
+                  <label className="preference-toggle">
+                    <input
+                      type="checkbox"
+                      checked={preferences.autoScrollChat}
+                      onChange={() => handlePreferenceChange('autoScrollChat')}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div className="preference-item">
+                  <div className="preference-info">
+                    <div className="preference-title">Sound Effects</div>
+                    <div className="preference-desc">Play sounds for notifications</div>
+                  </div>
+                  <label className="preference-toggle">
+                    <input
+                      type="checkbox"
+                      checked={preferences.soundEffects}
+                      onChange={() => handlePreferenceChange('soundEffects')}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Danger Zone */}
+          <Card className="border-destructive/30">
+            <CardContent className="pt-6">
+              <h2 className="text-base font-semibold text-destructive mb-4">Danger Zone</h2>
+              <div className="space-y-4">
+                <div className="p-3 rounded-lg bg-destructive/5">
+                  <div className="text-sm font-medium text-foreground mb-1">Clear All Data</div>
+                  <div className="text-xs text-muted-foreground mb-2">
                     Remove all generation history and cached data
                   </div>
+                  <Button variant="destructive" size="sm" onClick={handleClearData}>
+                    Clear Data
+                  </Button>
                 </div>
-                <button className="btn btn-danger mt-sm" onClick={handleClearData}>
-                  CLEAR DATA
-                </button>
-              </div>
 
-              <div className="danger-item mt-md">
-                <div>
-                  <div className="danger-title">DELETE ACCOUNT</div>
-                  <div className="danger-desc text-muted">
+                <div className="p-3 rounded-lg bg-destructive/5">
+                  <div className="text-sm font-medium text-foreground mb-1">Delete Account</div>
+                  <div className="text-xs text-muted-foreground mb-2">
                     Permanently delete account and all associated data
                   </div>
+                  <Button variant="destructive" size="sm" onClick={handleDeleteAccount}>
+                    Delete Account
+                  </Button>
                 </div>
-                <button className="btn btn-danger mt-sm" onClick={handleDeleteAccount}>
-                  DELETE ACCOUNT
-                </button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </Layout>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Github, Trash2 } from 'lucide-react';
 
 export const GitHubTokenSettings: React.FC = () => {
   const { user } = useAuthContext();
@@ -10,7 +14,6 @@ export const GitHubTokenSettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Load existing token from user metadata
     if (user?.user_metadata?.github_token) {
       setToken(user.user_metadata.github_token);
     }
@@ -26,11 +29,8 @@ export const GitHubTokenSettings: React.FC = () => {
     setError('');
 
     try {
-      // Save token to user metadata
       const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          github_token: token,
-        },
+        data: { github_token: token },
       });
 
       if (updateError) throw updateError;
@@ -48,9 +48,7 @@ export const GitHubTokenSettings: React.FC = () => {
     setLoading(true);
     try {
       await supabase.auth.updateUser({
-        data: {
-          github_token: null,
-        },
+        data: { github_token: null },
       });
       setToken('');
     } catch (err) {
@@ -61,194 +59,61 @@ export const GitHubTokenSettings: React.FC = () => {
   };
 
   return (
-    <div className="github-token-settings">
-      <div className="setting-section">
-        <h3>🔗 GitHub Integration</h3>
-        <p className="setting-description">
-          Connect your GitHub account to enable repository operations through chat.
-        </p>
+    <div className="max-w-lg space-y-4">
+      <div className="flex items-center gap-2 mb-1">
+        <Github className="h-4 w-4 text-foreground" />
+        <h3 className="text-base font-semibold text-foreground">GitHub Integration</h3>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Connect your GitHub account to enable repository operations through chat.
+      </p>
 
-        <div className="token-input-group">
-          <label htmlFor="github-token">GitHub Personal Access Token</label>
-          <input
-            id="github-token"
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            className="token-input"
-          />
-          <p className="input-hint">
-            Generate a token at{' '}
-            <a
-              href="https://github.com/settings/tokens/new?scopes=repo,user:email"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub Settings → Developer settings → Personal access tokens
-            </a>
-          </p>
-          <p className="input-hint">
-            Required scopes: <code>repo</code>, <code>user:email</code>
-          </p>
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-        {saved && <div className="success-message">✓ GitHub token saved successfully!</div>}
-
-        <div className="button-group">
-          <button
-            onClick={handleSave}
-            disabled={loading || !token}
-            className="primary-button"
+      <div className="space-y-2">
+        <Label htmlFor="github-token" className="text-sm">GitHub Personal Access Token</Label>
+        <Input
+          id="github-token"
+          type="password"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        />
+        <p className="text-xs text-muted-foreground">
+          Generate a token at{' '}
+          <a
+            href="https://github.com/settings/tokens/new?scopes=repo,user:email"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:underline"
           >
-            {loading ? 'Saving...' : 'Save Token'}
-          </button>
-          {token && (
-            <button
-              onClick={handleRemove}
-              disabled={loading}
-              className="secondary-button"
-            >
-              Remove Token
-            </button>
-          )}
-        </div>
+            GitHub Settings
+          </a>
+          . Required scopes: <code className="text-xs bg-muted px-1.5 py-0.5 rounded">repo</code>,{' '}
+          <code className="text-xs bg-muted px-1.5 py-0.5 rounded">user:email</code>
+        </p>
       </div>
 
-      <style>{`
-        .github-token-settings {
-          padding: 24px;
-          max-width: 600px;
-        }
+      {error && (
+        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+          {error}
+        </div>
+      )}
+      {saved && (
+        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-sm text-emerald-400">
+          GitHub token saved successfully
+        </div>
+      )}
 
-        .setting-section {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          padding: 24px;
-        }
-
-        .setting-section h3 {
-          margin: 0 0 8px 0;
-          font-size: 18px;
-          color: #00ff41;
-        }
-
-        .setting-description {
-          margin: 0 0 24px 0;
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 14px;
-        }
-
-        .token-input-group {
-          margin-bottom: 16px;
-        }
-
-        .token-input-group label {
-          display: block;
-          margin-bottom: 8px;
-          color: rgba(255, 255, 255, 0.9);
-          font-weight: 500;
-        }
-
-        .token-input {
-          width: 100%;
-          padding: 12px;
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          color: white;
-          font-family: 'Courier New', monospace;
-          font-size: 14px;
-        }
-
-        .token-input:focus {
-          outline: none;
-          border-color: #00ff41;
-        }
-
-        .input-hint {
-          margin: 8px 0 0 0;
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        .input-hint a {
-          color: #00ff41;
-          text-decoration: none;
-        }
-
-        .input-hint a:hover {
-          text-decoration: underline;
-        }
-
-        .input-hint code {
-          background: rgba(0, 255, 65, 0.1);
-          padding: 2px 6px;
-          border-radius: 4px;
-          color: #00ff41;
-        }
-
-        .error-message {
-          padding: 12px;
-          background: rgba(255, 0, 0, 0.1);
-          border: 1px solid rgba(255, 0, 0, 0.3);
-          border-radius: 8px;
-          color: #ff4444;
-          margin-bottom: 16px;
-        }
-
-        .success-message {
-          padding: 12px;
-          background: rgba(0, 255, 65, 0.1);
-          border: 1px solid rgba(0, 255, 65, 0.3);
-          border-radius: 8px;
-          color: #00ff41;
-          margin-bottom: 16px;
-        }
-
-        .button-group {
-          display: flex;
-          gap: 12px;
-        }
-
-        .primary-button,
-        .secondary-button {
-          padding: 12px 24px;
-          border-radius: 8px;
-          border: none;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .primary-button {
-          background: #00ff41;
-          color: black;
-        }
-
-        .primary-button:hover:not(:disabled) {
-          background: #00cc34;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 255, 65, 0.3);
-        }
-
-        .primary-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .secondary-button {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .secondary-button:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.15);
-        }
-      `}</style>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={handleSave} disabled={loading || !token}>
+          {loading ? 'Saving...' : 'Save Token'}
+        </Button>
+        {token && (
+          <Button variant="outline" size="sm" onClick={handleRemove} disabled={loading}>
+            <Trash2 className="h-3 w-3 mr-1" />
+            Remove
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

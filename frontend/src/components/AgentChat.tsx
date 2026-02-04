@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StatusIndicator } from './StatusIndicator'
 import { useUIStore } from '../stores/uiStore'
-import '../styles/theme.css'
 import './AgentChat.css'
 
 export interface AgentMessage {
@@ -31,16 +30,13 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   const autoScrollChat = useUIStore((state) => state.autoScrollChat)
   const [manualScrollOverride, setManualScrollOverride] = useState(false)
 
-  // Log messages received
   useEffect(() => {
     console.log(`[AgentChat] Received ${messages.length} messages`);
   }, [messages.length]);
 
-  // Filter out invalid messages (no content, invalid timestamp, etc)
   const validMessages = React.useMemo(() => {
     console.log(`[AgentChat] Processing ${messages.length} messages...`);
-    
-    // Debug: Log all message structures
+
     messages.forEach((msg, idx) => {
       console.log(`[AgentChat] Message ${idx}:`, {
         id: msg.id,
@@ -53,9 +49,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         timestampType: typeof msg.timestamp,
       });
     });
-    
+
     const filtered = messages.filter(msg => {
-      // Check if message has ID
       if (!msg.id) {
         console.warn('[AgentChat] Filtering out message with no ID:', {
           agent: msg.agent,
@@ -64,14 +59,12 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         });
         return false;
       }
-      
-      // Must have content
+
       if (!msg.content || msg.content.trim() === '') {
         console.warn('[AgentChat] Filtering out message with no content:', msg.id);
         return false;
       }
-      
-      // Check timestamp validity - be more lenient
+
       try {
         const dateObj = msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp);
         if (isNaN(dateObj.getTime())) {
@@ -82,70 +75,50 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         console.warn('[AgentChat] Error checking timestamp for message:', msg.id, error);
         return false;
       }
-      
+
       return true;
     });
-    
-    console.log(`[AgentChat] Filtered messages: ${messages.length} → ${filtered.length}`);
+
+    console.log(`[AgentChat] Filtered messages: ${messages.length} -> ${filtered.length}`);
     return filtered;
   }, [messages]);
 
   useEffect(() => {
-    // Only auto-scroll if enabled in preferences and user hasn't manually scrolled
     if (autoScrollChat && !manualScrollOverride && chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [validMessages, autoScrollChat, manualScrollOverride])
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    // Only track manual scroll if auto-scroll is enabled
     if (!autoScrollChat) return
-    
+
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 50
-    
-    // If user scrolls away from bottom, disable auto-scroll temporarily
-    // If they scroll back to bottom, re-enable it
     setManualScrollOverride(!isAtBottom)
-  }
-
-  const getAgentIcon = (agent: string) => {
-    const icons: Record<string, string> = {
-      'LeadEngineer': '◆',
-      'SpecInterpreter': '◇',
-      'CodeGenerator': '▣',
-      'BugHunter': '▲',
-      'SecuritySentinel': '◈',
-      'PerformanceProfiler': '◉',
-      'TestCrafter': '◎',
-      'DocWeaver': '◐',
-    }
-    return icons[agent] || '●'
   }
 
   const getMessageColor = (role: string) => {
     switch (role) {
       case 'system':
-        return 'text-warning'
+        return 'text-yellow-400'
       case 'agent':
-        return 'text-primary'
+        return 'text-blue-400'
       case 'user':
-        return 'text-success'
+        return 'text-emerald-400'
       case 'thought':
-        return 'text-muted'
+        return 'text-muted-foreground'
       default:
-        return 'text-primary'
+        return 'text-foreground'
     }
   }
 
   const formatTimestamp = (date: Date | string | number) => {
     const dateObj = date instanceof Date ? date : new Date(date);
-    
-    // Check if date is valid
+
     if (isNaN(dateObj.getTime())) {
       return '--:--:--';
     }
-    
+
     return dateObj.toLocaleTimeString('en-US', {
       hour12: false,
       hour: '2-digit',
@@ -155,71 +128,48 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   }
 
   return (
-    <div className={`agent-chat terminal-window ${className}`}>
+    <div className={`agent-chat rounded-lg border border-border bg-card ${className}`}>
       {/* Chat Header */}
-      <div className="terminal-header">
-        <div className="terminal-button close"></div>
-        <div className="terminal-button minimize"></div>
-        <div className="terminal-button maximize"></div>
-        <div className="terminal-title">
-          AGENT COMMUNICATION CHANNEL
-        </div>
-      </div>
-
-      {/* Agent Status Bar */}
-      <div className="chat-status-bar">
+      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground">Agent Communication</span>
         <StatusIndicator
           status={isStreaming ? 'loading' : 'success'}
           message={agentStatus}
           size="small"
         />
-        <div className="status-indicator-line">
-          ═══════════════════════════════════════
-        </div>
       </div>
 
       {/* Chat Messages */}
       <div className="chat-messages" onScroll={handleScroll}>
         {validMessages.length === 0 ? (
           <div className="chat-empty">
-            <pre className="ascii-logo phosphor-glow">
-{`    ╔═══════════════════════════════════╗
-    ║                                   ║
-    ║      AWAITING AGENT RESPONSE      ║
-    ║                                   ║
-    ║   ►  System initialized           ║
-    ║   ►  Agents ready                 ║
-    ║   ►  Listening for commands...    ║
-    ║                                   ║
-    ╚═══════════════════════════════════╝`}
-            </pre>
+            <div className="text-center space-y-2">
+              <p className="text-muted-foreground text-sm">Awaiting agent response</p>
+              <p className="text-xs text-muted-foreground/60">System initialized. Listening for commands...</p>
+            </div>
           </div>
         ) : (
           validMessages.map((message, index) => (
             <div
               key={message.id}
-              className={`chat-message ${message.role} ${getMessageColor(message.role)}`}
+              className={`chat-message ${message.role}`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               {/* Message Header */}
               <div className="message-header">
-                <span className="message-icon phosphor-glow">
-                  {getAgentIcon(message.agent)}
-                </span>
-                <span className="message-agent phosphor-glow">
-                  [{message.agent.toUpperCase()}]
+                <span className={`message-agent ${getMessageColor(message.role)}`}>
+                  {message.agent}
                 </span>
                 <span className="message-role">
-                  {message.role === 'thought' ? '(THINKING)' : ''}
+                  {message.role === 'thought' ? '(thinking)' : ''}
                 </span>
-                <span className="message-timestamp text-muted">
+                <span className="message-timestamp text-muted-foreground">
                   {formatTimestamp(message.timestamp)}
                 </span>
               </div>
 
               {/* Message Content */}
               <div className="message-content">
-                <span className="message-prefix">&gt;&gt;</span>
                 <span className="message-text">
                   {message.content}
                   {message.role === 'thought' && (
@@ -246,12 +196,11 @@ export const AgentChat: React.FC<AgentChatProps> = ({
               {/* Tool Calls */}
               {message.toolCalls && message.toolCalls.length > 0 && (
                 <div className="message-tools">
-                  <div className="tools-label text-muted">
-                    &gt; TOOLS EXECUTED:
+                  <div className="tools-label text-muted-foreground text-xs">
+                    Tools executed:
                   </div>
                   {message.toolCalls.map((tool, idx) => (
                     <div key={idx} className="tool-call">
-                      <span className="tool-icon">⚙</span>
                       <span className="tool-name">{tool}</span>
                     </div>
                   ))}
@@ -264,8 +213,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         {/* Streaming Indicator */}
         {isStreaming && (
           <div className="chat-streaming">
-            <span className="streaming-icon phosphor-glow">◉</span>
-            <span className="streaming-text">AGENT PROCESSING</span>
+            <span className="streaming-text">Agent processing</span>
             <span className="streaming-dots">
               <span>.</span>
               <span>.</span>
@@ -280,10 +228,10 @@ export const AgentChat: React.FC<AgentChatProps> = ({
       {/* Chat Footer */}
       <div className="chat-footer">
         <div className="footer-stats">
-          <span className="text-muted">MESSAGES: {validMessages.length}</span>
-          <span className="text-muted">STATUS: {isStreaming ? 'ACTIVE' : 'STANDBY'}</span>
-          <span className="text-muted">
-            SCROLL: {autoScrollChat && !manualScrollOverride ? 'AUTO' : 'MANUAL'}
+          <span className="text-muted-foreground">Messages: {validMessages.length}</span>
+          <span className="text-muted-foreground">Status: {isStreaming ? 'Active' : 'Standby'}</span>
+          <span className="text-muted-foreground">
+            Scroll: {autoScrollChat && !manualScrollOverride ? 'Auto' : 'Manual'}
           </span>
         </div>
       </div>
@@ -298,43 +246,40 @@ export const AgentChatCompact: React.FC<{
   isActive: boolean
 }> = ({ latestMessage, messageCount, isActive }) => {
   return (
-    <div className="agent-chat-compact terminal-window">
-      <div className="terminal-content">
-        <div className="compact-header">
-          <span className="text-primary phosphor-glow">◆ AGENT CHANNEL</span>
-          <span className="badge badge-success">{messageCount}</span>
-        </div>
-
-        {latestMessage && (
-          <div className="compact-message mt-sm">
-            <div className="text-muted">
-              [{latestMessage.agent}] {formatTimestamp(latestMessage.timestamp)}
-            </div>
-            <div className="text-primary">
-              &gt; {latestMessage.content.substring(0, 50)}
-              {latestMessage.content.length > 50 ? '...' : ''}
-            </div>
-          </div>
-        )}
-
-        {isActive && (
-          <div className="compact-status mt-sm">
-            <StatusIndicator status="loading" message="PROCESSING" size="small" />
-          </div>
-        )}
+    <div className="agent-chat-compact rounded-lg border border-border bg-card p-3">
+      <div className="compact-header">
+        <span className="text-foreground text-sm font-medium">Agent Channel</span>
+        <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">{messageCount}</span>
       </div>
+
+      {latestMessage && (
+        <div className="compact-message mt-2">
+          <div className="text-xs text-muted-foreground">
+            {latestMessage.agent} {formatTimestamp(latestMessage.timestamp)}
+          </div>
+          <div className="text-sm text-foreground mt-0.5">
+            {latestMessage.content.substring(0, 50)}
+            {latestMessage.content.length > 50 ? '...' : ''}
+          </div>
+        </div>
+      )}
+
+      {isActive && (
+        <div className="compact-status mt-2 pt-2 border-t border-border">
+          <StatusIndicator status="loading" message="Processing" size="small" />
+        </div>
+      )}
     </div>
   )
 }
 
 function formatTimestamp(timestamp: Date | string | number): string {
   const dateObj = timestamp instanceof Date ? timestamp : new Date(timestamp);
-  
-  // Check if date is valid
+
   if (isNaN(dateObj.getTime())) {
     return '--:--:--';
   }
-  
+
   return dateObj.toLocaleTimeString('en-US', {
     hour12: false,
     hour: '2-digit',

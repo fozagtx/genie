@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { FileUpload, UploadedFile } from './FileUpload';
 import { useAuthContext } from '../contexts/AuthContext';
 import { useSoundEffects } from '../hooks/useSoundEffects';
-import '../styles/theme.css';
+import { Send, Paperclip } from 'lucide-react';
+import { Button } from './ui/button';
 import './ChatInput.css';
 
 export interface ChatInputMessage {
@@ -43,12 +44,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
     });
 
-    // Clear input
     setText('');
     setUploadedImages([]);
     setShowUpload(false);
 
-    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -57,14 +56,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
 
-    // Play typing sound (throttled to avoid too many sounds)
     const now = Date.now();
     if (now - lastTypeTimeRef.current > 100) {
       playType();
       lastTypeTimeRef.current = now;
     }
 
-    // Auto-resize textarea
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -72,7 +69,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Enter (without Shift)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -88,79 +84,73 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className={`chat-input terminal-window ${className}`}>
-      <div className="terminal-content">
-        <form onSubmit={handleSubmit} className="chat-input-form">
-          {/* Image Upload Section */}
-          {showImageUpload && user && showUpload && (
-            <div className="chat-input-upload-section">
-              <FileUpload
-                userId={user.id}
-                folder="chat"
-                maxFiles={3}
-                onFilesChange={handleImagesChange}
-                disabled={disabled}
-              />
-            </div>
+    <div className={`chat-input rounded-lg border border-border bg-card ${className}`}>
+      <form onSubmit={handleSubmit} className="chat-input-form p-3">
+        {/* Image Upload Section */}
+        {showImageUpload && user && showUpload && (
+          <div className="chat-input-upload-section mb-3">
+            <FileUpload
+              userId={user.id}
+              folder="chat"
+              maxFiles={3}
+              onFilesChange={handleImagesChange}
+              disabled={disabled}
+            />
+          </div>
+        )}
+
+        {/* Input Row */}
+        <div className="chat-input-row">
+          {showImageUpload && user && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={showUpload ? 'text-blue-400' : 'text-muted-foreground'}
+              onClick={() => {
+                playToggle();
+                toggleUpload();
+              }}
+              disabled={disabled}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
           )}
 
-          {/* Input Row */}
-          <div className="chat-input-row">
-            {/* Image Upload Toggle Button */}
-            {showImageUpload && user && (
-              <button
-                type="button"
-                className={`btn-image-toggle ${showUpload ? 'active' : ''}`}
-                onClick={() => {
-                  playToggle();
-                  toggleUpload();
-                }}
-                disabled={disabled}
-                title="Attach images"
-              >
-                <span className="icon">◈</span>
-              </button>
-            )}
-
-            {/* Text Input */}
-            <div className="input-wrapper">
-              <span className="input-prefix">&gt;&gt;</span>
-              <textarea
-                ref={textareaRef}
-                className="input chat-textarea"
-                value={text}
-                onChange={handleTextChange}
-                onKeyDown={handleKeyDown}
-                placeholder={placeholder}
-                disabled={disabled}
-                rows={1}
-              />
-            </div>
-
-            {/* Send Button */}
-            <button
-              type="submit"
-              className="btn btn-primary btn-send"
-              disabled={disabled || (!text.trim() && uploadedImages.length === 0)}
-              title="Send message (Enter)"
-              onClick={() => playClick()}
-            >
-              <span className="icon">►</span>
-              SEND
-            </button>
+          <div className="input-wrapper">
+            <textarea
+              ref={textareaRef}
+              className="chat-textarea"
+              value={text}
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              disabled={disabled}
+              rows={1}
+            />
           </div>
 
-          {/* Hint */}
-          <div className="chat-input-hint text-muted">
-            <span>Press Enter to send, Shift+Enter for new line</span>
-            {uploadedImages.length > 0 && (
-              <span className="image-count">
-                {uploadedImages.length} image(s) attached
-              </span>
-            )}
-          </div>
-        </form>
-      </div>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={disabled || (!text.trim() && uploadedImages.length === 0)}
+            onClick={() => playClick()}
+          >
+            <Send className="h-4 w-4 mr-1" />
+            Send
+          </Button>
+        </div>
+
+        {/* Hint */}
+        <div className="chat-input-hint text-xs text-muted-foreground mt-2">
+          <span>Press Enter to send, Shift+Enter for new line</span>
+          {uploadedImages.length > 0 && (
+            <span className="image-count ml-2">
+              {uploadedImages.length} image(s) attached
+            </span>
+          )}
+        </div>
+      </form>
     </div>
   );
 };

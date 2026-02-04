@@ -82,9 +82,6 @@ export interface UserSettings {
   userId: string
   apiKey?: string
   hasApiKey?: boolean
-  theme?: 'blue' | 'green'
-  crtEffects?: boolean
-  phosphorGlow?: boolean
   autoScrollChat?: boolean
   soundEffects?: boolean
   createdAt?: string
@@ -493,9 +490,6 @@ class ApiClient {
 
   // Update preferences
   async updatePreferences(preferences: {
-    theme?: 'blue' | 'green'
-    crtEffects?: boolean
-    phosphorGlow?: boolean
     autoScrollChat?: boolean
     soundEffects?: boolean
   }): Promise<ApiResponse> {

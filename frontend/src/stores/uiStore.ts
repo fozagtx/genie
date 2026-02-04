@@ -35,11 +35,9 @@ interface UIState {
   sidebarOpen: boolean
 
   // Theme
-  theme: 'light' | 'dark' | 'blue' | 'green'
+  theme: 'dark'
 
   // Preferences
-  crtEffects: boolean
-  phosphorGlow: boolean
   autoScrollChat: boolean
   soundEffects: boolean
 
@@ -62,12 +60,9 @@ interface UIState {
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
 
-  // Theme actions
-  setTheme: (theme: 'light' | 'dark' | 'blue' | 'green') => void
-
   // Preference actions
-  setPreference: (key: 'crtEffects' | 'phosphorGlow' | 'autoScrollChat' | 'soundEffects', value: boolean) => void
-  loadPreferences: (preferences: { crtEffects?: boolean; phosphorGlow?: boolean; autoScrollChat?: boolean; soundEffects?: boolean }) => void
+  setPreference: (key: 'autoScrollChat' | 'soundEffects', value: boolean) => void
+  loadPreferences: (preferences: { autoScrollChat?: boolean; soundEffects?: boolean }) => void
 }
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -78,9 +73,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   toasts: [],
   modals: [],
   sidebarOpen: true,
-  theme: 'dark',
-  crtEffects: false,
-  phosphorGlow: true,
+  theme: 'dark' as const,
   autoScrollChat: true,
   soundEffects: true,
 
@@ -196,93 +189,37 @@ export const useUIStore = create<UIState>((set, get) => ({
     set({ sidebarOpen: open })
   },
 
-  // Theme
-  setTheme: (theme: 'light' | 'dark' | 'blue' | 'green') => {
-    set({ theme })
-    
-    // Apply theme to document
-    document.documentElement.classList.remove('dark', 'light', 'blue', 'green')
-    document.documentElement.classList.add(theme)
-    
-    // Persist to localStorage
-    localStorage.setItem('genie-theme', theme)
-  },
-
   // Preferences
-  setPreference: (key: 'crtEffects' | 'phosphorGlow' | 'autoScrollChat' | 'soundEffects', value: boolean) => {
+  setPreference: (key: 'autoScrollChat' | 'soundEffects', value: boolean) => {
     set({ [key]: value })
-    
-    // Apply preference to document body
-    if (key === 'crtEffects') {
-      if (value) {
-        document.body.classList.add('crt-enabled')
-      } else {
-        document.body.classList.remove('crt-enabled')
-      }
-    } else if (key === 'phosphorGlow') {
-      if (value) {
-        document.body.classList.add('phosphor-enabled')
-      } else {
-        document.body.classList.remove('phosphor-enabled')
-      }
-    } else if (key === 'soundEffects') {
+
+    if (key === 'soundEffects') {
       soundEffects.setEnabled(value)
-      // Play a test sound when enabling
       if (value) {
         soundEffects.playSuccess()
       }
     }
-    
-    // Persist to localStorage
+
     localStorage.setItem(`genie-${key}`, String(value))
   },
 
-  loadPreferences: (preferences: { crtEffects?: boolean; phosphorGlow?: boolean; autoScrollChat?: boolean; soundEffects?: boolean }) => {
+  loadPreferences: (preferences: { autoScrollChat?: boolean; soundEffects?: boolean }) => {
     set({
-      crtEffects: preferences.crtEffects ?? false,
-      phosphorGlow: preferences.phosphorGlow ?? true,
       autoScrollChat: preferences.autoScrollChat ?? true,
       soundEffects: preferences.soundEffects ?? true,
     })
-    
-    // Apply visual preferences to document body
-    if (preferences.crtEffects === true) {
-      document.body.classList.add('crt-enabled')
-    } else {
-      document.body.classList.remove('crt-enabled')
-    }
-    
-    if (preferences.phosphorGlow !== false) {
-      document.body.classList.add('phosphor-enabled')
-    } else {
-      document.body.classList.remove('phosphor-enabled')
-    }
-    
-    // Apply sound preference
+
     soundEffects.setEnabled(preferences.soundEffects ?? true)
   },
 }))
 
 // Initialize preferences on load
 if (typeof window !== 'undefined') {
-  // Load theme from localStorage
-  const savedTheme = localStorage.getItem('genie-theme') as 'light' | 'dark' | 'blue' | 'green' | null
-  if (savedTheme) {
-    useUIStore.getState().setTheme(savedTheme)
-  }
-
-  // Load preferences from localStorage
-  const savedCrtEffects = localStorage.getItem('genie-crtEffects')
-  const savedPhosphorGlow = localStorage.getItem('genie-phosphorGlow')
   const savedAutoScrollChat = localStorage.getItem('genie-autoScrollChat')
   const savedSoundEffects = localStorage.getItem('genie-soundEffects')
 
   useUIStore.getState().loadPreferences({
-    crtEffects: savedCrtEffects !== null ? savedCrtEffects === 'true' : false,
-    phosphorGlow: savedPhosphorGlow !== null ? savedPhosphorGlow === 'true' : true,
     autoScrollChat: savedAutoScrollChat !== null ? savedAutoScrollChat === 'true' : true,
     soundEffects: savedSoundEffects !== null ? savedSoundEffects === 'true' : true,
   })
-
-  console.log('[UIStore] Loaded preferences from localStorage')
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 // @ts-ignore - package lacks type definitions
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer-continued'
-import '../styles/theme.css'
 import './DiffViewer.css'
 
 interface DiffViewerProps {
@@ -17,51 +16,51 @@ interface DiffViewerProps {
 export const DiffViewer: React.FC<DiffViewerProps> = ({
   oldCode,
   newCode,
-  oldTitle = 'ORIGINAL',
-  newTitle = 'MODIFIED',
+  oldTitle = 'Original',
+  newTitle = 'Modified',
   language = 'typescript',
   splitView = true,
   className = '',
 }) => {
-  // Custom styles for retro terminal theme
+  // Modern dark theme styles for diff viewer
   const customStyles = {
     variables: {
       dark: {
-        diffViewerBackground: '#0a0e0f',
-        diffViewerColor: '#00ff41',
-        addedBackground: '#00441a',
-        addedColor: '#33ff66',
-        removedBackground: '#441a1a',
-        removedColor: '#ff6666',
-        wordAddedBackground: '#006619',
-        wordRemovedBackground: '#661919',
-        addedGutterBackground: '#003311',
-        removedGutterBackground: '#331111',
-        gutterBackground: '#141a1c',
-        gutterBackgroundDark: '#0a0e0f',
-        highlightBackground: '#1a2224',
-        highlightGutterBackground: '#1a2224',
-        codeFoldGutterBackground: '#141a1c',
-        codeFoldBackground: '#0a0e0f',
-        emptyLineBackground: '#0a0e0f',
-        gutterColor: '#00aa2a',
-        addedGutterColor: '#00ff41',
-        removedGutterColor: '#ff3333',
-        codeFoldContentColor: '#00cc33',
-        diffViewerTitleBackground: '#141a1c',
-        diffViewerTitleColor: '#00ff41',
-        diffViewerTitleBorderColor: '#00ff41',
+        diffViewerBackground: '#0a0a0a',
+        diffViewerColor: '#e5e7eb',
+        addedBackground: '#064e3b',
+        addedColor: '#34d399',
+        removedBackground: '#4c0519',
+        removedColor: '#fb7185',
+        wordAddedBackground: '#065f46',
+        wordRemovedBackground: '#881337',
+        addedGutterBackground: '#064e3b',
+        removedGutterBackground: '#4c0519',
+        gutterBackground: '#111827',
+        gutterBackgroundDark: '#0a0a0a',
+        highlightBackground: '#1f2937',
+        highlightGutterBackground: '#1f2937',
+        codeFoldGutterBackground: '#111827',
+        codeFoldBackground: '#0a0a0a',
+        emptyLineBackground: '#0a0a0a',
+        gutterColor: '#6b7280',
+        addedGutterColor: '#34d399',
+        removedGutterColor: '#fb7185',
+        codeFoldContentColor: '#9ca3af',
+        diffViewerTitleBackground: '#111827',
+        diffViewerTitleColor: '#e5e7eb',
+        diffViewerTitleBorderColor: '#374151',
       },
     },
     line: {
       padding: '8px 4px',
-      fontFamily: "'Courier New', 'Consolas', 'Monaco', monospace",
+      fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
       fontSize: '13px',
       lineHeight: '20px',
     },
     gutter: {
       padding: '8px 8px',
-      fontFamily: "'Courier New', 'Consolas', 'Monaco', monospace",
+      fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
       fontSize: '12px',
       minWidth: '50px',
       textAlign: 'right',
@@ -72,54 +71,33 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   const isAddition = addedLineStats > 0
 
   return (
-    <div className={`diff-viewer terminal-window ${className}`}>
-      {/* Terminal Header */}
-      <div className="terminal-header">
-        <div className="terminal-button close"></div>
-        <div className="terminal-button minimize"></div>
-        <div className="terminal-button maximize"></div>
-        <div className="terminal-title">DIFFERENTIAL ANALYSIS</div>
-      </div>
-
-      {/* Diff Stats Bar */}
-      <div className="diff-stats-bar">
-        <div className="stats-item">
-          <span className="text-muted">&gt; MODE:</span>
-          <span className="text-primary phosphor-glow">
-            {' '}
-            {splitView ? 'SPLIT VIEW' : 'UNIFIED'}
+    <div className={`diff-viewer rounded-lg border border-border bg-card overflow-hidden ${className}`}>
+      {/* Header */}
+      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground">Diff Analysis</span>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <span>{splitView ? 'Split View' : 'Unified'}</span>
+          <span className={isAddition ? 'text-emerald-400' : 'text-destructive'}>
+            {isAddition ? '+' : ''}{addedLineStats} lines
           </span>
-        </div>
-        <div className="stats-item">
-          <span className="text-muted">&gt; CHANGES:</span>
-          <span className={isAddition ? 'text-success' : 'text-error'}>
-            {' '}
-            {isAddition ? '+' : ''}
-            {addedLineStats} LINES
-          </span>
-        </div>
-        <div className="stats-item">
-          <span className="text-muted">&gt; LANG:</span>
-          <span className="text-primary"> {language.toUpperCase()}</span>
+          <span>{language.toUpperCase()}</span>
         </div>
       </div>
 
       {/* File Labels */}
       <div className="diff-labels">
         <div className="label-item old-label">
-          <span className="label-icon">◄</span>
-          <span className="label-text">{oldTitle}</span>
+          <span>{oldTitle}</span>
         </div>
         {splitView && (
           <div className="label-item new-label">
-            <span className="label-text">{newTitle}</span>
-            <span className="label-icon">►</span>
+            <span>{newTitle}</span>
           </div>
         )}
       </div>
 
       {/* Diff Viewer */}
-      <div className="diff-container crt-screen">
+      <div className="diff-container">
         <ReactDiffViewer
           oldValue={oldCode}
           newValue={newCode}
@@ -127,26 +105,26 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
           compareMethod={DiffMethod.WORDS}
           useDarkTheme={true}
           styles={customStyles}
-          leftTitle={undefined} // We use custom labels
+          leftTitle={undefined}
           rightTitle={undefined}
           showDiffOnly={false}
           hideLineNumbers={false}
         />
       </div>
 
-      {/* Diff Legend */}
+      {/* Legend */}
       <div className="diff-legend">
         <div className="legend-item">
           <span className="legend-box added"></span>
-          <span className="legend-text text-success">ADDED</span>
+          <span className="text-emerald-400">Added</span>
         </div>
         <div className="legend-item">
           <span className="legend-box removed"></span>
-          <span className="legend-text text-error">REMOVED</span>
+          <span className="text-destructive">Removed</span>
         </div>
         <div className="legend-item">
           <span className="legend-box modified"></span>
-          <span className="legend-text text-warning">MODIFIED</span>
+          <span className="text-yellow-400">Modified</span>
         </div>
       </div>
     </div>
@@ -163,37 +141,24 @@ export const DiffSummary: React.FC<{
   const total = additions + deletions + modifications
 
   return (
-    <div className={`diff-summary terminal-window ${className}`}>
-      <div className="terminal-content">
-        <div className="summary-header phosphor-glow">
-          <span>◆</span> CHANGE SUMMARY
+    <div className={`diff-summary rounded-lg border border-border bg-card p-4 ${className}`}>
+      <div className="text-sm font-medium text-foreground mb-3">Change Summary</div>
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Additions:</span>
+          <span className="text-emerald-400">+{additions} lines</span>
         </div>
-        <div className="summary-stats mt-md">
-          <div className="stat-line">
-            <span className="stat-label text-muted">&gt; ADDITIONS:</span>
-            <span className="stat-value text-success phosphor-glow">
-              +{additions} lines
-            </span>
-          </div>
-          <div className="stat-line">
-            <span className="stat-label text-muted">&gt; DELETIONS:</span>
-            <span className="stat-value text-error phosphor-glow">
-              -{deletions} lines
-            </span>
-          </div>
-          <div className="stat-line">
-            <span className="stat-label text-muted">&gt; MODIFICATIONS:</span>
-            <span className="stat-value text-warning phosphor-glow">
-              ~{modifications} lines
-            </span>
-          </div>
-          <div className="stat-divider mt-sm mb-sm">
-            ═══════════════════════════════
-          </div>
-          <div className="stat-line">
-            <span className="stat-label text-muted">&gt; TOTAL:</span>
-            <span className="stat-value text-primary phosphor-glow">{total} changes</span>
-          </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Deletions:</span>
+          <span className="text-destructive">-{deletions} lines</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Modifications:</span>
+          <span className="text-yellow-400">~{modifications} lines</span>
+        </div>
+        <div className="border-t border-border pt-2 flex justify-between">
+          <span className="text-muted-foreground">Total:</span>
+          <span className="text-foreground font-medium">{total} changes</span>
         </div>
       </div>
     </div>

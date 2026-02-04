@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import Editor, { OnMount } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor'
-import '../styles/theme.css'
 import './CodeEditor.css'
 
 interface CodeEditorProps {
@@ -23,58 +22,57 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   height = '500px',
   showMinimap = true,
   className = '',
-  title = 'CODE EDITOR',
+  title = 'Code Editor',
 }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
 
-    // Define custom retro terminal theme
-    monaco.editor.defineTheme('terminal-green', {
+    // Modern dark theme
+    monaco.editor.defineTheme('genie-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [
-        { token: 'comment', foreground: '00aa2a', fontStyle: 'italic' },
-        { token: 'keyword', foreground: '00ff41', fontStyle: 'bold' },
-        { token: 'string', foreground: '33ff66' },
-        { token: 'number', foreground: '00cc33' },
-        { token: 'type', foreground: '00ff41' },
-        { token: 'class', foreground: '00ff41', fontStyle: 'bold' },
-        { token: 'function', foreground: '33ff66' },
-        { token: 'variable', foreground: '00cc33' },
-        { token: 'constant', foreground: '00ff41' },
-        { token: 'operator', foreground: '00cc33' },
-        { token: 'delimiter', foreground: '00aa2a' },
+        { token: 'comment', foreground: '6b7280', fontStyle: 'italic' },
+        { token: 'keyword', foreground: 'c084fc', fontStyle: 'bold' },
+        { token: 'string', foreground: '34d399' },
+        { token: 'number', foreground: 'f59e0b' },
+        { token: 'type', foreground: '60a5fa' },
+        { token: 'class', foreground: '60a5fa', fontStyle: 'bold' },
+        { token: 'function', foreground: '34d399' },
+        { token: 'variable', foreground: 'e5e7eb' },
+        { token: 'constant', foreground: 'f59e0b' },
+        { token: 'operator', foreground: '9ca3af' },
+        { token: 'delimiter', foreground: '6b7280' },
       ],
       colors: {
-        'editor.background': '#0a0e0f',
-        'editor.foreground': '#00ff41',
-        'editor.lineHighlightBackground': '#141a1c',
-        'editor.selectionBackground': '#006619',
-        'editor.inactiveSelectionBackground': '#00441a',
-        'editorCursor.foreground': '#00ff41',
-        'editorWhitespace.foreground': '#00441a',
-        'editorIndentGuide.background': '#00441a',
-        'editorIndentGuide.activeBackground': '#006619',
-        'editorLineNumber.foreground': '#00aa2a',
-        'editorLineNumber.activeForeground': '#00ff41',
-        'editorBracketMatch.background': '#006619',
-        'editorBracketMatch.border': '#00ff41',
-        'scrollbarSlider.background': '#00aa2a80',
-        'scrollbarSlider.hoverBackground': '#00cc3380',
-        'scrollbarSlider.activeBackground': '#00ff4180',
+        'editor.background': '#0a0a0a',
+        'editor.foreground': '#e5e7eb',
+        'editor.lineHighlightBackground': '#1f2937',
+        'editor.selectionBackground': '#374151',
+        'editor.inactiveSelectionBackground': '#1f2937',
+        'editorCursor.foreground': '#60a5fa',
+        'editorWhitespace.foreground': '#1f2937',
+        'editorIndentGuide.background': '#1f2937',
+        'editorIndentGuide.activeBackground': '#374151',
+        'editorLineNumber.foreground': '#4b5563',
+        'editorLineNumber.activeForeground': '#9ca3af',
+        'editorBracketMatch.background': '#374151',
+        'editorBracketMatch.border': '#60a5fa',
+        'scrollbarSlider.background': '#37415180',
+        'scrollbarSlider.hoverBackground': '#4b556380',
+        'scrollbarSlider.activeBackground': '#6b728080',
       },
     })
 
-    monaco.editor.setTheme('terminal-green')
+    monaco.editor.setTheme('genie-dark')
 
-    // Add custom font settings
     editor.updateOptions({
-      fontFamily: "'Courier New', 'Consolas', 'Monaco', monospace",
+      fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
       fontSize: 14,
-      lineHeight: 20,
-      letterSpacing: 0.5,
+      lineHeight: 22,
+      letterSpacing: 0.3,
     })
   }
 
@@ -85,40 +83,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   }
 
   return (
-    <div className={`code-editor terminal-window ${className}`}>
-      {/* Terminal Header */}
-      <div className="terminal-header">
-        <div className="terminal-button close"></div>
-        <div className="terminal-button minimize"></div>
-        <div className="terminal-button maximize"></div>
-        <div className="terminal-title">{title}</div>
-      </div>
-
-      {/* Editor Status Bar */}
-      <div className="editor-status-bar">
-        <div className="status-item">
-          <span className="text-muted">&gt; LANG:</span>
-          <span className="text-primary phosphor-glow"> {language.toUpperCase()}</span>
-        </div>
-        <div className="status-item">
-          <span className="text-muted">&gt; MODE:</span>
-          <span className={readOnly ? 'text-warning' : 'text-success'}>
-            {' '}
-            {readOnly ? '[READ-ONLY]' : '[EDIT]'}
-          </span>
-        </div>
-        <div className="status-item">
-          <span className="text-muted">&gt; LINES:</span>
-          <span className="text-primary"> {value.split('\n').length}</span>
-        </div>
-        <div className="status-item">
-          <span className="text-muted">&gt; CHARS:</span>
-          <span className="text-primary"> {value.length}</span>
+    <div className={`code-editor rounded-lg border border-border bg-card overflow-hidden ${className}`}>
+      {/* Header */}
+      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground">{title}</span>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <span>{language.toUpperCase()}</span>
+          <span>{readOnly ? 'Read Only' : 'Edit'}</span>
+          <span>{value.split('\n').length} lines</span>
         </div>
       </div>
 
       {/* Monaco Editor Container */}
-      <div className="editor-container crt-screen">
+      <div className="editor-container">
         <Editor
           width="100%"
           height={height}
@@ -128,9 +105,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           onMount={handleEditorDidMount}
           options={{
             readOnly,
-            minimap: {
-              enabled: showMinimap,
-            },
+            minimap: { enabled: showMinimap },
             scrollBeyondLastLine: false,
             automaticLayout: true,
             tabSize: 2,
@@ -151,20 +126,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             },
             overviewRulerLanes: 0,
             hideCursorInOverviewRuler: true,
-            cursorBlinking: 'solid',
-            cursorStyle: 'block',
+            cursorBlinking: 'smooth',
+            cursorStyle: 'line',
             renderWhitespace: 'selection',
           }}
         />
       </div>
 
-      {/* Editor Footer */}
-      <div className="editor-footer">
-        <div className="footer-text text-muted">
-          <span className="phosphor-glow">◆</span> GENIE EDITOR v1.0.0
-          <span className="separator">|</span>
-          {readOnly ? 'VIEW MODE' : 'READY'}
-        </div>
+      {/* Footer */}
+      <div className="px-4 py-1.5 border-t border-border text-xs text-muted-foreground">
+        Genie Editor {readOnly ? '| View Mode' : '| Ready'}
       </div>
     </div>
   )
@@ -181,14 +152,12 @@ export const CodePreview: React.FC<{
   const truncated = code.split('\n').length > maxLines
 
   return (
-    <div className={`code-preview terminal-window ${className}`}>
-      <div className="terminal-header">
-        <div className="terminal-title">
-          CODE PREVIEW [{language.toUpperCase()}]
-        </div>
+    <div className={`code-preview rounded-lg border border-border bg-card overflow-hidden ${className}`}>
+      <div className="px-3 py-2 border-b border-border text-xs text-muted-foreground">
+        Preview [{language.toUpperCase()}]
       </div>
       <div className="preview-content">
-        <pre className="preview-code phosphor-glow">
+        <pre className="preview-code">
           <code>
             {lines.map((line, idx) => (
               <div key={idx} className="preview-line">
@@ -197,7 +166,7 @@ export const CodePreview: React.FC<{
               </div>
             ))}
             {truncated && (
-              <div className="preview-line text-muted">
+              <div className="preview-line text-muted-foreground">
                 <span className="line-number">...</span>
                 <span className="line-content">
                   [{code.split('\n').length - maxLines} more lines]

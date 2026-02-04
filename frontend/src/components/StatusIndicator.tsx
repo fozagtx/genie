@@ -1,4 +1,5 @@
 import React from 'react'
+import { Loader2 } from 'lucide-react'
 import './StatusIndicator.css'
 
 export type StatusType = 'idle' | 'loading' | 'success' | 'error' | 'warning'
@@ -21,31 +22,16 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   const getStatusIcon = () => {
     switch (status) {
       case 'loading':
-        return '◉'
+        return '...'
       case 'success':
-        return '✓'
+        return '\u2713'
       case 'error':
-        return '✗'
+        return '\u2717'
       case 'warning':
-        return '⚠'
+        return '!'
       case 'idle':
       default:
-        return '○'
-    }
-  }
-
-  const getStatusAnimation = () => {
-    switch (status) {
-      case 'loading':
-        return 'pulse-glow'
-      case 'success':
-        return 'flash-success'
-      case 'error':
-        return 'glitch-error'
-      case 'warning':
-        return 'blink-warning'
-      default:
-        return ''
+        return '\u25CB'
     }
   }
 
@@ -66,10 +52,10 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 
   return (
     <div
-      className={`status-indicator ${getStatusColor()} ${getStatusAnimation()} size-${size} ${className}`}
+      className={`status-indicator ${getStatusColor()} size-${size} ${className}`}
     >
       {showIcon && (
-        <span className="status-icon phosphor-glow">{getStatusIcon()}</span>
+        <span className="status-icon">{getStatusIcon()}</span>
       )}
       {message && <span className="status-message">{message}</span>}
     </div>
@@ -78,19 +64,14 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 
 // Loading Spinner Component
 export const LoadingSpinner: React.FC<{ text?: string; className?: string }> = ({
-  text = 'PROCESSING',
+  text = 'Processing',
   className = '',
 }) => {
   return (
     <div className={`loading-spinner ${className}`}>
       <div className="spinner-container">
-        <div className="pixel-spinner"></div>
-        <div className="spinner-text phosphor-glow">{text}...</div>
-      </div>
-      <div className="spinner-dots">
-        <span>.</span>
-        <span>.</span>
-        <span>.</span>
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div className="spinner-text">{text}...</div>
       </div>
     </div>
   )
@@ -98,7 +79,7 @@ export const LoadingSpinner: React.FC<{ text?: string; className?: string }> = (
 
 // Progress Bar Component
 interface ProgressBarProps {
-  progress: number // 0-100
+  progress: number
   label?: string
   showPercentage?: boolean
   className?: string
@@ -115,18 +96,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div className={`progress-bar-container ${className}`}>
       {label && (
-        <div className="progress-label phosphor-glow">
-          &gt; {label}
-          {showPercentage && <span className="progress-percentage"> [{clampedProgress}%]</span>}
+        <div className="progress-label">
+          {label}
+          {showPercentage && <span className="progress-percentage"> {clampedProgress}%</span>}
         </div>
       )}
       <div className="progress-bar-track">
         <div
-          className="progress-bar-fill phosphor-glow"
+          className="progress-bar-fill"
           style={{ width: `${clampedProgress}%` }}
-        >
-          <div className="progress-bar-glow"></div>
-        </div>
+        />
       </div>
     </div>
   )
@@ -149,57 +128,45 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
   const getConnectionColor = () => {
     switch (connectionStatus) {
       case 'online':
-        return 'text-success'
+        return 'text-emerald-400'
       case 'offline':
-        return 'text-error'
+        return 'text-destructive'
       case 'connecting':
-        return 'text-warning'
+        return 'text-yellow-400'
       default:
-        return 'text-muted'
+        return 'text-muted-foreground'
     }
   }
 
   return (
-    <div className={`system-status-panel terminal-window ${className}`}>
-      <div className="terminal-content">
-        <div className="status-grid">
-          <div className="status-item">
-            <span className="status-label text-muted">&gt; AGENT STATUS:</span>
-            <span className="status-value text-primary phosphor-glow">{agentStatus}</span>
-          </div>
-          <div className="status-item">
-            <span className="status-label text-muted">&gt; CONNECTION:</span>
-            <span className={`status-value ${getConnectionColor()} phosphor-glow`}>
-              [{connectionStatus.toUpperCase()}]
-            </span>
-          </div>
-          {queueSize > 0 && (
-            <div className="status-item">
-              <span className="status-label text-muted">&gt; QUEUE:</span>
-              <span className="status-value text-warning phosphor-glow">{queueSize} tasks</span>
-            </div>
-          )}
+    <div className={`system-status-panel rounded-lg border border-border bg-card p-4 ${className}`}>
+      <div className="status-grid">
+        <div className="status-item">
+          <span className="status-label text-muted-foreground">Agent Status:</span>
+          <span className="status-value text-foreground">{agentStatus}</span>
         </div>
+        <div className="status-item">
+          <span className="status-label text-muted-foreground">Connection:</span>
+          <span className={`status-value ${getConnectionColor()}`}>
+            {connectionStatus.toUpperCase()}
+          </span>
+        </div>
+        {queueSize > 0 && (
+          <div className="status-item">
+            <span className="status-label text-muted-foreground">Queue:</span>
+            <span className="status-value text-yellow-400">{queueSize} tasks</span>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-// Retro Loading Animation (Matrix-style)
+// Modern Loading Animation
 export const RetroLoader: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
-    <div className={`retro-loader ${className}`}>
-      <div className="loader-frame">
-        <pre className="loader-ascii phosphor-glow">
-{`╔════════════════════════╗
-║                        ║
-║    [▓▓▓▓▓▓▓░░░░░░░]   ║
-║                        ║
-║    PROCESSING...       ║
-║                        ║
-╚════════════════════════╝`}
-        </pre>
-      </div>
+    <div className={`flex justify-center items-center p-8 ${className}`}>
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
     </div>
   )
 }

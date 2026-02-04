@@ -179,84 +179,6 @@ export const TerminalPage: React.FC = () => {
     }
   }, [generation?.response?.files]);
 
-  // Matrix rain effect for welcome screen
-  useEffect(() => {
-    if (messages.length > 0) return; // Only show on empty chat
-
-    const canvas = document.getElementById('matrix-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*(){}[]<>+-*/=アイウエオカキクケコサシスセソタチツテト'.split('');
-    const fontSize = 16; // Increased font size for better visibility
-    const columns = canvas.width / fontSize;
-    const drops: number[] = [];
-
-    for (let i = 0; i < columns; i++) {
-      drops[i] = Math.random() * -100;
-    }
-
-    let animationId: number;
-    const draw = () => {
-      // Darker fade for more contrast
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.font = `bold ${fontSize}px monospace`; // Bold for better visibility
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-
-        // More vibrant colors with better gradients
-        if (drops[i] * fontSize > canvas.height * 0.95) {
-          // Brightest at bottom
-          ctx.fillStyle = '#00FF00';
-          ctx.shadowColor = '#00FF00';
-          ctx.shadowBlur = 10;
-        } else {
-          // Gradient effect from top to bottom
-          const opacity = Math.min(1, (drops[i] * fontSize) / (canvas.height * 0.8));
-          ctx.fillStyle = `rgba(0, 255, 0, ${opacity * 0.9})`;
-          ctx.shadowColor = '#00FF00';
-          ctx.shadowBlur = 5;
-        }
-        
-        ctx.fillText(text, x, y);
-
-        // Reset shadow for next iteration
-        ctx.shadowBlur = 0;
-
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [messages.length]);
-
   // Use realtime WebSocket updates (no polling!)
   useRealtimeJob({
     jobId: currentJobId,
@@ -989,8 +911,7 @@ export const TerminalPage: React.FC = () => {
       <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`}>
         <div className="sidebar-header">
           <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <span className="logo-icon phosphor-glow">⬡</span>
-            <span className="logo-text">GENIE</span>
+            <span className="logo-text">Genie</span>
           </div>
           <button className="btn-new-chat" onClick={() => {
             playClick();
@@ -1195,49 +1116,16 @@ export const TerminalPage: React.FC = () => {
             <div className="chat-messages">
               {messages.length === 0 ? (
                 <div className="chat-empty">
-                  <div className="matrix-rain-container">
-                    <canvas id="matrix-canvas" className="matrix-canvas"></canvas>
-                  </div>
                   <div className="welcome-content">
-                    <pre className="ascii-logo terminal-glow">
-{`    ╔═══════════════════════════════════════════════════════════════════════════════╗
-    ║   ██████╗ ██████╗ ██████╗ ███████╗███████╗ ██████╗ ██████╗  ██████╗ ███████╗  ║
-    ║  ██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝  ║
-    ║  ██║     ██║   ██║██║  ██║█████╗  █████╗  ██║   ██║██████╔╝██║  ███╗█████╗    ║
-    ║  ██║     ██║   ██║██║  ██║██╔══╝  ██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝    ║
-    ║  ╚██████╗╚██████╔╝██████╔╝███████╗██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗  ║
-    ║   ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝  ║
-    ║                                                                               ║
-    ║                      [ A I   P O W E R E D   C O D E   G E N ]                ║
-    ╚═══════════════════════════════════════════════════════════════════════════════╝`}
-                    </pre>
-                    <div className="welcome-features">
-                      <div className="feature-line typing-effect" style={{ animationDelay: '0.5s' }}>
-                        <span className="feature-icon">▸</span>
-                        <span className="feature-text">GENERATE_CODE<span className="cursor-blink">_</span></span>
-                      </div>
-                      <div className="feature-line typing-effect" style={{ animationDelay: '1s' }}>
-                        <span className="feature-icon">▸</span>
-                        <span className="feature-text">ANALYZE_AND_REVIEW<span className="cursor-blink">_</span></span>
-                      </div>
-                      <div className="feature-line typing-effect" style={{ animationDelay: '1.5s' }}>
-                        <span className="feature-icon">▸</span>
-                        <span className="feature-text">REFACTOR_OPTIMIZE<span className="cursor-blink">_</span></span>
-                      </div>
-                      <div className="feature-line typing-effect" style={{ animationDelay: '2s' }}>
-                        <span className="feature-icon">▸</span>
-                        <span className="feature-text">SECURITY_SCAN<span className="cursor-blink">_</span></span>
-                      </div>
-                      <div className="feature-line typing-effect" style={{ animationDelay: '2.5s' }}>
-                        <span className="feature-icon">▸</span>
-                        <span className="feature-text">TESTS_AND_DOCS<span className="cursor-blink">_</span></span>
-                      </div>
+                    <h1 className="welcome-title">Genie AI</h1>
+                    <p className="welcome-subtitle">What would you like to build?</p>
+                    <div className="welcome-capabilities">
+                      <div className="capability-chip">Generate Code</div>
+                      <div className="capability-chip">Analyze &amp; Review</div>
+                      <div className="capability-chip">Refactor &amp; Optimize</div>
+                      <div className="capability-chip">Security Scan</div>
+                      <div className="capability-chip">Tests &amp; Docs</div>
                     </div>
-                    <div className="welcome-prompt typing-effect" style={{ animationDelay: '3s' }}>
-                      <span className="prompt-symbol">&gt;&gt;</span>
-                      <span className="prompt-text">AWAITING_INPUT<span className="cursor-blink">█</span></span>
-                    </div>
-                    <div className="scan-line"></div>
                   </div>
                 </div>
               ) : (
@@ -1252,10 +1140,10 @@ export const TerminalPage: React.FC = () => {
                     }`}
                   >
                     <div className="message-header">
-                      <span className="message-icon phosphor-glow">
+                      <span className="message-icon ">
                         {getAgentIcon(message.agent)}
                       </span>
-                      <span className="message-agent phosphor-glow">
+                      <span className="message-agent ">
                         [{(message.agent || 'system').toUpperCase()}]
                       </span>
                       {message.role === 'thought' && (
@@ -1302,10 +1190,10 @@ export const TerminalPage: React.FC = () => {
                       className={`agent-progress-message ${progress.status}`}
                     >
                       <div className="progress-header">
-                        <span className="progress-icon phosphor-glow">
+                        <span className="progress-icon ">
                           {getAgentIcon(progress.agent)}
                         </span>
-                        <span className="progress-agent phosphor-glow">
+                        <span className="progress-agent ">
                           [{progress.agent.toUpperCase()}]
                         </span>
                         <span className={`progress-status ${progress.status}`}>
@@ -1340,7 +1228,7 @@ export const TerminalPage: React.FC = () => {
 
               {isProcessing && progressMessages.length === 0 && (
                 <div className="chat-streaming">
-                  <span className="streaming-icon phosphor-glow">◉</span>
+                  <span className="streaming-icon ">◉</span>
                   <span className="streaming-text">PROCESSING</span>
                   <span className="streaming-dots">
                     <span>.</span>
