@@ -20,10 +20,11 @@
 }
 
 .toast {
-  background: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-lg);
   cursor: pointer;
   padding: 1rem;
   animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 4.7s forwards;
@@ -158,11 +159,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--bg-overlay);
+  backdrop-filter: var(--glass-blur);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: var(--z-modal);
   padding: 1rem;
   animation: fadeIn 0.2s ease-out;
 }
