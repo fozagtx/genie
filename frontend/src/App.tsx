@@ -5,7 +5,6 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { useUIStore } from './stores/uiStore'
 
 // Pages
-import { HomePage } from './pages/HomePage'
 import { ShowcasePage } from './pages/ShowcasePage'
 import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/auth/LoginPage'
@@ -56,7 +55,6 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/showcase" element={<ShowcasePage />} />
-            <Route path="/old" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -90,7 +88,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             {/* Legacy redirects - redirect old routes to terminal */}
             <Route path="/dashboard" element={<Navigate to="/terminal" replace />} />
             <Route path="/chat" element={<Navigate to="/terminal" replace />} />

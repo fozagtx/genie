@@ -1,7 +1,25 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import './Header.css'
+import { Button } from './ui/button'
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Sparkles,
+  Search,
+  History,
+  Settings,
+  LogOut,
+} from 'lucide-react'
+
+const navItems = [
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/chat', label: 'AI Chat', icon: MessageSquare },
+  { path: '/generate', label: 'Generate', icon: Sparkles },
+  { path: '/review', label: 'Review', icon: Search },
+  { path: '/history', label: 'History', icon: History },
+  { path: '/settings', label: 'Settings', icon: Settings },
+]
 
 export const Header: React.FC = () => {
   const { user, signOut } = useAuth()
@@ -19,79 +37,41 @@ export const Header: React.FC = () => {
     }
   }
 
-  const isActive = (path: string) => location.pathname === path
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(path + '/')
 
   return (
-    <header className="app-header terminal-window">
-      <div className="terminal-header">
-        <div className="terminal-button close"></div>
-        <div className="terminal-button minimize"></div>
-        <div className="terminal-button maximize"></div>
-        <div className="terminal-title">GENIE AI - NAVIGATION CONSOLE</div>
-      </div>
-      <div className="terminal-content">
-        <div className="header-content">
-          {/* Logo/Brand */}
-          <div className="header-brand">
-            <Link to="/dashboard" className="brand-link">
-              <span className="brand-icon phosphor-glow">◆</span>
-              <span className="brand-text">GENIE</span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+        <div className="flex items-center gap-6">
+          <Link to="/" className="text-lg font-bold tracking-tight">
+            Genie
+          </Link>
 
-          {/* Navigation */}
-          <nav className="header-nav">
-            <Link 
-              to="/dashboard" 
-              className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
-            >
-              ◆ DASHBOARD
-            </Link>
-            <Link 
-              to="/chat" 
-              className={`nav-link ${(isActive('/chat') || location.pathname.startsWith('/chat/')) ? 'active' : ''}`}
-            >
-              🤖 AI CHAT
-            </Link>
-            <Link 
-              to="/generate" 
-              className={`nav-link ${isActive('/generate') ? 'active' : ''}`}
-            >
-              ► GENERATE
-            </Link>
-            <Link 
-              to="/review" 
-              className={`nav-link ${isActive('/review') ? 'active' : ''}`}
-            >
-              ◉ REVIEW
-            </Link>
-            <Link 
-              to="/history" 
-              className={`nav-link ${isActive('/history') ? 'active' : ''}`}
-            >
-              ▣ HISTORY
-            </Link>
-            <Link 
-              to="/settings" 
-              className={`nav-link ${isActive('/settings') ? 'active' : ''}`}
-            >
-              ⚙ SETTINGS
-            </Link>
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Button
+                key={path}
+                variant="ghost"
+                size="sm"
+                className={isActive(path) ? 'bg-muted' : ''}
+                onClick={() => navigate(path)}
+              >
+                <Icon className="mr-1.5 h-4 w-4" />
+                {label}
+              </Button>
+            ))}
           </nav>
+        </div>
 
-          {/* User Actions */}
-          <div className="header-actions">
-            <div className="user-info">
-              <span className="user-email text-muted">{user?.email}</span>
-            </div>
-            <button 
-              className="btn btn-danger logout-btn"
-              onClick={handleLogout}
-              title="Logout"
-            >
-              ► LOGOUT
-            </button>
-          </div>
+        <div className="flex items-center gap-3">
+          {user?.email && (
+            <span className="hidden text-sm text-muted-foreground sm:inline">{user.email}</span>
+          )}
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="mr-1.5 h-4 w-4" />
+            Logout
+          </Button>
         </div>
       </div>
     </header>

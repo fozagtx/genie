@@ -1,86 +1,19 @@
-/* Genie AI - Modern Dark Theme */
+/* Genie AI - Brand Extensions (beyond shadcn base) */
 
 :root {
-  /* Modern Color Palette */
-  --bg-primary: #000000;
-  --bg-secondary: #0f0f0f;
-  --bg-tertiary: #1a1a1a;
-  --bg-elevated: #262626;
-  --bg-overlay: rgba(0, 0, 0, 0.8);
-
-  /* Text Colors */
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --text-error: #ef4444;
-  --text-warning: #f59e0b;
-  --text-success: #10b981;
-  --text-info: #3b82f6;
-
   /* Brand Colors */
   --brand-primary: #8b5cf6;
   --brand-secondary: #3b82f6;
   --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-
-  /* Border Colors */
-  --border-primary: rgba(255, 255, 255, 0.1);
-  --border-secondary: rgba(255, 255, 255, 0.05);
-  --border-accent: rgba(139, 92, 246, 0.3);
-
-  /* Shadow */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
-
-  /* Modern Card System */
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --card-hover-bg: rgba(255, 255, 255, 0.08);
 
   /* Glassmorphism */
   --glass-bg: rgba(0, 0, 0, 0.6);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-blur: blur(10px);
 
-  /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Inter', system-ui, -apple-system, sans-serif;
-
-  /* Spacing */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-
   /* Z-Index */
   --z-dropdown: 10;
   --z-sticky: 20;
   --z-modal: 50;
   --z-tooltip: 100;
-}
-
-/* Global Styles */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Remove theme switching since we only have one modern theme */
-.theme-blue,
-.theme-green {
-  /* Keep variables as they are - modern theme only */
 }

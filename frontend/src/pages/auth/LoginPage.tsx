@@ -1,37 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { MatrixBackground } from '../../components/MatrixBackground'
-import '../../styles/theme.css'
-import './LoginPage.css'
+import { Button } from '../../components/ui/button'
+import { Card, CardContent } from '../../components/ui/card'
+import { Github } from 'lucide-react'
 
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [bootSequence, setBootSequence] = useState(true)
   const { signInWithGithub, user } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (user) {
-      // Check if there's a Telegram auth return URL
-      const returnUrl = sessionStorage.getItem('telegram_auth_return_url');
+      const returnUrl = sessionStorage.getItem('telegram_auth_return_url')
       if (returnUrl) {
-        sessionStorage.removeItem('telegram_auth_return_url');
-        navigate(returnUrl);
+        sessionStorage.removeItem('telegram_auth_return_url')
+        navigate(returnUrl)
       } else {
-        navigate('/terminal');
+        navigate('/terminal')
       }
     }
   }, [user, navigate])
-
-  useEffect(() => {
-    // Boot sequence animation
-    const timer = setTimeout(() => {
-      setBootSequence(false)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
 
   const handleGithubLogin = async () => {
     setError('')
@@ -45,152 +35,43 @@ export const LoginPage: React.FC = () => {
     }
   }
 
-  if (bootSequence) {
-    return (
-      <div className="login-page crt-screen auth-page full-height flex items-center justify-center">
-        <div className="boot-sequence">
-          <div className="boot-line phosphor-glow">╔══════════════════════════════════════╗</div>
-          <div className="boot-line phosphor-glow">║   GENIE AI AUTHENTICATION SYS   ║</div>
-          <div className="boot-line phosphor-glow">║          SYSTEM BOOTING...          ║</div>
-          <div className="boot-line phosphor-glow">╚══════════════════════════════════════╝</div>
-          <div className="boot-progress mt-lg">
-            <div className="boot-progress-bar"></div>
-          </div>
-          <div className="boot-log mt-md text-muted">
-            <div>&gt; Initializing kernel modules...</div>
-            <div>&gt; Loading authentication protocols...</div>
-            <div>&gt; Establishing secure connection...</div>
-            <div>&gt; System ready.</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="login-page crt-screen auth-page full-height">
-      {/* Background Matrix Effect */}
-      <MatrixBackground />
-
-      {/* Main Login Terminal */}
-      <div className="flex items-center justify-center full-height">
-        <div className="login-container">
-          {/* Terminal Header */}
-          <div className="terminal-window">
-            <div className="terminal-header">
-              <div className="terminal-button close"></div>
-              <div className="terminal-button minimize"></div>
-              <div className="terminal-button maximize"></div>
-              <div className="terminal-title">AUTHENTICATION REQUIRED</div>
-            </div>
-
-            <div className="terminal-content">
-              {/* ASCII Art Header */}
-              <div className="ascii-art phosphor-glow">
-                <pre>
-{`   ╔═══════════════════════════════════════╗
-   ║                                       ║
-   ║    ██████╗ ██████╗ ██████╗ ███████╗   ║
-   ║   ██╔════╝██╔═══██╗██╔══██╗██╔════╝   ║
-   ║   ██║     ██║   ██║██║  ██║█████╗     ║
-   ║   ██║     ██║   ██║██║  ██║██╔══╝     ║
-   ║   ╚██████╗╚██████╔╝██████╔╝███████╗   ║
-   ║    ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝   ║
-   ║                                       ║
-   ║         FORGE AI TERMINAL             ║
-   ║         v1.0.0 [SECURE]               ║
-   ║                                       ║
-   ╚═══════════════════════════════════════╝`}
-                </pre>
-              </div>
-
-              {/* System Status */}
-              <div className="system-status mt-lg mb-lg">
-                <div className="status-line">
-                  <span className="text-muted">&gt;</span> SYSTEM STATUS:
-                  <span className="text-success phosphor-glow"> [ONLINE]</span>
-                </div>
-                <div className="status-line">
-                  <span className="text-muted">&gt;</span> SECURITY LEVEL:
-                  <span className="text-warning"> [MAXIMUM]</span>
-                </div>
-                <div className="status-line">
-                  <span className="text-muted">&gt;</span> AUTHENTICATION:
-                  <span className="text-error"> [REQUIRED]</span>
-                </div>
-              </div>
-
-              {/* Error Display */}
-              {error && (
-                <div className="error-message terminal-window mt-md mb-md">
-                  <div className="terminal-content">
-                    <div className="text-error phosphor-glow">
-                      ⚠ ERROR: {error}
-                    </div>
-                    <div className="text-muted mt-sm">
-                      &gt; Access denied. Please try again.
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Authentication Instructions */}
-              <div className="auth-instructions mt-lg mb-lg">
-                <div className="text-muted mb-md">
-                  &gt; AUTHENTICATION METHOD:
-                </div>
-                <div className="phosphor-glow mb-md">
-                  Connect your GitHub account to access Genie AI
-                </div>
-                <div className="text-muted text-sm">
-                  ⚡ Instant access with your GitHub credentials<br/>
-                  🔐 Secure OAuth 2.0 authentication<br/>
-                  🚀 No additional registration required
-                </div>
-              </div>
-
-              {/* GitHub OAuth Button */}
-              <div className="login-form mt-lg">
-                <button
-                  type="button"
-                  onClick={handleGithubLogin}
-                  className="btn btn-primary full-width mb-md oauth-btn"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="pixel-loader"></span> AUTHENTICATING...
-                    </>
-                  ) : (
-                    <>
-                      <span className="oauth-icon">⚡</span> AUTHENTICATE VIA GITHUB
-                    </>
-                  )}
-                </button>
-
-                {/* Info Text */}
-                <div className="form-footer mt-lg text-center">
-                  <div className="text-muted text-sm">
-                    &gt; By authenticating, you agree to our Terms of Service
-                  </div>
-                </div>
-              </div>
-
-              {/* System Footer */}
-              <div className="system-footer mt-xl">
-                <div className="footer-line text-muted text-center">
-                  ═══════════════════════════════════════
-                </div>
-                <div className="text-muted text-center mt-sm">
-                  GENIE AI © 2025 | SECURE TERMINAL v1.0.0
-                </div>
-                <div className="text-muted text-center">
-                  [ENCRYPTED] [AUTHENTICATED] [MONITORED]
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+            Welcome Back
+          </h1>
+          <p className="text-muted-foreground">Sign in to continue to Genie AI</p>
         </div>
+
+        <Card>
+          <CardContent className="pt-6">
+            {error && (
+              <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
+            <Button className="w-full" size="lg" onClick={handleGithubLogin} disabled={loading}>
+              {loading ? (
+                <>
+                  <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <Github className="mr-2 h-5 w-5" />
+                  Continue with GitHub
+                </>
+              )}
+            </Button>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              By signing in, you agree to our Terms of Service
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
