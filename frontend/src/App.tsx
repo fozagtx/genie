@@ -29,19 +29,17 @@ const ToastContainer: React.FC = () => {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`toast toast-${toast.type} terminal-window`}
+          className={`toast toast-${toast.type}`}
           onClick={() => removeToast(toast.id)}
         >
-          <div className="terminal-content">
-            <div className="toast-content">
-              <div className="toast-icon">
-                {toast.type === 'success' && '✓'}
-                {toast.type === 'error' && '✗'}
-                {toast.type === 'warning' && '⚠'}
-                {toast.type === 'info' && 'ℹ'}
-              </div>
-              <div className="toast-message">{toast.message}</div>
+          <div className="toast-content">
+            <div className="toast-icon">
+              {toast.type === 'success' && '✓'}
+              {toast.type === 'error' && '✗'}
+              {toast.type === 'warning' && '⚠'}
+              {toast.type === 'info' && 'ℹ'}
             </div>
+            <div className="toast-message">{toast.message}</div>
           </div>
         </div>
       ))}
