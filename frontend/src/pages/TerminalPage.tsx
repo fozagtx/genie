@@ -1017,6 +1017,16 @@ export const TerminalPage: React.FC = () => {
         </div>
 
         <div className="sidebar-footer">
+          <button
+            className="btn-docs"
+            onClick={() => {
+              playClick();
+              navigate('/docs');
+            }}
+          >
+            <span className="icon">📄</span>
+            <span className="text">DOCS</span>
+          </button>
           <button 
             className="btn-telegram" 
             onClick={() => {
@@ -1117,8 +1127,10 @@ export const TerminalPage: React.FC = () => {
               {messages.length === 0 ? (
                 <div className="chat-empty">
                   <div className="welcome-content">
-                    <h1 className="welcome-title">Genie AI</h1>
-                    <p className="welcome-subtitle">What would you like to build?</p>
+                    <h1 className="welcome-title">What should we code next?</h1>
+                    <p className="welcome-subtitle">
+                      Multi-agent routing, code reviews, and deployments in one clean workspace.
+                    </p>
                     <div className="welcome-capabilities">
                       <div className="capability-chip">Generate Code</div>
                       <div className="capability-chip">Analyze &amp; Review</div>
@@ -1340,7 +1352,7 @@ export const TerminalPage: React.FC = () => {
                       handleSendMessage(e);
                     }
                   }}
-                  placeholder="Describe what you need: generate, review, refactor, optimize..."
+                  placeholder="Describe a task: build a feature, review code, tighten security..."
                   disabled={isProcessing || uploadingImages}
                 />
                 <button 

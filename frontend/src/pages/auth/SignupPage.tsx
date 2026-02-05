@@ -33,10 +33,8 @@ export const SignupPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-            Get Started
-          </h1>
-          <p className="text-muted-foreground">Create your account to start building with AI</p>
+          <h1 className="mb-2 text-4xl font-bold text-slate-900">Get started</h1>
+          <p className="text-slate-500">Create your account to start building with Genie</p>
         </div>
 
         <Card>
@@ -47,26 +45,28 @@ export const SignupPage: React.FC = () => {
               </div>
             )}
 
-            <Button className="w-full" size="lg" onClick={handleGithubSignup} disabled={loading}>
+            <Button
+              className="w-full rounded-full bg-black text-white hover:bg-black/90"
+              size="lg"
+              onClick={handleGithubSignup}
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                   Creating account...
                 </>
               ) : (
-                <>
-                  <Github className="mr-2 h-5 w-5" />
-                  Sign up with GitHub
-                </>
+              <>
+                <Github className="mr-2 h-5 w-5" />
+                Sign up with GitHub
+              </>
               )}
             </Button>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <button
-                onClick={() => navigate('/login')}
-                className="font-medium text-purple-400 hover:text-purple-300"
-              >
+              <button onClick={() => navigate('/login')} className="font-semibold text-slate-900 hover:text-slate-700">
                 Sign in
               </button>
             </p>

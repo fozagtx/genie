@@ -5,21 +5,32 @@ import { z } from 'zod'
 dotenvConfig()
 
 // Define the configuration schema
-const configSchema = z.object({
-  openaiApiKey: z.string().min(1, 'OPENAI_API_KEY is required'),
-  port: z.coerce.number().default(3000),
-  nodeEnv: z.enum(['development', 'production', 'test']).default('development'),
-  logLevel: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
-  supabaseUrl: z.string().url('SUPABASE_URL must be a valid URL'),
-  supabaseAnonKey: z.string().min(1, 'SUPABASE_ANON_KEY is required'),
-  supabaseServiceKey: z.string().min(1, 'SUPABASE_SERVICE_KEY is required'),
-  githubToken: z.string().optional(),
-  // CodeForge Bot GitHub Token - Used for public repo operations (PRs, issues, etc.)
-  codeforgebotGithubToken: z.string().optional(),
-  codeforgebotGithubUsername: z.string().optional().default('codeforge-ai-bot'),
-  sonarqubeUrl: z.string().url().optional().or(z.literal('')),
-  sonarqubeToken: z.string().optional(),
-})
+const configSchema = z
+  .object({
+    openaiApiKey: z.string().optional(),
+    googleApiKey: z.string().optional(),
+    port: z.coerce.number().default(3000),
+    nodeEnv: z.enum(['development', 'production', 'test']).default('development'),
+    logLevel: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+    supabaseUrl: z.string().url('SUPABASE_URL must be a valid URL'),
+    supabaseAnonKey: z.string().min(1, 'SUPABASE_ANON_KEY is required'),
+    supabaseServiceKey: z.string().min(1, 'SUPABASE_SERVICE_KEY is required'),
+    githubToken: z.string().optional(),
+    // CodeForge Bot GitHub Token - Used for public repo operations (PRs, issues, etc.)
+    codeforgebotGithubToken: z.string().optional(),
+    codeforgebotGithubUsername: z.string().optional().default('codeforge-ai-bot'),
+    sonarqubeUrl: z.string().url().optional().or(z.literal('')),
+    sonarqubeToken: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.openaiApiKey && !data.googleApiKey) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Set either OPENAI_API_KEY or GOOGLE_API_KEY',
+        path: ['openaiApiKey'],
+      })
+    }
+  })
 
 export type Config = z.infer<typeof configSchema>
 
@@ -31,6 +42,7 @@ export function loadConfig(): Config {
   try {
     return configSchema.parse({
       openaiApiKey: process.env.OPENAI_API_KEY,
+      googleApiKey: process.env.GOOGLE_API_KEY,
       port: process.env.PORT,
       nodeEnv: process.env.NODE_ENV,
       logLevel: process.env.LOG_LEVEL,

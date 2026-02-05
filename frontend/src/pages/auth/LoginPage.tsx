@@ -39,10 +39,8 @@ export const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-            Welcome Back
-          </h1>
-          <p className="text-muted-foreground">Sign in to continue to Genie AI</p>
+          <h1 className="mb-2 text-4xl font-bold text-slate-900">Welcome back</h1>
+          <p className="text-slate-500">Sign in to continue to Genie</p>
         </div>
 
         <Card>
@@ -53,7 +51,12 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            <Button className="w-full" size="lg" onClick={handleGithubLogin} disabled={loading}>
+            <Button
+              className="w-full rounded-full bg-black text-white hover:bg-black/90"
+              size="lg"
+              onClick={handleGithubLogin}
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
