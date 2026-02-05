@@ -24,8 +24,6 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_KEY
         sync: false
-      - key: REDIS_URL
-        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: RUNWARE_API_KEY
