@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { AgentMessage } from '../components/AgentChat';
 import { CodeEditor } from '../components/CodeEditor';
@@ -57,7 +57,10 @@ export const TerminalPage: React.FC = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  
+  const [panelWidthPercent, setPanelWidthPercent] = useState(50); // code panel width as percentage of main area
+  const isResizing = useRef(false);
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
   // Chat State
   const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -315,6 +318,36 @@ export const TerminalPage: React.FC = () => {
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
     setAutoScroll(isAtBottom);
   };
+
+  // Resizable panel handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizing.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!isResizing.current || !mainContentRef.current) return;
+      const rect = mainContentRef.current.getBoundingClientRect();
+      const totalWidth = rect.width;
+      const mouseX = moveEvent.clientX - rect.left;
+      // Chat takes the left portion; code panel takes the right portion
+      const codePanelPercent = ((totalWidth - mouseX) / totalWidth) * 100;
+      // Clamp between 20% and 80%
+      setPanelWidthPercent(Math.min(80, Math.max(20, codePanelPercent)));
+    };
+
+    const onMouseUp = () => {
+      isResizing.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, []);
 
   // Load existing session if ID is provided
   useEffect(() => {
@@ -1082,7 +1115,7 @@ export const TerminalPage: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <div className="terminal-main-content">
+      <div className="terminal-main-content" ref={mainContentRef}>
         {/* Menu toggle button for mobile */}
         <button
           className="btn-menu-toggle"
@@ -1121,7 +1154,11 @@ export const TerminalPage: React.FC = () => {
             </button>
         </div>
         {/* Chat Interface */}
-        <div className="chat-interface-area">
+        <div className="chat-interface-area" style={
+          generation?.response?.files && generation.response.files.length > 0 && isPreviewPanelVisible
+            ? { flex: `0 0 ${100 - panelWidthPercent}%` }
+            : undefined
+        }>
           <div className="chat-messages-container" onScroll={handleChatScroll}>
             <div className="chat-messages">
               {messages.length === 0 ? (
@@ -1379,7 +1416,7 @@ export const TerminalPage: React.FC = () => {
 
         {/* Toggle button for right panel when hidden */}
         {generation?.response?.files && generation.response.files.length > 0 && !isPreviewPanelVisible && (
-          <button 
+          <button
             className="btn-toggle-preview collapsed"
             onClick={() => setIsPreviewPanelVisible(true)}
             title="Show preview panel"
@@ -1388,9 +1425,18 @@ export const TerminalPage: React.FC = () => {
           </button>
         )}
 
+        {/* Resize Handle between chat and code panel */}
+        {generation?.response?.files && generation.response.files.length > 0 && isPreviewPanelVisible && (
+          <div
+            className="resize-handle"
+            onMouseDown={handleResizeStart}
+            title="Drag to resize panels"
+          />
+        )}
+
         {/* Right Panel - Code/Preview/Deploy */}
         {generation?.response?.files && generation.response.files.length > 0 && isPreviewPanelVisible && (
-          <div className="code-preview-panel">
+          <div className="code-preview-panel" style={{ flex: `0 0 ${panelWidthPercent}%` }}>
             <div className="tabs">
               <button 
                 className={activeTab === 'source' ? 'active' : ''} 

@@ -258,9 +258,44 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 400px;
-  border-right: 1px solid #e2e8f0;
+  min-width: 300px;
+  border-right: none;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  overflow: hidden;
+}
+
+/* Resize Handle between chat and code panels */
+.resize-handle {
+  width: 6px;
+  cursor: col-resize;
+  background: #e2e8f0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  transition: background 0.15s ease;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background: #4f46e5;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 32px;
+  background: #94a3b8;
+  border-radius: 1px;
+  transition: background 0.15s ease;
+}
+
+.resize-handle:hover::after,
+.resize-handle:active::after {
+  background: #ffffff;
 }
 
 /* Workspace hero removed */
@@ -801,12 +836,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  min-width: 200px;
   overflow: hidden;
   background: #ffffff;
   animation: slideInRight 0.2s ease-out;
   position: relative;
-  border-left: 1px solid #e2e8f0;
 }
 
 @keyframes slideInRight {
@@ -1201,15 +1235,21 @@
   }
 
   .chat-interface-area {
-    width: 100%;
+    width: 100% !important;
+    flex: none !important;
     height: 50%;
     border-right: none;
     border-bottom: 1px solid hsl(var(--border));
     min-width: unset;
   }
 
+  .resize-handle {
+    display: none;
+  }
+
   .code-preview-panel {
-    width: 100%;
+    width: 100% !important;
+    flex: none !important;
     height: 50%;
   }
 }
