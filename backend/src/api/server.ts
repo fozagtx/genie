@@ -50,6 +50,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://genie-ai.vercel.app',
+  'https://genieai.vercel.app',
 ];
 
 // Add environment variable origin if specified
