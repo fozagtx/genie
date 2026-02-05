@@ -55,7 +55,7 @@
 **Backend:** Node.js 20.x, Express.js, TypeScript, Socket.io, Bull, Redis, ADK-TS
 **AI Models:** GLM-4.6 (coding), GPT-5-nano (analysis), OpenAI GPT-4, Anthropic Claude, Google Gemini
 **Storage:** Supabase (PostgreSQL + Storage), Redis
-**Deployment:** Vercel (frontend), Heroku (backend), Fly.io (generated projects)
+**Deployment:** Vercel (frontend), Render (backend), Fly.io (generated projects)
 
 ---
 
@@ -105,6 +105,15 @@ cd frontend && npm run dev
 ```
 
 **Access:** http://localhost:5173/terminal
+
+---
+
+### Backend Deployment (Render)
+
+- Deploy the backend as a Render Web Service using the provided `render.yaml` (auto-runs `npm install` then `npm run start --workspace backend`).
+- Set environment variables in Render: `GOOGLE_API_KEY` (Gemini), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `REDIS_URL`, and `FRONTEND_URL` (point to your frontend origin). Optional: `OPENAI_API_KEY`, `RUNWARE_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GENIE_BOT_GITHUB_TOKEN`.
+- Render sets `PORT` automatically; the health check path is `/api/status`.
+- Telegram webhooks now auto-detect `RENDER_EXTERNAL_URL` if `APP_URL`/`BACKEND_URL` are not provided.
 
 ---
 

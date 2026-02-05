@@ -47,7 +47,7 @@ export class TelegramBotService {
   
   /**
    * Set up webhook for receiving updates from Telegram
-   * Auto-detects Heroku URL or uses provided URL
+   * Auto-detects platform URL (Render/Heroku) or uses provided URL
    */
   async setupWebhook(customUrl?: string) {
     if (!this.bot) {
@@ -56,23 +56,28 @@ export class TelegramBotService {
     }
     
     try {
-      // Auto-detect webhook URL from Heroku environment
       let baseUrl = customUrl;
       
       if (!baseUrl) {
-        // Try Heroku app name first
+        baseUrl = process.env.APP_URL || process.env.BACKEND_URL;
+      }
+
+      // Render automatically provides the public URL via RENDER_EXTERNAL_URL
+      if (!baseUrl && process.env.RENDER_EXTERNAL_URL) {
+        baseUrl = process.env.RENDER_EXTERNAL_URL;
+      }
+
+      // Fallback for legacy Heroku deployments
+      if (!baseUrl) {
         const herokuAppName = process.env.HEROKU_APP_NAME;
         if (herokuAppName) {
           baseUrl = `https://${herokuAppName}.herokuapp.com`;
-        } else {
-          // Try to get from environment variable
-          baseUrl = process.env.APP_URL || process.env.BACKEND_URL;
         }
       }
       
       if (!baseUrl) {
-        console.error('❌ Cannot setup webhook: No URL provided and HEROKU_APP_NAME not set');
-        console.warn('💡 Set HEROKU_APP_NAME or APP_URL environment variable');
+        console.error('❌ Cannot setup webhook: No URL provided and no platform URL detected');
+        console.warn('💡 Set APP_URL, BACKEND_URL, or rely on RENDER_EXTERNAL_URL for Render deployments');
         return;
       }
       

@@ -1,7 +1,0 @@
-tests/
-*.test.ts
-*.spec.ts
-coverage/
-.env.example
-tsconfig.json
-jest.config.js

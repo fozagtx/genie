@@ -157,7 +157,7 @@ export const GitHubAgent = async (
     
     // Try to use cached tools with bot token
     try {
-      const botToken = process.env.CODEFORGE_BOT_GITHUB_TOKEN;
+      const botToken = process.env.GENIE_BOT_GITHUB_TOKEN || process.env.CODEFORGE_BOT_GITHUB_TOKEN;
       if (!botToken) {
         throw new Error('No bot token available');
       }
@@ -232,7 +232,7 @@ export const GitHubAgent = async (
           .build();
       }
       
-      throw new Error('GitHub Agent requires either bot token (CODEFORGE_BOT_GITHUB_TOKEN) or user context');
+      throw new Error('GitHub Agent requires either bot token (GENIE_BOT_GITHUB_TOKEN or legacy CODEFORGE_BOT_GITHUB_TOKEN) or user context');
     }
     
   } catch (error: any) {
