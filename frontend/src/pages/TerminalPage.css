@@ -341,6 +341,7 @@
   animation: slideIn 0.2s ease-out;
   transition: all 0.15s ease;
   background: #ffffff;
+  color: #1e293b;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
@@ -351,14 +352,23 @@
 
 .chat-message.user {
   border-left-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.chat-message.agent {
+  border-left-color: #6366f1;
+  background: #eef2ff;
 }
 
 .chat-message.system {
   border-left-color: #f59e0b;
+  background: #fffbeb;
 }
 
 .chat-message.thought {
-  opacity: 0.7;
+  border-left-color: #94a3b8;
+  background: #f8fafc;
+  opacity: 0.8;
   font-style: italic;
 }
 
@@ -377,7 +387,22 @@
 .message-agent {
   font-weight: 600;
   font-size: 0.8rem;
-  color: #0f172a;
+}
+
+.chat-message.user .message-agent {
+  color: #15803d;
+}
+
+.chat-message.agent .message-agent {
+  color: #4338ca;
+}
+
+.chat-message.system .message-agent {
+  color: #b45309;
+}
+
+.chat-message.thought .message-agent {
+  color: #64748b;
 }
 
 .message-role {
@@ -406,6 +431,7 @@
   flex: 1;
   white-space: pre-wrap;
   word-break: break-word;
+  color: #1e293b;
 }
 
 .typing-dots {

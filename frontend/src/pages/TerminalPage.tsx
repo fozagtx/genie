@@ -1144,12 +1144,7 @@ export const TerminalPage: React.FC = () => {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`chat-message ${message.role} ${
-                      message.role === 'user' ? 'text-success' :
-                      message.role === 'system' ? 'text-warning' :
-                      message.role === 'thought' ? 'text-muted' :
-                      'text-primary'
-                    }`}
+                    className={`chat-message ${message.role}`}
                   >
                     <div className="message-header">
                       <span className="message-icon ">
