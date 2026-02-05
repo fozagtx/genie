@@ -30,11 +30,11 @@ import { Octokit } from '@octokit/rest';
 export function createEnhancedGitHubTools() {
   const config = getConfig();
   
-  if (!config.codeforgebotGithubToken) {
-    throw new Error('CODEFORGE_BOT_GITHUB_TOKEN not configured. Bot operations are unavailable.');
+  if (!config.geniebotGithubToken) {
+    throw new Error('GENIE_BOT_GITHUB_TOKEN (or legacy CODEFORGE_BOT_GITHUB_TOKEN) not configured. Bot operations are unavailable.');
   }
 
-  const botToken = config.codeforgebotGithubToken;
+  const botToken = config.geniebotGithubToken;
   
   // Get base bot tools
   const botTools = createBotGitHubTools();
@@ -789,7 +789,7 @@ Step 3: Push directly to main
    - message is OPTIONAL (auto-generated if not provided)
 → DONE - No forking/branching/PR needed!
 
-Result: ✅ Repository live at https://github.com/codeforge-ai-bot/{repo-name}
+Result: ✅ Repository live at https://github.com/genie-ai-bot/{repo-name}
 Note: It's a new repo in bot account, no existing code to protect
 User can fork the bot's repo to their account if they want
 \`\`\`

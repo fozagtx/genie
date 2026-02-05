@@ -1,5 +1,5 @@
 -- Telegram Integration Tables
--- Stores Telegram users linked to CodeForge accounts
+-- Stores Telegram users linked to Genie accounts
 
 -- Table: telegram_users
 -- Links Telegram accounts to Supabase users
@@ -121,7 +121,7 @@ CREATE POLICY "Service role can manage telegram_settings"
   USING (auth.role() = 'service_role');
 
 -- Comments
-COMMENT ON TABLE telegram_users IS 'Links Telegram accounts to CodeForge user accounts';
+COMMENT ON TABLE telegram_users IS 'Links Telegram accounts to Genie user accounts';
 COMMENT ON TABLE telegram_auth_pending IS 'Pending authentication requests from Telegram bot';
 COMMENT ON TABLE telegram_settings IS 'User-specific Telegram bot settings';
 COMMENT ON FUNCTION cleanup_expired_telegram_auth IS 'Removes expired authentication tokens (run periodically)';

@@ -1,4 +1,4 @@
--- Row Level Security Policies for CodeForge AI
+-- Row Level Security Policies for Genie AI
 -- These policies ensure users can only access their own data
 
 -- Enable RLS on all tables

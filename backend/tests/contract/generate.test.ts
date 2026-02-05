@@ -8,7 +8,7 @@ import type { Server } from 'http'
  * Purpose: Verify that the generate endpoint adheres to its contract specification.
  * These tests MUST FAIL initially (TDD approach).
  *
- * Contract: specs/001-codeforge-ai-multi-agent/contracts/generate.md
+ * Contract: specs/001-genie-ai-multi-agent/contracts/generate.md
  */
 
 describe('POST /api/generate - Contract Tests', () => {

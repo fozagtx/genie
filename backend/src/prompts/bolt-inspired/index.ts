@@ -1,5 +1,5 @@
 /**
- * Complete WebContainer-optimized prompt for CodeForge AI
+ * Complete WebContainer-optimized prompt for Genie AI
  * Combines all prompt sections into a cohesive system
  */
 

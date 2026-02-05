@@ -1,4 +1,4 @@
--- Storage buckets for CodeForge AI
+-- Storage buckets for Genie AI
 -- Used for storing project files and related data
 
 -- Create storage bucket for project files

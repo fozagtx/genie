@@ -7,7 +7,7 @@ import { EnhanceWorkflow } from './EnhanceWorkflow';
  * The main hierarchical workflow orchestrator.
  * It uses the LeadEngineerAgent to decide which specialized workflow to run.
  */
-export class CodeForgeWorkflow {
+export class GenieWorkflow {
     private leadEngineer: LeadEngineerAgent;
 
     constructor() {

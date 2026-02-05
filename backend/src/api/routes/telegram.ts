@@ -1,6 +1,6 @@
 /**
  * Telegram authentication routes
- * Handles linking Telegram accounts to CodeForge accounts
+ * Handles linking Telegram accounts to Genie accounts
  */
 
 import { Router } from 'express';
@@ -154,7 +154,7 @@ router.post('/telegram/complete-auth', optionalAuth, async (req, res): Promise<v
       const successMessage = `
 ✅ **Authentication Successful!**
 
-Your Telegram account has been successfully linked to CodeForge AI!
+Your Telegram account has been successfully linked to Genie AI!
 
 You can now:
 • Send me messages to generate code

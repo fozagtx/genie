@@ -120,7 +120,7 @@ export class RepositoryFileSystemCache {
     this.octokit = _config.octokit;
 
     // Set cache directory
-    this.cacheDir = path.join(os.tmpdir(), 'codeforge-agent-cache');
+    this.cacheDir = path.join(os.tmpdir(), 'genie-agent-cache');
 
     // Initialize
     this.initialize();

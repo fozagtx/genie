@@ -1,7 +1,7 @@
 {
-  "name": "CodeForge AI Backend",
-  "description": "Multi-agent AI system for automated code generation",
-  "repository": "https://github.com/zaikaman/CodeForgeAI",
+  "name": "Genie AI Backend",
+  "description": "Genie AI - multi-agent system for automated code generation",
+  "repository": "https://github.com/zaikaman/genie",
   "keywords": ["nodejs", "express", "ai", "socketio", "typescript"],
   "env": {
     "NODE_ENV": {

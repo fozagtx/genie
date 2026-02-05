@@ -49,8 +49,7 @@ const io = new Server(server, {
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://codeforge-adk.vercel.app',
-  'https://codeforge-ai-c67006992634.herokuapp.com',
+  'https://genie-ai.vercel.app',
 ];
 
 // Add environment variable origin if specified

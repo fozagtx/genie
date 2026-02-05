@@ -1,5 +1,5 @@
 /**
- * Design guidelines for CodeForge AI
+ * Design guidelines for Genie AI
  * Based on bolt.diy's design excellence standards
  */
 

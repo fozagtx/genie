@@ -34,7 +34,7 @@ const vapiToolCallSchema = z.object({
  * POST /api/vapi/tools - Handle VAPI tool calls
  * 
  * This endpoint receives function calls from VAPI voice assistant
- * and creates background jobs in CodeForge
+ * and creates background jobs in Genie
  */
 router.post('/tools', async (req: Request, res: Response): Promise<void> => {
   try {

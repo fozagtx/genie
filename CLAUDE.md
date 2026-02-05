@@ -136,7 +136,7 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 - `AgentRouterService` - Intelligent agent selection based on complexity
 
 **Workflow Management:**
-- `CodeForgeWorkflow` - Main orchestration workflow
+- `GenieWorkflow` - Main orchestration workflow
 - `GenerationQueue` - Manages code generation jobs
 - `ChatQueue` - Handles chat interactions
 

@@ -1,5 +1,5 @@
 /**
- * TelegramBotService - Telegram bot integration for CodeForge AI
+ * TelegramBotService - Telegram bot integration for Genie AI
  * 
  * FEATURES:
  * - Accept chat messages from users
@@ -253,7 +253,7 @@ export class TelegramBotService {
       await this.bot.sendMessage(
         chatId,
         `👋 Welcome back, ${msg.from?.first_name || 'there'}!\n\n` +
-        `You're already signed in to CodeForge AI.\n\n` +
+        `You're already signed in to Genie AI.\n\n` +
         `Send me any message to start coding, or use:\n` +
         `/help - See all commands\n` +
         `/status - Check your active jobs`
@@ -341,7 +341,7 @@ export class TelegramBotService {
     const chatId = msg.chat.id;
     
     const helpText = `
-🤖 **CodeForge AI Telegram Bot**
+🤖 **Genie AI Telegram Bot**
 
 I can help you with:
 ✅ Code generation (React, Next.js, Vue, etc.)
@@ -533,16 +533,16 @@ All requests run in **background mode** - you'll get a notification when they're
       });
     
     // Create deep link to web app
-    const webUrl = process.env.FRONTEND_URL || 'https://codeforge-adk.vercel.app';
+    const webUrl = process.env.FRONTEND_URL || 'https://genie-ai.vercel.app';
     const authUrl = `${webUrl}/telegram-auth?token=${authToken}`;
     
     const message = `
 👋 Hello ${firstName}!
 
-To use CodeForge AI via Telegram, you need to sign in to our web interface first.
+To use Genie AI via Telegram, you need to sign in to our web interface first.
 
 Why sign in?
-• Link your Telegram account to your CodeForge account
+• Link your Telegram account to your Genie account
 • Access your projects and generation history
 • Sync between web and Telegram
 
@@ -556,7 +556,7 @@ Click the button below to sign in:
         inline_keyboard: [
           [
             {
-              text: '🔐 Sign In to CodeForge',
+              text: '🔐 Sign In to Genie',
               url: authUrl,
             },
           ],
@@ -597,7 +597,7 @@ Click the button below to sign in:
     
     const emoji = success ? '✅' : '❌';
     const status = success ? 'completed' : 'failed';
-    const webUrl = `${process.env.FRONTEND_URL || 'https://codeforge-adk.vercel.app'}/terminal/${generationId}`;
+    const webUrl = `${process.env.FRONTEND_URL || 'https://genie-ai.vercel.app'}/terminal/${generationId}`;
     
     // Send notification without Markdown to avoid parsing errors with special characters
     const notification = `

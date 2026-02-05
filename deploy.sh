@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# CodeForge AI - Quick Deployment Script for Vercel
+# Genie AI - Quick Deployment Script for Vercel
 
-echo "🚀 CodeForge AI - Vercel Deployment Setup"
-echo "=========================================="
+echo "🚀 Genie AI - Vercel Deployment Setup"
+echo "====================================="
 echo ""
 
 # Check if vercel CLI is installed

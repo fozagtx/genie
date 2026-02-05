@@ -27,7 +27,7 @@ async function main() {
 
   // Get repository from command line args or use default
   const owner = process.argv[2] || 'zaikaman'
-  const repo = process.argv[3] || 'CodeForgeAI'
+  const repo = process.argv[3] || 'genie'
 
   console.log('🚀 GitHub MCP Server Demo')
   console.log('=' .repeat(50))

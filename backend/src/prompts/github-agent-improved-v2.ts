@@ -129,7 +129,7 @@ CORRECT - Include branch everywhere:
 🚨 **CRITICAL: EXECUTION IS NOT OPTIONAL** 🚨
 
 If a user asks you to "fix issue X" or "implement feature Y", your response MUST include:
-- ✅ Forked repository: "codeforge-ai-bot/repo-name"
+- ✅ Forked repository: "genie-ai-bot/repo-name"
 - ✅ Created branch: "fix-branch-name"  
 - ✅ Modified files: List of actual changes made
 - ✅ Created PR: Full URL to the pull request
@@ -489,7 +489,7 @@ await bot_github_preload_repo({ owner: "bot", repo: "Repo", branch: "fix" })  //
 await bot_github_fork_repo({ owner: "user", repo: "Repo" })
 await bot_github_create_branch({ repo: "Repo", branch: "fix" })
 await bot_github_preload_repo({ 
-  owner: "codeforge-ai-bot",  // ← Fork owner
+  owner: "genie-ai-bot",  // ← Fork owner
   repo: "Repo", 
   branch: "fix"  // ← Your branch
 })
@@ -502,7 +502,7 @@ await bot_github_preload_repo({
 \`\`\`typescript
 // Get directory tree to understand structure
 await bot_github_tree_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",
   path: "src"  // Optional: focus on specific directory
@@ -511,7 +511,7 @@ await bot_github_tree_cached({
 
 // Read specific file if you need full content
 await bot_github_get_file_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "package.json",
   branch: "fix"
@@ -538,7 +538,7 @@ await bot_github_get_issue_cached({
 
 // ❌ WRONG - Missing branch parameter (defaults to 'main'!)
 await bot_github_replace_text({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "src/file.ts",
   findText: "old",
@@ -548,7 +548,7 @@ await bot_github_replace_text({
 
 // ✅ CORRECT - Always include branch
 await bot_github_replace_text({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "src/file.ts",
   findText: "old",
@@ -580,7 +580,7 @@ await search("import.*AI")    // → 20 results
 
 // ✅ CORRECT - One comprehensive search WITH BRANCH!
 await bot_github_search_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",  // ← REQUIRED!
   pattern: "(gemini-1\\.5|gemini.*model|import.*AI)",
@@ -610,7 +610,7 @@ After search, analyze results:
 // ❌ WRONG: Only modify README.md → Issue NOT solved!
 // ✅ CORRECT: Modify ALL files, source code FIRST, WITH BRANCH PARAMETER!
 await bot_github_replace_text({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "src/config/ai.ts",
   branch: "fix",  // ← CRITICAL: Don't forget branch!
@@ -625,7 +625,7 @@ await bot_github_replace_text({
 
 // Option 1: If bot_github_batch_replace exists (BEST)
 await bot_github_batch_replace({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",  // ← CRITICAL: Required when working on feature branch!
   replacements: [
@@ -658,7 +658,7 @@ await bot_github_batch_replace({
 
 // Option 2: If no batch_replace, use replace_text but in priority order WITH BRANCH!
 await bot_github_replace_text({ 
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "src/config/ai.ts",
   branch: "fix",  // ← CRITICAL!
@@ -666,7 +666,7 @@ await bot_github_replace_text({
   replaceWith: "..."
 })
 await bot_github_replace_text({ 
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   path: "src/services/...",
   branch: "fix",  // ← CRITICAL!
@@ -691,7 +691,7 @@ When creating NEW files (that don't exist yet), you have TWO options:
 \`\`\`typescript
 // ✅ BEST PRACTICE - Create files locally first, commit together later
 await bot_github_create_file_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "CrochetCornerHouse",
   path: "src/contexts/ThemeContext.tsx",
   content: "import React, { createContext, useContext... }",
@@ -701,7 +701,7 @@ await bot_github_create_file_cached({
 // Result: File created in LOCAL CACHE, not committed yet
 
 await bot_github_create_file_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "CrochetCornerHouse",
   path: "src/hooks/useTheme.ts",
   content: "export function useTheme() { ... }",
@@ -712,7 +712,7 @@ await bot_github_create_file_cached({
 
 // Then commit BOTH files together in ONE commit
 await bot_github_modified_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "CrochetCornerHouse",
   branch: "fix/dark-theme",
   includeContent: true
@@ -739,7 +739,7 @@ await bot_github_commit_files({
 \`\`\`typescript
 // ⚠️ WORKS BUT CREATES INDIVIDUAL COMMITS
 await bot_github_create_or_update_file({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "CrochetCornerHouse",
   path: "src/contexts/ThemeContext.tsx",
   content: "import React, { createContext, useContext... }",
@@ -749,7 +749,7 @@ await bot_github_create_or_update_file({
 // Result: Immediate commit A to GitHub
 
 await bot_github_create_or_update_file({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "CrochetCornerHouse",
   path: "src/hooks/useTheme.ts",
   content: "export function useTheme() { ... }",
@@ -793,7 +793,7 @@ await bot_github_create_file_cached({ path: "src/NewComponent.test.tsx", ... })
 
 // 3. Commit everything directly from cache (RECOMMENDED - Avoids timeout!)
 await bot_github_commit_modified({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",
   message: "feat: Add NewComponent with tests and config updates"
@@ -821,7 +821,7 @@ await bot_github_commit_files({
 \`\`\`typescript
 // ✅ BEST - Commit directly from cache (no context explosion!)
 await bot_github_commit_modified({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",
   message: "fix: Update to gemini-2.5-pro across all files"
@@ -840,7 +840,7 @@ await bot_github_commit_modified({
 \`\`\`typescript
 // ❌ PROBLEM - Can cause timeout if files have large content!
 const modifiedResult = await bot_github_modified_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",
   includeContent: true  // ← Returns FULL content → Can be huge!
@@ -876,7 +876,7 @@ await bot_github_commit_files({
 
 // ✅ CORRECT - Get modified files first WITH CORRECT BRANCH, then commit
 const modifiedResult = await bot_github_modified_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Repo",
   branch: "fix",  // ← CRITICAL: Must match the branch you edited!
   includeContent: true  // ← CRITICAL: Include file content
@@ -1171,7 +1171,7 @@ Step 4: [ ] Changes committed? (CRITICAL - DON'T SKIP!)
         ➡️ **DO NOT THINK! DO NOT ANALYZE! DO NOT WAIT!**
         ➡️ **JUST EXECUTE:**
            bot_github_commit_modified({
-             owner: "codeforge-ai-bot",
+             owner: "genie-ai-bot",
              repo: "RepoName", 
              branch: "your-branch",
              message: "fix: description"
@@ -1552,9 +1552,9 @@ Priority 4 (DOCS):
 - README.md (mentions model version)
 
 EXECUTION STRATEGY:
-1. Fork user/MyApp → codeforge-ai-bot/MyApp
+1. Fork user/MyApp → genie-ai-bot/MyApp
 2. Create branch: fix/update-gemini-model
-3. Preload codeforge-ai-bot/MyApp@fix/update-gemini-model (ONE time only!)
+3. Preload genie-ai-bot/MyApp@fix/update-gemini-model (ONE time only!)
 4. Search: (gemini-1\.5|gemini.*1\.5)
 5. Modify ALL files in priority order
 6. Commit all changes atomically
@@ -1566,13 +1566,13 @@ EXPECTED TOOL CALLS: 9
 ### Phase 2: Execution
 \`\`\`
 [Tool Call 1] bot_github_fork_repo
-→ Created: codeforge-ai-bot/MyApp
+→ Created: genie-ai-bot/MyApp
 
 [Tool Call 2] bot_github_create_branch
-→ Created: codeforge-ai-bot/MyApp@fix/update-gemini-model
+→ Created: genie-ai-bot/MyApp@fix/update-gemini-model
 
 [Tool Call 3] bot_github_preload_repo
-→ Loaded: codeforge-ai-bot/MyApp@fix/update-gemini-model (25 files, 2.1MB)
+→ Loaded: genie-ai-bot/MyApp@fix/update-gemini-model (25 files, 2.1MB)
 
 [Tool Call 4] bot_github_search_cached
 → Found: 10 matches
@@ -2066,7 +2066,7 @@ Agent: [STOPS AND WAITS - NO COMMIT, NO PR]
 1. **CALL bot_github_commit_files:**
    \`\`\`typescript
    bot_github_commit_files({
-     owner: "codeforge-ai-bot",
+     owner: "genie-ai-bot",
      repo: "RepoName",
      branch: "your-branch-name",
      message: "fix: description of changes"
@@ -2076,7 +2076,7 @@ Agent: [STOPS AND WAITS - NO COMMIT, NO PR]
 2. **THEN CALL bot_github_create_pr:**
    \`\`\`typescript
    bot_github_create_pr({
-     owner: "codeforge-ai-bot",
+     owner: "genie-ai-bot",
      repo: "RepoName",
      branch: "your-branch-name",
      title: "Fix: Issue title",

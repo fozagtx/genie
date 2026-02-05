@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, async () => {
   console.log(`
-🚀 CodeForge AI Backend Server Starting...
+🚀 Genie AI Backend Server Starting...
 📡 Server running on: http://localhost:${PORT}
 🏥 Health check: http://localhost:${PORT}/api/status
 ✨ Environment: ${process.env.NODE_ENV || 'development'}

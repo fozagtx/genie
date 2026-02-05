@@ -1,7 +1,7 @@
 {
-  "name": "@codeforge/shared",
+  "name": "@genie/shared",
   "version": "1.0.0",
-  "description": "Shared TypeScript types and constants for CodeForge AI",
+  "description": "Shared TypeScript types and constants for Genie AI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

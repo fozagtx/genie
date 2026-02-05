@@ -7,7 +7,7 @@ import { trace } from '@opentelemetry/api'
 
 const provider = new NodeTracerProvider({
   resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'codeforge-ai-backend',
+    [SemanticResourceAttributes.SERVICE_NAME]: 'genie-ai-backend',
   }),
 })
 
@@ -16,4 +16,4 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter))
 
 provider.register()
 
-export const tracer = trace.getTracer('codeforge-ai-tracer')
+export const tracer = trace.getTracer('genie-ai-tracer')

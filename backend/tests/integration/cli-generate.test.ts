@@ -20,27 +20,27 @@ describe('CLI Generate Command - Integration Test', () => {
 
   it('T026.1 - should execute generate command with prompt', async () => {
     // const { execSync } = require('child_process')
-    // const output = execSync('codeforge generate "Create a function to add two numbers"').toString()
+    // const output = execSync('genie generate "Create a function to add two numbers"').toString()
     // expect(output).toContain('Generated code')
   })
 
   it('T026.2 - should create output file when --output specified', async () => {
-    // execSync('codeforge generate "Create add function" --output ./out/add.ts')
+    // execSync('genie generate "Create add function" --output ./out/add.ts')
     // expect(fs.existsSync('./out/add.ts')).toBe(true)
   })
 
   it('T026.3 - should generate tests when --tests flag provided', async () => {
-    // const output = execSync('codeforge generate "Create function" --tests').toString()
+    // const output = execSync('genie generate "Create function" --tests').toString()
     // expect(output).toContain('Generated tests')
   })
 
   it('T026.4 - should use project context with --project-id', async () => {
-    // const output = execSync('codeforge generate "Create utility" --project-id proj-123').toString()
+    // const output = execSync('genie generate "Create utility" --project-id proj-123').toString()
     // expect(output).toContain('Using project context')
   })
 
   it('T026.5 - should stream output with --stream flag', async () => {
-    // const output = execSync('codeforge generate "Create function" --stream').toString()
+    // const output = execSync('genie generate "Create function" --stream').toString()
     // expect(output).toContain('Streaming')
   })
 })

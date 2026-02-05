@@ -1,7 +1,7 @@
-# CodeForge AI - Quick Deployment Script for Vercel (PowerShell)
+# Genie AI - Quick Deployment Script for Vercel (PowerShell)
 
-Write-Host "🚀 CodeForge AI - Vercel Deployment Setup" -ForegroundColor Cyan
-Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "🚀 Genie AI - Vercel Deployment Setup" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Check if vercel CLI is installed

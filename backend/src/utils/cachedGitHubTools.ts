@@ -204,7 +204,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
         After creating files, use bot_github_modified_cached to see all changes,
         then bot_github_commit_files to commit everything at once.`,
       schema: z.object({
-        owner: z.string().describe('Repository owner (e.g., "codeforge-ai-bot")'),
+        owner: z.string().describe('Repository owner (e.g., "genie-ai-bot")'),
         repo: z.string().describe('Repository name'),
         path: z.string().describe('File path (e.g., "src/components/NewComponent.tsx")'),
         content: z.string().describe('Complete file content'),
@@ -513,7 +513,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
         
         Use this instead of bot_github_modified_cached + bot_github_commit_files for better performance.`,
       schema: z.object({
-        owner: z.string().describe('Repository owner (usually "codeforge-ai-bot" for fork)'),
+        owner: z.string().describe('Repository owner (usually "genie-ai-bot" for fork)'),
         repo: z.string().describe('Repository name'),
         branch: z.string().describe('Branch to commit to'),
         message: z.string().describe('Commit message'),
@@ -837,7 +837,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
      */
     createTool({
       name: 'bot_github_fork_repo',
-      description: `Fork a repository to codeforge-ai-bot account. Use this when modifying someone else's repo.
+      description: `Fork a repository to genie-ai-bot account. Use this when modifying someone else's repo.
         Returns: fork URL and owner info.`,
       schema: z.object({
         owner: z.string().describe('Original repository owner'),
@@ -863,9 +863,9 @@ export function createCachedGitHubTools(_octokit: Octokit) {
             return {
               success: true,
               forkExists: true,
-              forkOwner: 'codeforge-ai-bot',
+              forkOwner: 'genie-ai-bot',
               forkRepo: args.repo,
-              message: `✅ Fork already exists: codeforge-ai-bot/${args.repo}`,
+              message: `✅ Fork already exists: genie-ai-bot/${args.repo}`,
             };
           }
           return {
@@ -882,7 +882,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
      */
     createTool({
       name: 'bot_github_create_branch',
-      description: `Create a new branch in forked repository (in codeforge-ai-bot account).`,
+      description: `Create a new branch in forked repository (in genie-ai-bot account).`,
       schema: z.object({
         repo: z.string().describe('Repository name'),
         branchName: z.string().describe('New branch name (e.g., "fix-issue-123")'),
@@ -895,14 +895,14 @@ export function createCachedGitHubTools(_octokit: Octokit) {
         try {
           // Get the current main branch SHA
           const mainRef = await _octokit.rest.git.getRef({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             ref: `heads/${args.baseBranch || 'main'}`,
           });
 
           // Create new branch
           await _octokit.rest.git.createRef({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             ref: `refs/heads/${args.branchName}`,
             sha: mainRef.data.object.sha,
@@ -911,7 +911,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
           return {
             success: true,
             branch: args.branchName,
-            message: `✅ Branch created: codeforge-ai-bot/${args.repo}/${args.branchName}`,
+            message: `✅ Branch created: genie-ai-bot/${args.repo}/${args.branchName}`,
           };
         } catch (error: any) {
           return {
@@ -928,7 +928,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
      */
     createTool({
       name: 'bot_github_commit_files',
-      description: `Commit modified files and push to a branch in forked repository (codeforge-ai-bot).
+      description: `Commit modified files and push to a branch in forked repository (genie-ai-bot).
         
         USAGE PATTERN:
         1. Make edits using bot_github_replace_text or bot_github_edit_cached
@@ -1006,13 +1006,13 @@ export function createCachedGitHubTools(_octokit: Octokit) {
 
           // Get current branch tree
           const { data: branchRef } = await _octokit.rest.git.getRef({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             ref: `heads/${args.branch}`,
           });
 
           const { data: commit } = await _octokit.rest.git.getCommit({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             commit_sha: branchRef.object.sha,
           });
@@ -1021,7 +1021,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
           for (const file of args.files) {
             // Create blob for each file
             const { data: blob } = await _octokit.rest.git.createBlob({
-              owner: 'codeforge-ai-bot',
+              owner: 'genie-ai-bot',
               repo: args.repo,
               content: file.content,
               encoding: 'utf-8',
@@ -1037,7 +1037,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
 
           // Create tree
           const { data: tree } = await _octokit.rest.git.createTree({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             base_tree: commit.tree.sha,
             tree: treeEntries,
@@ -1045,7 +1045,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
 
           // Create commit
           const { data: newCommit } = await _octokit.rest.git.createCommit({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             message: args.message,
             tree: tree.sha,
@@ -1054,14 +1054,14 @@ export function createCachedGitHubTools(_octokit: Octokit) {
 
           // Update branch reference
           await _octokit.rest.git.updateRef({
-            owner: 'codeforge-ai-bot',
+            owner: 'genie-ai-bot',
             repo: args.repo,
             ref: `heads/${args.branch}`,
             sha: newCommit.sha,
           });
 
           // Clear modified files tracking after successful commit
-          cache.clearModifiedFiles('codeforge-ai-bot', args.repo, args.branch);
+          cache.clearModifiedFiles('genie-ai-bot', args.repo, args.branch);
 
           return {
             success: true,
@@ -1084,7 +1084,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
      */
     createTool({
       name: 'bot_github_create_pr',
-      description: `Create a pull request from forked repository (codeforge-ai-bot) to original repository.
+      description: `Create a pull request from forked repository (genie-ai-bot) to original repository.
         Use this to submit your changes for review.`,
       schema: z.object({
         owner: z.string().describe('Original repository owner'),
@@ -1100,7 +1100,7 @@ export function createCachedGitHubTools(_octokit: Octokit) {
             repo: args.repo,
             title: args.title,
             body: args.body,
-            head: `codeforge-ai-bot:${args.branch}`,
+            head: `genie-ai-bot:${args.branch}`,
             base: 'main',
           });
 

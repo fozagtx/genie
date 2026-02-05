@@ -1,7 +1,7 @@
-# CodeForge AI - Heroku Deployment Guide (Backend)
+# Genie AI - Heroku Deployment Guide (Backend)
 
-Write-Host "🚀 CodeForge AI - Heroku Backend Deployment" -ForegroundColor Cyan
-Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "🚀 Genie AI - Heroku Backend Deployment" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Check if Heroku CLI is installed
@@ -27,7 +27,7 @@ Write-Host ""
 
 Write-Host "2️⃣  Create a new Heroku app:" -ForegroundColor White
 Write-Host "   cd backend" -ForegroundColor Cyan
-Write-Host "   heroku create codeforge-ai-backend" -ForegroundColor Cyan
+Write-Host "   heroku create genie-ai-backend" -ForegroundColor Cyan
 Write-Host "   (or use your preferred app name)" -ForegroundColor Gray
 Write-Host ""
 
@@ -46,7 +46,7 @@ Write-Host "   cd backend" -ForegroundColor Cyan
 Write-Host "   git init" -ForegroundColor Cyan
 Write-Host "   git add ." -ForegroundColor Cyan
 Write-Host "   git commit -m 'Initial backend deployment'" -ForegroundColor Cyan
-Write-Host "   heroku git:remote -a codeforge-ai-backend" -ForegroundColor Cyan
+Write-Host "   heroku git:remote -a genie-ai-backend" -ForegroundColor Cyan
 Write-Host "   git push heroku main" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "   Option B - Push from monorepo root:" -ForegroundColor Gray

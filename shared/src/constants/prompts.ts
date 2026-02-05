@@ -4,7 +4,7 @@
  */
 
 // Base system prompt for all agents
-export const BASE_SYSTEM_PROMPT = `You are an AI agent working as part of CodeForge AI, a multi-agent system for code generation, review, and enhancement.
+export const BASE_SYSTEM_PROMPT = `You are an AI agent working as part of Genie AI, a multi-agent system for code generation, review, and enhancement.
 
 General Guidelines:
 - Be precise and professional in your analysis

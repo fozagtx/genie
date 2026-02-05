@@ -1,7 +1,7 @@
 /**
  * GitHub Tools with Bot Token Support
  * 
- * This module provides GitHub tools that use the CodeForge AI bot token
+ * This module provides GitHub tools that use the Genie AI bot token
  * for public repository operations, eliminating the need for users to
  * provide their personal access tokens for most operations.
  * 
@@ -29,12 +29,12 @@ import { getConfig } from './config'
 export function createBotGitHubTools() {
   const config = getConfig()
   
-  if (!config.codeforgebotGithubToken) {
-    throw new Error('CODEFORGE_BOT_GITHUB_TOKEN not configured. Bot operations are unavailable.')
+  if (!config.geniebotGithubToken) {
+    throw new Error('GENIE_BOT_GITHUB_TOKEN (or legacy CODEFORGE_BOT_GITHUB_TOKEN) not configured. Bot operations are unavailable.')
   }
 
-  const botToken = config.codeforgebotGithubToken
-  const botUsername = config.codeforgebotGithubUsername || 'codeforge-ai-bot'
+  const botToken = config.geniebotGithubToken
+  const botUsername = config.geniebotGithubUsername || 'genie-ai-bot'
 
   // Create server instance with bot token
   const server = createGitHubMcpServer({
@@ -109,7 +109,7 @@ export function createBotGitHubTools() {
             owner: args.owner,
             repo: args.repo,
             title: args.title,
-            body: `${args.body}\n\n---\n🤖 *This PR was created by CodeForge AI Bot*`,
+            body: `${args.body}\n\n---\n🤖 *This PR was created by Genie AI Bot*`,
             head: `${botUsername}:${args.head_branch}`, // fork:branch format
             base: args.base_branch,
           })
@@ -194,7 +194,7 @@ https://github.com/${args.owner}/${args.repo}/compare/${args.base_branch}...${bo
       fn: async (args) => {
         const fileCount = args.files.length;
         const filePaths = args.files.map(f => f.path).join(', ');
-        const autoMessage = args.message || `🤖 CodeForge AI: Updated ${fileCount} file${fileCount > 1 ? 's' : ''} (${filePaths})`;
+        const autoMessage = args.message || `🤖 Genie AI: Updated ${fileCount} file${fileCount > 1 ? 's' : ''} (${filePaths})`;
         
         return await server.executeTool('push_files', {
           owner: botUsername,
@@ -224,7 +224,7 @@ https://github.com/${args.owner}/${args.repo}/compare/${args.base_branch}...${bo
           owner: args.owner,
           repo: args.repo,
           title: args.title,
-          body: `${args.body}\n\n---\n🤖 *This issue was created by CodeForge AI Bot on behalf of a user*`,
+          body: `${args.body}\n\n---\n🤖 *This issue was created by Genie AI Bot on behalf of a user*`,
           labels: args.labels,
         })
         
@@ -258,7 +258,7 @@ https://github.com/${args.owner}/${args.repo}/compare/${args.base_branch}...${bo
           owner: args.owner,
           repo: args.repo,
           issue_number: args.issue_number,
-          body: `${args.body}\n\n---\n🤖 *CodeForge AI Bot*`,
+          body: `${args.body}\n\n---\n🤖 *Genie AI Bot*`,
         })
         
         return {
@@ -723,7 +723,7 @@ Bot Actions:
 1. Create repo in bot account → bot_github_create_repo_in_bot_account('calculator-app')
 2. Generate code files (index.html, styles.css, script.js)
 3. Push to main → bot_github_push_to_fork(repo, files, message, branch='main')
-4. Return repo URL: https://github.com/codeforge-ai-bot/calculator-app
+4. Return repo URL: https://github.com/genie-ai-bot/calculator-app
 
 Result: ✅ Repository created in bot account with code live on main branch!
 Note: No forking/branching/PR needed for new repos
@@ -735,16 +735,16 @@ User can fork the bot's repo to their account if they want
 User: "Add dark mode to my myapp repo"
 
 Bot Actions:
-1. Fork user's repo → codeforge-ai-bot/myapp
-2. Create branch in fork → codeforge-ai-bot/myapp:add-dark-mode
+1. Fork user's repo → genie-ai-bot/myapp
+2. Create branch in fork → genie-ai-bot/myapp:add-dark-mode
 3. Push dark mode files to fork branch
-4. Create PR from codeforge-ai-bot/myapp:add-dark-mode → user/myapp:main
+4. Create PR from genie-ai-bot/myapp:add-dark-mode → user/myapp:main
 5. Return PR link to user
 
 Result: ✅ PR created without user's personal token!
 \`\`\`
 
-**Note:** All bot operations will show "🤖 CodeForge AI Bot" as the author. This is transparent and secure.
+**Note:** All bot operations will show "🤖 Genie AI Bot" as the author. This is transparent and secure.
 `
 
 export default createBotGitHubTools

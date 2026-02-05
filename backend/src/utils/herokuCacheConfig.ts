@@ -48,7 +48,7 @@ export function getCacheDirectory(): {
       // S3 backend (would need different implementation)
       console.log(`[HerokuCache] Using S3 bucket: ${s3Bucket}`);
       return {
-        path: path.join(os.tmpdir(), 'codeforge-agent-cache'),
+        path: path.join(os.tmpdir(), 'genie-agent-cache'),
         persistent: false,
         maxSize: 500 * 1024 * 1024, // 500MB
         warning: 'S3 caching not yet implemented, using ephemeral fallback',
@@ -59,7 +59,7 @@ export function getCacheDirectory(): {
         '[HerokuCache] ⚠️  Production without persistent storage. Cache will be lost on dyno restart.'
       );
       return {
-        path: path.join(os.tmpdir(), 'codeforge-agent-cache'),
+        path: path.join(os.tmpdir(), 'genie-agent-cache'),
         persistent: false,
         maxSize: 500 * 1024 * 1024, // 500MB
         warning: 'No persistent storage configured. Set PERSISTENT_CACHE_PATH or AWS_S3_CACHE_BUCKET.',
@@ -68,7 +68,7 @@ export function getCacheDirectory(): {
   } else {
     // Development or local
     return {
-      path: path.join(os.tmpdir(), 'codeforge-agent-cache'),
+      path: path.join(os.tmpdir(), 'genie-agent-cache'),
       persistent: false,
       maxSize: 500 * 1024 * 1024, // 500MB
     };

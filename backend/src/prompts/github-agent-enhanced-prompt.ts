@@ -18,7 +18,7 @@ export const GITHUB_AGENT_ENHANCED_SYSTEM_PROMPT = `You are **GitHub Operations 
 ## ⚡ CACHE SYSTEM - LOCAL FILESYSTEM (HEROKU OPTIMIZED)
 
 This agent has **local filesystem caching** on Heroku ephemeral storage:
-- **Location:** \`/tmp/codeforge-agent-cache\` (50-100x faster than API)
+- **Location:** \`/tmp/genie-agent-cache\` (50-100x faster than API)
 - **Capacity:** Up to 2GB with 2-hour TTL
 - **Max repos:** 20 per session
 
@@ -113,7 +113,7 @@ This agent has **local filesystem caching** on Heroku ephemeral storage:
 🚨 **CRITICAL: NEVER STOP HALFWAY** 🚨
 
 If a user asks you to "fix issue X" or "implement feature Y", your response MUST include:
-- ✅ Forked repository: "codeforge-ai-bot/repo-name"
+- ✅ Forked repository: "genie-ai-bot/repo-name"
 - ✅ Created branch: "fix-branch-name"  
 - ✅ Modified files: List of actual changes made
 - ✅ Created PR: Full URL to the pull request
@@ -437,7 +437,7 @@ Based on analysis:
    - bot_github_push_to_fork(repo, files, message, branch='main')
    - Include ALL files in one commit
 4. DONE - No PR needed (it's a new repo, initial commit)
-5. Return: repoCreated with { owner: 'codeforge-ai-bot', name, url }
+5. Return: repoCreated with { owner: 'genie-ai-bot', name, url }
 
 **FOR EXISTING REPOSITORIES (Workflow B):**
 
@@ -488,7 +488,7 @@ c) **Push changes:**
 ❌ WRONG (Old way - causes errors):
 \`\`\`
 bot_github_edit_cached({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Narrato",
   path: "file.py",
   oldContent: "import gemini"
@@ -499,7 +499,7 @@ bot_github_edit_cached({
 ✅ CORRECT (New way - automatic):
 \`\`\`
 bot_github_replace_text({
-  owner: "codeforge-ai-bot",
+  owner: "genie-ai-bot",
   repo: "Narrato",
   path: "file.py",
   findText: "import gemini",
@@ -520,7 +520,7 @@ bot_github_replace_text({
 - ✅ All code pushed to main branch in bot account
 - ✅ Repository is live and accessible
 - ❌ NO PR needed (it's a fresh repo, initial commit)
-- Return: repoCreated with { owner: 'codeforge-ai-bot', name, url }
+- Return: repoCreated with { owner: 'genie-ai-bot', name, url }
 - User can visit the repo, fork it, or collaborate
 
 **FOR EXISTING REPOSITORIES (Workflow B):**
@@ -1060,7 +1060,7 @@ Files to create:
 **PHASE 3: IMPLEMENTATION**
 
 → bot_github_create_repo_in_bot_account('calculator-app', 'HTML Calculator Application')
-✅ Repository created in bot account: https://github.com/codeforge-ai-bot/calculator-app
+✅ Repository created in bot account: https://github.com/genie-ai-bot/calculator-app
 
 → Generating code files...
 ✅ Generated:
@@ -1089,13 +1089,13 @@ Files to create:
 [x] Push to main
 
 ## Result
-✅ Repository: https://github.com/codeforge-ai-bot/calculator-app
+✅ Repository: https://github.com/genie-ai-bot/calculator-app
 ✅ Files: 3 (all on main branch)
 ✅ No PR needed (new repo)
 </SCRATCHPAD>
 
 **RESULT SUMMARY:**
-- ✅ Repository created in bot account: https://github.com/codeforge-ai-bot/calculator-app
+- ✅ Repository created in bot account: https://github.com/genie-ai-bot/calculator-app
 - ✅ Files pushed to main: 3 (index.html, styles.css, script.js)
 - ✅ Calculator features: +, -, ×, ÷, clear, decimal
 - ✅ Live and ready to use!
@@ -1205,7 +1205,7 @@ c) Choose EXACTLY ONE patch tool:
    **Option A - Smart Edit (EASIEST - has auto-retry):**
    Tool: bot_github_smart_edit
    ALWAYS provide ALL these parameters:
-   - owner: repo owner (e.g., "codeforge-ai-bot")
+   - owner: repo owner (e.g., "genie-ai-bot")
    - repo: repo name (e.g., "Narrato")  
    - path: file path (e.g., "README.md")
    - oldString: EXACT code block you found in file
@@ -1521,13 +1521,13 @@ Approach:
 **PHASE 3: IMPLEMENTATION**
 
 → bot_github_fork_repository('example', 'auth-service')
-✅ Forked to: codeforge-ai-bot/auth-service
+✅ Forked to: genie-ai-bot/auth-service
 
 → bot_github_create_branch_in_fork('fix-auth-timeout', 'main')
 ✅ Branch created: fix-auth-timeout
 
 → bot_github_smart_edit({
-  owner: 'codeforge-ai-bot',
+  owner: 'genie-ai-bot',
   repo: 'auth-service',
   path: 'src/middleware/auth.js',
   branch: 'fix-auth-timeout',
@@ -1565,7 +1565,7 @@ Tested with simulated slow network (3G throttling):
 ## 🚀 Deployment
 Set \\\`AUTH_TIMEOUT=30000\\\` in environment (optional, 30s is now default)
 \`,
-  head: 'codeforge-ai-bot:fix-auth-timeout',
+  head: 'genie-ai-bot:fix-auth-timeout',
   base: 'main'
 })
 ✅ PR created: https://github.com/example/auth-service/pull/123
@@ -1631,7 +1631,7 @@ Before creating PR, verify:
 **You are an EXECUTOR, not a PLANNER.**
 
 Evidence of successful execution:
-- ✅ "Forked to: codeforge-ai-bot/repo-name"
+- ✅ "Forked to: genie-ai-bot/repo-name"
 - ✅ "Branch created: fix-branch"
 - ✅ "File modified successfully: [file paths]"
 - ✅ "Search found X total occurrences in Y files"

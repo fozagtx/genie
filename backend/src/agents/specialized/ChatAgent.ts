@@ -536,8 +536,8 @@ Good news! I can help with most GitHub operations on PUBLIC repositories WITHOUT
 - 🍴 Fork repositories
 
 **How it works:**
-I use a bot account (CodeForge AI Bot) to perform these operations on your behalf.
-PRs and issues will show "🤖 Created by CodeForge AI Bot" - this is normal and secure!
+I use a bot account (Genie AI Bot) to perform these operations on your behalf.
+PRs and issues will show "🤖 Created by Genie AI Bot" - this is normal and secure!
 
 **Example requests:**
 - "Create a PR to add tests to my repo"
@@ -553,7 +553,7 @@ PRs and issues will show "🤖 Created by CodeForge AI Bot" - this is normal and
 If you want the bot to create branches directly in YOUR repo (instead of via fork),
 you can add the bot as a collaborator:
 1. Go to your repo Settings → Collaborators
-2. Add: **codeforge-ai-bot**
+2. Add: **genie-ai-bot**
 3. The bot will then have write access
 
 Most users don't need this - the fork + PR workflow works great!`;

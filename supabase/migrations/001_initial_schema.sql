@@ -1,4 +1,4 @@
--- CodeForge AI Initial Database Schema
+-- Genie AI Initial Database Schema
 -- This migration creates the core tables for the application
 
 -- Enable pgcrypto extension for gen_random_uuid()

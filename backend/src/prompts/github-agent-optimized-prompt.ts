@@ -52,7 +52,7 @@ ISSUE ANALYSIS:
 - Critical files: [actual code files, not just README]
 
 WORKFLOW (OPTIMIZED - Fork first, load once):
-1. Fork original repo → codeforge-ai-bot/repo
+1. Fork original repo → genie-ai-bot/repo
 2. Create feature branch on fork
 3. Preload ONLY the fork+branch (not original!)
 4. Make all edits on fork+branch
@@ -119,13 +119,13 @@ Problem: Loaded same 150 files twice! Wasted 20+ seconds!
 **✅ DO fork first, load once:**
 \`\`\`
 1. bot_github_fork_repo(owner: "user", repo: "Repo")
-   → Creates: codeforge-ai-bot/Repo
+   → Creates: genie-ai-bot/Repo
    
 2. bot_github_create_branch(repo: "Repo", branch: "fix-issue")
-   → Creates: codeforge-ai-bot/Repo@fix-issue
+   → Creates: genie-ai-bot/Repo@fix-issue
    
 3. bot_github_preload_repo(
-     owner: "codeforge-ai-bot",  ← Fork owner
+     owner: "genie-ai-bot",  ← Fork owner
      repo: "Repo",
      branch: "fix-issue"          ← Your branch
    )
@@ -331,8 +331,8 @@ await bot_github_commit_files({
 ### For Model Replacement Tasks (gemini-2.5-pro etc)
 \`\`\`
 OPTIMAL PLAN (Fork-first workflow):
-1. Fork repository → codeforge-ai-bot/Repo (1 call)
-2. Create branch → codeforge-ai-bot/Repo@fix-gemini (1 call)
+1. Fork repository → genie-ai-bot/Repo (1 call)
+2. Create branch → genie-ai-bot/Repo@fix-gemini (1 call)
 3. Preload ONLY fork+branch (1 call)
    ⚠️ DON'T preload original repo first!
 4. Search: (gemini-1\.5|gemini-2\.5|model.*version|MODEL_NAME) (1 call)
@@ -597,17 +597,17 @@ PROBLEMS:
 ### ✅ NEW WAY (Fork first + Load once + Fix code!):
 \`\`\`
 1. bot_github_fork_repo({ owner: "user", repo: "MyApp" })
-   → Created: codeforge-ai-bot/MyApp
+   → Created: genie-ai-bot/MyApp
 
 2. bot_github_create_branch({ 
      repo: "MyApp", 
      branchName: "fix/update-gemini-model",
      baseBranch: "main"
    })
-   → Created: codeforge-ai-bot/MyApp@fix/update-gemini-model
+   → Created: genie-ai-bot/MyApp@fix/update-gemini-model
 
 3. bot_github_preload_repo({
-     owner: "codeforge-ai-bot",  ← Fork, not original!
+     owner: "genie-ai-bot",  ← Fork, not original!
      repo: "MyApp",
      branch: "fix/update-gemini-model"  ← Your branch
    })
@@ -615,7 +615,7 @@ PROBLEMS:
 
 4. bot_github_search_cached({ 
      pattern: "(gemini-1\\.5-pro|GEMINI.*1\\.5)",
-     owner: "codeforge-ai-bot",  ← Search in fork
+     owner: "genie-ai-bot",  ← Search in fork
      repo: "MyApp"
    })
    
@@ -628,7 +628,7 @@ PROBLEMS:
    PLAN: Fix code files FIRST, docs LAST
 
 5. bot_github_batch_replace({
-     owner: "codeforge-ai-bot", repo: "MyApp",
+     owner: "genie-ai-bot", repo: "MyApp",
      branch: "fix/update-gemini-model",
      replacements: [
        // PRIORITY 1: Fix actual code
@@ -672,7 +672,7 @@ PROBLEMS:
    // All replacements in ONE call, prioritized correctly
 
 6. bot_github_modified_cached({
-     owner: "codeforge-ai-bot", repo: "MyApp",
+     owner: "genie-ai-bot", repo: "MyApp",
      branch: "fix/update-gemini-model", 
      includeContent: true
    })

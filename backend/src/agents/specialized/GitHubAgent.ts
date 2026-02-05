@@ -12,7 +12,7 @@
  * - Complete end-to-end GitHub workflows
  * - SESSION MEMORY to prevent duplicate operations
  * 
- * This agent uses CodeForge AI Bot token for most operations, so users
+ * This agent uses Genie AI Bot token for most operations, so users
  * don't need to provide their personal access tokens!
  * 
  * ENHANCED VERSION: Now includes:

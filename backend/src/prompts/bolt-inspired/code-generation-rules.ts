@@ -1,5 +1,5 @@
 /**
- * Code generation rules for CodeForge AI
+ * Code generation rules for Genie AI
  * Based on bolt.diy's proven patterns
  */
 

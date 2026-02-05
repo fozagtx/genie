@@ -122,7 +122,7 @@
       },
     },
     "shared": {
-      "name": "@codeforge/shared",
+      "name": "@genie/shared",
       "version": "1.0.0",
       "dependencies": {
         "zod": "^3.22.4",
@@ -235,7 +235,7 @@
 
     "@clack/prompts": ["@clack/prompts@0.11.0", "", { "dependencies": { "@clack/core": "0.5.0", "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw=="],
 
-    "@codeforge/shared": ["@codeforge/shared@workspace:shared"],
+    "@genie/shared": ["@genie/shared@workspace:shared"],
 
     "@colors/colors": ["@colors/colors@1.6.0", "", {}, "sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA=="],
 

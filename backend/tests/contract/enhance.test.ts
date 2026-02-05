@@ -8,7 +8,7 @@ import type { Server } from 'http'
  * Purpose: Verify that the enhance endpoint adheres to its contract specification.
  * These tests MUST FAIL initially (TDD approach).
  *
- * Contract: specs/001-codeforge-ai-multi-agent/contracts/enhance.md
+ * Contract: specs/001-genie-ai-multi-agent/contracts/enhance.md
  */
 
 describe('POST /api/enhance - Contract Tests', () => {
