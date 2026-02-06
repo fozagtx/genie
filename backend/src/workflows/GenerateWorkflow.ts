@@ -1389,7 +1389,7 @@ Return the result as JSON with the following structure:
           files: finalFiles,
           confidence: 0.8,
           metadata: {
-            generatedBy: 'AI Agent (glm-4.6)',
+            generatedBy: 'AI Agent (gemini-1.5-flash)',
             formatted: !this.usedSimpleCoder,
             formattedCount: this.usedSimpleCoder ? 0 : finalFiles.length,
             attempt: attempt,
@@ -1655,7 +1655,7 @@ Return the complete updated codebase as JSON:
           files: finalFiles,
           confidence: 0.85,
           metadata: {
-            generatedBy: 'CodeModificationAgent (glm-4.6)',
+            generatedBy: 'CodeModificationAgent (gemini-1.5-flash)',
             formatted: true,
             formattedCount: formattedFiles.length,
             attempt: attempt,
@@ -1842,7 +1842,7 @@ Return a structured response with all test files and a summary.`
         metadata: {
           testCount,
           fileCount: response.files.length,
-          generatedBy: 'TestCrafterAgent (glm-4.6)',
+          generatedBy: 'TestCrafterAgent (gemini-1.5-flash)',
         },
       }
     } catch (error) {

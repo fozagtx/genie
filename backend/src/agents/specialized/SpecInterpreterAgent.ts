@@ -57,7 +57,7 @@ Provide structured, prioritized requirements that developers can implement with 
 
 export const SpecInterpreterAgent = async () => {
   return AgentBuilder.create('SpecInterpreterAgent')
-    .withModel('glm-4.6')
+    .withModel('gemini-1.5-flash')
     .withInstruction(systemPrompt)
     .build();
 };

@@ -40,7 +40,7 @@ export const SimpleCoderAgent = async (options?: SimpleCoderOptions) => {
   console.log(`[SimpleCoderAgent] Prompt loaded: ${promptTime}ms (${finalPrompt.length} chars)`);
   
   let builder = AgentBuilder.create('SimpleCoderAgent')
-    .withModel('glm-4.6')
+    .withModel('gemini-1.5-flash')
     .withInstruction(finalPrompt)
     .withOutputSchema(generationSchema);
   

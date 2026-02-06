@@ -87,7 +87,7 @@ The fixed code should be production-ready with no errors.`;
 
 export const CodeFixerAgent = async () => {
   return AgentBuilder.create('CodeFixerAgent')
-    .withModel('glm-4.6')
+    .withModel('gemini-1.5-flash')
     .withInstruction(systemPrompt)
     .withOutputSchema(generationSchema)
     .build();
