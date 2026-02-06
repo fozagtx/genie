@@ -619,7 +619,7 @@ ${logs}
 ${typeScriptErrorGuide}
 ${typeScriptErrorContext}
 
-CURRENT CODEBASE (${currentFiles.length} files):
+Files to fix (${currentFiles.length}):
 ${filesContext}
 
 REQUIREMENTS:

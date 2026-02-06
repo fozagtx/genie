@@ -748,7 +748,7 @@ ${criticalErrors.length > 15 ? `\n... and ${criticalErrors.length - 15} more cri
 
 ${errorContext}
 
-CURRENT CODEBASE (${files.length} files):
+Files to fix (${files.length}):
 ${filesContext}
 
 ⚠️ CRITICAL REQUIREMENTS:
@@ -1487,9 +1487,9 @@ Remember:
 
         let contextMessage = `Modify the following codebase according to the user's request.
 
-USER REQUEST: ${escapedPrompt}
+${escapedPrompt}
 ${imageInfo}
-CURRENT CODEBASE (${request.currentFiles.length} files):
+Existing files (${request.currentFiles.length}):
 
 `
 
@@ -2293,7 +2293,22 @@ MIT
    * Returns real HTML/CSS/JS files instead of a placeholder comment.
    */
   private generateFallbackFiles(request: any): Array<{ path: string; content: string }> {
-    const prompt = request.prompt || 'Web Application'
+    // Extract just the user's request, stripping any internal context that was prepended
+    let prompt = request.prompt || 'your request'
+    // Remove internal context block if present
+    const endContextIdx = prompt.indexOf('[END INTERNAL CONTEXT]')
+    if (endContextIdx !== -1) {
+      prompt = prompt.substring(endContextIdx + '[END INTERNAL CONTEXT]'.length).trim()
+    }
+    // Remove existing files listing if present
+    const existingFilesIdx = prompt.indexOf('\n\nExisting files (')
+    if (existingFilesIdx !== -1) {
+      prompt = prompt.substring(0, existingFilesIdx).trim()
+    }
+    // Truncate for display
+    if (prompt.length > 200) {
+      prompt = prompt.substring(0, 200) + '...'
+    }
     // Sanitize prompt for use in HTML content (prevent XSS)
     const safePrompt = prompt.replace(/[<>"&]/g, (c: string) => {
       const map: Record<string, string> = { '<': '&lt;', '>': '&gt;', '"': '&quot;', '&': '&amp;' }

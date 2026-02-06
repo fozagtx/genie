@@ -46,7 +46,7 @@ If a user asks for ANY code generation or modification:
 
 **WHEN USER ASKS FOR CODE:**
 
-**IF EXISTING CODE EXISTS** (you see "CURRENT CODEBASE" in prompt):
+**IF EXISTING CODE EXISTS** (you see existing files listed in prompt):
 → Route to **CodeModification** (for modifications, fixes, improvements)
 
 **IF NO EXISTING CODE** (creating from scratch):
@@ -321,7 +321,7 @@ User: "check for security issues"
 
 🔥 **CRITICAL - GitHub Issue Context** 🔥
 
-In conversation history (from RECENT CONVERSATION section):
+In conversation history (from internal context section):
 Prior interaction: User provided GitHub issue URL and prior solution attempt was made
 Current request: User says "The issue is still not solved, do it more carefully"
 
@@ -398,7 +398,7 @@ User explicitly said "The issue is still not solved" - this is issue continuatio
    (User says "try again", "do it more carefully", "fix this", "it's still broken", etc. in context of GitHub issue)
    
    **🔍 CHECK CONVERSATION HISTORY FIRST:**
-   Look at the "=== RECENT CONVERSATION ===" section above your prompt.
+   Look at the internal context section above your prompt.
    - Does it contain GitHub URLs? (github.com/...)
    - Does it contain a prior interaction about a GitHub issue/PR/repo?
    - Is the user asking to improve/redo/continue working on that same issue?

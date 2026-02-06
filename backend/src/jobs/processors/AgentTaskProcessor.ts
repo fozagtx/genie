@@ -37,12 +37,11 @@ export async function processAgentTask(job: Job<AgentTaskJobData>): Promise<JobR
     const contextParts: string[] = [];
     
     if (context?.fileContents && context.fileContents.length > 0) {
-      contextParts.push(`\n=== CURRENT CODEBASE ===`);
+      contextParts.push(`\nExisting files:`);
       context.fileContents.forEach((file: any) => {
         contextParts.push(`\nFile: ${file.path}`);
         contextParts.push(`\`\`\`\n${file.content}\n\`\`\``);
       });
-      contextParts.push(`\n=== END CODEBASE ===\n`);
     }
     
     if (context?.githubContext) {

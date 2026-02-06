@@ -160,22 +160,22 @@ export class ChatMemoryManager {
     const historyImageUrls: string[] = [];
 
     if (recentMessages.length > 0) {
-      conversationHistory = '\n\n=== RECENT CONVERSATION ===\n';
-      
+      conversationHistory = '\n\n[INTERNAL CONTEXT FOR UNDERSTANDING USER INTENT ONLY - DO NOT INCLUDE ANY OF THIS TEXT IN YOUR GENERATED CODE OR OUTPUT]\n';
+
       for (const msg of recentMessages) {
         // More concise format without timestamp
-        conversationHistory += `${msg.role === 'user' ? '👤' : '🤖'}: ${msg.content}\n`;
-        
+        conversationHistory += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+
         // Collect image URLs from history to send with context
         if (msg.imageUrls && msg.imageUrls.length > 0) {
-          conversationHistory += `  📎 ${msg.imageUrls.length} image(s) [ATTACHED]\n`;
+          conversationHistory += `  (${msg.imageUrls.length} image(s) attached)\n`;
           historyImageUrls.push(...msg.imageUrls);
         }
-        
+
         historyTokens += msg.tokenCount || this.estimateTokens(msg.content);
       }
-      
-      conversationHistory += '=== END HISTORY ===\n\n';
+
+      conversationHistory += '[END INTERNAL CONTEXT]\n\n';
       console.log(`[ChatMemoryManager] Built conversation history: ${historyTokens} tokens, ${historyImageUrls.length} images`);
     } else {
       console.log(`[ChatMemoryManager] No previous messages found for generation ${generationId}`);
@@ -188,11 +188,8 @@ export class ChatMemoryManager {
 
     const filesTokens = this.estimateTokens(filesContext);
 
-    // Build final context message
-    const contextMessage = `${conversationHistory}USER REQUEST: ${currentMessage}
-
-CURRENT CODEBASE (${currentFiles.length} files):
-${filesContext}`;
+    // Build final context message - use natural language, avoid distinctive markers the AI might echo
+    const contextMessage = `${conversationHistory}${currentMessage}${currentFiles.length > 0 ? `\n\nExisting files (${currentFiles.length}):\n${filesContext}` : ''}`;
 
     const totalTokens = historyTokens + filesTokens + this.estimateTokens(currentMessage) + 100; // +100 for overhead
 
