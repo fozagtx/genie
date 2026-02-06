@@ -6,7 +6,7 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug, Search } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
@@ -16,6 +16,7 @@ import { useRealtimeJob } from '../hooks/useRealtimeJob';
 import { useRealtimeJobsList } from '../hooks/useRealtimeJobsList';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import { useGitHubToken } from '../hooks/useGitHubToken';
+import { useGitHubRepos, GitHubRepo } from '../hooks/useGitHubRepos';
 import apiClient from '../services/apiClient';
 import { uploadMultipleFiles, validateFile } from '../services/fileUploadService';
 import '../styles/theme.css';
@@ -34,7 +35,8 @@ export const TerminalPage: React.FC = () => {
   const id = searchParams.get('generation') || routeId; // Support both query param and route param
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const { githubContext: gitHubCtx } = useGitHubToken();
+  const { githubContext: gitHubCtx, isConnected: isGitHubConnected } = useGitHubToken();
+  const { data: githubRepos, isLoading: reposLoading } = useGitHubRepos();
   const { showToast } = useUIStore();
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,6 +59,7 @@ export const TerminalPage: React.FC = () => {
   const [isPreviewPanelVisible, setIsPreviewPanelVisible] = useState(true);
   const [backgroundMode, setBackgroundMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [repoSearchQuery, setRepoSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
     const saved = localStorage.getItem('genie-sidebar-visible');
@@ -1288,6 +1291,86 @@ export const TerminalPage: React.FC = () => {
                   <div className="capability-chip">Tests &amp; Docs</div>
                 </div>
               </div>
+
+              {/* GitHub Repo Card - search repos for code review / bug fix */}
+              {isGitHubConnected && (
+                <div className="repo-action-card">
+                  <div className="repo-card-header">
+                    <Github size={18} />
+                    <span>Your Repositories</span>
+                  </div>
+                  <div className="repo-search-row">
+                    <Search size={14} className="repo-search-icon" />
+                    <input
+                      type="text"
+                      className="repo-search-input"
+                      placeholder="Search repos..."
+                      value={repoSearchQuery}
+                      onChange={(e) => setRepoSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="repo-list">
+                    {reposLoading ? (
+                      <div className="repo-list-empty">Loading repos...</div>
+                    ) : githubRepos && githubRepos.length > 0 ? (
+                      (repoSearchQuery
+                        ? githubRepos.filter(r =>
+                            r.name.toLowerCase().includes(repoSearchQuery.toLowerCase()) ||
+                            (r.description && r.description.toLowerCase().includes(repoSearchQuery.toLowerCase()))
+                          )
+                        : githubRepos.slice(0, 8)
+                      ).map((repo) => (
+                        <div key={repo.id} className="repo-item">
+                          <div className="repo-item-info">
+                            <span className="repo-item-name">{repo.name}</span>
+                            {repo.private && <span className="repo-private-badge">Private</span>}
+                            {repo.language && <span className="repo-lang-badge">{repo.language}</span>}
+                          </div>
+                          <div className="repo-item-actions">
+                            <button
+                              className="repo-action-btn review"
+                              onClick={() => {
+                                playClick();
+                                setChatInput(`Review the code in the GitHub repo "${repo.fullName}" for best practices, security, and performance`);
+                                setTimeout(() => {
+                                  const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                                  form?.requestSubmit();
+                                }, 100);
+                              }}
+                              disabled={isProcessing}
+                              title="Code Review"
+                            >
+                              <Shield size={14} />
+                              Review
+                            </button>
+                            <button
+                              className="repo-action-btn bugfix"
+                              onClick={() => {
+                                playClick();
+                                setChatInput(`Find and fix bugs in the GitHub repo "${repo.fullName}"`);
+                                setTimeout(() => {
+                                  const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                                  form?.requestSubmit();
+                                }, 100);
+                              }}
+                              disabled={isProcessing}
+                              title="Bug Fix"
+                            >
+                              <Bug size={14} />
+                              Bug Fix
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="repo-list-empty">
+                        {repoSearchQuery ? 'No repos match your search' : 'No repositories found'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="centered-input-wrapper">
                 {renderInputForm()}
               </div>
