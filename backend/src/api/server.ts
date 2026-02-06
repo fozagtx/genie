@@ -28,6 +28,7 @@ import jobsRouter from './routes/jobs-simple';
 import telegramRouter from './routes/telegram';
 import generationsRouter from './routes/generations';
 import imageGenerationRouter from '../routes/imageGeneration';
+import githubRouter from './routes/github';
 // import codebaseRouter from './routes/codebase'; // DISABLED - rollback to legacy mode
 
 const app = express();
@@ -71,7 +72,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-github-token'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 86400, // 24 hours
 }));
@@ -101,6 +102,7 @@ app.use('/api/jobs', jobsRouter);
 app.use('/api', telegramRouter);
 app.use('/api/generations', generationsRouter);
 app.use('/api/images', imageGenerationRouter);
+app.use('/api/github', githubRouter);
 // app.use('/api', codebaseRouter); // DISABLED - rollback to legacy mode
 
 // Socket.io connection

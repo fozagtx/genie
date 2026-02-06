@@ -332,6 +332,22 @@
   min-height: 400px;
 }
 
+/* Centered empty state - input with welcome text */
+.chat-empty-centered {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.centered-input-wrapper {
+  width: 100%;
+  max-width: 640px;
+}
+
 .welcome-content {
   display: flex;
   flex-direction: column;
@@ -392,7 +408,7 @@
 
 .chat-message:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .chat-message.user {
@@ -1288,7 +1304,7 @@
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 999;
     pointer-events: all;
   }

@@ -10,12 +10,20 @@ import { LLMRegistry } from "./vendor/@iqai/adk/index.js";
 async function testVendorADK() {
 	console.log("🧪 Testing Vendor ADK (Heroku path)\n");
 
-	// Test: glm-4.6 model (should use fallback)
-	console.log("Test: glm-4.6 model (Chinese AI model)");
+	// Test: gpt-4o-mini model
+	console.log("Test: gpt-4o-mini model (OpenAI)");
 	try {
-		const glmModel = LLMRegistry.newLLM("glm-4.6");
-		console.log("✅ Created LLM for glm-4.6:", glmModel.model);
-		console.log("   This should work with OpenAI API key fallback!");
+		const model = LLMRegistry.newLLM("gpt-4o-mini");
+		console.log("✅ Created LLM for gpt-4o-mini:", model.model);
+	} catch (error: any) {
+		console.log("❌ Error:", error.message);
+	}
+
+	// Test: gemini-1.5-flash model
+	console.log("\nTest: gemini-1.5-flash model (Google)");
+	try {
+		const model = LLMRegistry.newLLM("gemini-1.5-flash");
+		console.log("✅ Created LLM for gemini-1.5-flash:", model.model);
 	} catch (error: any) {
 		console.log("❌ Error:", error.message);
 	}

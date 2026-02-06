@@ -15,7 +15,7 @@
   border: 1px solid hsl(var(--border));
   border-radius: 0.75rem;
   backdrop-filter: blur(6px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   padding: 1rem;
   color: hsl(var(--foreground));
@@ -103,7 +103,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;

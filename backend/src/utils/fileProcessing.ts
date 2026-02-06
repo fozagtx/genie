@@ -1,6 +1,6 @@
 /**
  * File processing utilities for handling file uploads and downloads
- * Supports images and documents for GPT-5-nano multimodal processing
+ * Supports images and documents for multimodal processing
  */
 
 const pdfParse = require('pdf-parse');

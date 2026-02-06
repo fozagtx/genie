@@ -14,7 +14,7 @@ export const ShowcasePage: React.FC = () => {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-foreground">
               Interactive 3D Experience
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -32,10 +32,10 @@ export const ShowcasePage: React.FC = () => {
       <GenieAgentsSection />
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-16 bg-background">
+      <footer className="border-t border-border py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4 text-white">
+            <h2 className="text-2xl font-bold mb-4 text-foreground">
               Ready to Transform Your Development?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -43,7 +43,7 @@ export const ShowcasePage: React.FC = () => {
             </p>
             <a
               href="/terminal"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-md transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:opacity-90"
             >
               Launch Genie AI
             </a>

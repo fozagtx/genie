@@ -219,7 +219,7 @@ export const DocsPage: React.FC = () => {
               key={section.id}
               className={`w-full rounded-lg border border-transparent px-3.5 py-2.5 text-left text-[0.9rem] font-semibold transition-all duration-150 max-md:w-auto max-md:flex-none max-md:text-center max-md:px-3.5 max-md:py-2 max-md:text-[0.85rem] ${
                 activeSection === section.id
-                  ? 'bg-indigo-500 text-white border-indigo-500 shadow-md'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-md'
                   : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer'
               }`}
               onClick={() => setActiveSection(section.id)}

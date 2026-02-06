@@ -31,21 +31,21 @@
 ### Agent Architecture
 
 **Code Generation:**
-- **Simple Coder** (GLM-4.6) - HTML/CSS/JavaScript projects
-- **Complex Coder** (GLM-4.6) - React/TypeScript applications
-- **Code Modifier** (GLM-4.6) - Bug fixes and feature additions
+- **Simple Coder** (Gemini 1.5 Flash) - HTML/CSS/JavaScript projects
+- **Complex Coder** (Gemini 1.5 Flash) - React/TypeScript applications
+- **Code Modifier** (Gemini 1.5 Flash) - Bug fixes and feature additions
 
 **Code Review:**
-- **Security Sentinel** (GPT-5-nano) - Vulnerability scanning
-- **Performance Profiler** (GPT-5-nano) - Optimization analysis
-- **Bug Hunter** (GPT-5-nano) - Logic error detection
-- **Quality Assurance** (GPT-5-nano) - Best practices validation
+- **Security Sentinel** (GPT-4o Mini) - Vulnerability scanning
+- **Performance Profiler** (GPT-4o Mini) - Optimization analysis
+- **Bug Hunter** (GPT-4o Mini) - Logic error detection
+- **Quality Assurance** (GPT-4o Mini) - Best practices validation
 
 **Support:**
-- **Chat Agent** (GPT-5-nano) - Request routing and conversation
-- **Test Crafter** (GLM-4.6) - Test generation
-- **Doc Weaver** (GPT-5-nano) - Documentation creation
-- **GitHub Agent** (GLM-4.6) - Repository operations
+- **Chat Agent** (GPT-4o Mini) - Request routing and conversation
+- **Test Crafter** (Gemini 1.5 Flash) - Test generation
+- **Doc Weaver** (GPT-4o Mini) - Documentation creation
+- **GitHub Agent** (Gemini 1.5 Flash) - Repository operations
 
 ---
 
@@ -53,7 +53,7 @@
 
 **Frontend:** React 18.2, TypeScript 5.3, Vite, Tailwind CSS, Monaco Editor, WebContainer API
 **Backend:** Node.js 20.x, Express.js, TypeScript, Socket.io, Bull, Redis, ADK-TS
-**AI Models:** GLM-4.6 (coding), GPT-5-nano (analysis), OpenAI GPT-4, Anthropic Claude, Google Gemini
+**AI Models:** Gemini 1.5 Flash (coding), GPT-4o Mini (analysis), OpenAI GPT-4o, Google Gemini
 **Storage:** Supabase (PostgreSQL + Storage), Redis
 **Deployment:** Vercel (frontend), Render (backend), Fly.io (generated projects)
 
@@ -63,7 +63,7 @@
 
 ### Prerequisites
 - Node.js 20.x+, npm 10.x+, Redis, Supabase account
-- API keys: OpenAI/Anthropic/Google, Runware (optional), GitHub token (optional)
+- API keys: OpenAI, Google Gemini, Runware (optional), GitHub token (optional)
 
 ### Installation
 
@@ -79,6 +79,7 @@ npm run prepare-adk
 **Backend (.env):**
 ```env
 OPENAI_API_KEY=your_openai_key
+GOOGLE_API_KEY=your_google_gemini_key
 RUNWARE_API_KEY=your_runware_key  # For image generation
 SUPABASE_URL=your_supabase_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -111,7 +112,7 @@ cd frontend && npm run dev
 ### Backend Deployment (Render)
 
 - Deploy the backend as a Render Web Service using the provided `render.yaml` (auto-runs `npm install` then `npm run start --workspace backend`).
-- Set environment variables in Render: `GOOGLE_API_KEY` (Gemini), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `REDIS_URL`, and `FRONTEND_URL` (point to your frontend origin). Optional: `OPENAI_API_KEY`, `RUNWARE_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GENIE_BOT_GITHUB_TOKEN`.
+- Set environment variables in Render: `GOOGLE_API_KEY` (Gemini), `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `REDIS_URL`, and `FRONTEND_URL` (point to your frontend origin). Optional: `RUNWARE_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GENIE_BOT_GITHUB_TOKEN`.
 - Render sets `PORT` automatically; the health check path is `/api/status`.
 - Telegram webhooks now auto-detect `RENDER_EXTERNAL_URL` if `APP_URL`/`BACKEND_URL` are not provided.
 

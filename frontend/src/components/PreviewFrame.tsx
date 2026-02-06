@@ -317,18 +317,18 @@ export function PreviewFrame({ files, onError, onReady, onPreviewError }: Previe
   };
 
   return (
-    <div className={`preview-frame h-full w-full flex flex-col bg-gray-900 ${
+    <div className={`preview-frame h-full w-full flex flex-col bg-card ${
       isEnlarged ? 'fixed inset-0 z-50' : ''
     }`}>
       {/* Status Bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-2 bg-secondary border-b border-border">
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${
             status === 'ready' ? (previewErrors.length > 0 ? 'bg-orange-500' : 'bg-green-500') :
             status === 'error' ? 'bg-red-500' :
             'bg-yellow-500 animate-pulse'
           }`} />
-          <span className="text-sm text-gray-300">{getStatusMessage()}</span>
+          <span className="text-sm text-muted-foreground">{getStatusMessage()}</span>
           {previewErrors.length > 0 && (
             <span className="px-2 py-0.5 text-xs bg-orange-500 text-white rounded-full">
               {previewErrors.length} error{previewErrors.length > 1 ? 's' : ''}
@@ -373,7 +373,7 @@ export function PreviewFrame({ files, onError, onReady, onPreviewError }: Previe
           )}
           <button
             onClick={() => setIsEnlarged(!isEnlarged)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent rounded-md transition-colors"
             title={isEnlarged ? "Exit enlarged view" : "Enlarge preview"}
           >
             {isEnlarged ? (
@@ -399,9 +399,9 @@ export function PreviewFrame({ files, onError, onReady, onPreviewError }: Previe
       <div className="flex-1 relative">
         {status === 'error' ? (
           <div className="absolute inset-0 flex items-center justify-center bg-red-900/20">
-            <div className="max-w-md p-4 bg-gray-800 rounded-lg border border-red-500">
+            <div className="max-w-md p-4 bg-card rounded-lg border border-destructive">
               <h3 className="text-red-400 font-semibold mb-2">Preview Error</h3>
-              <p className="text-sm text-gray-300">{errorMessage}</p>
+              <p className="text-sm text-muted-foreground">{errorMessage}</p>
             </div>
           </div>
         ) : status === 'ready' && previewUrl ? (
@@ -418,7 +418,7 @@ export function PreviewFrame({ files, onError, onReady, onPreviewError }: Previe
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-sm text-gray-400">{getStatusMessage()}</p>
+              <p className="text-sm text-muted-foreground">{getStatusMessage()}</p>
             </div>
           </div>
         )}

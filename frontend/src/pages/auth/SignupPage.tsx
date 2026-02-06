@@ -30,7 +30,7 @@ export const SignupPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-rose-50 p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-4xl font-bold text-foreground">Get started</h1>
@@ -40,7 +40,7 @@ export const SignupPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             {error && (
-              <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-red-400">
+              <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -53,7 +53,7 @@ export const SignupPage: React.FC = () => {
             >
               {loading ? (
                 <>
-                  <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
                   Creating account...
                 </>
               ) : (

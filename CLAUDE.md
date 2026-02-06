@@ -112,21 +112,21 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 - `LeadEngineerAgent` - Coordinates complex multi-agent tasks
 
 **Code Generation Specialists:**
-- `SimpleCoderAgent` - HTML/CSS/JavaScript projects (uses GLM-4.6)
-- `ComplexCoderAgent` - React/TypeScript/frameworks (uses GLM-4.6)
-- `CodeModificationAgent` - Modifies existing code (uses GLM-4.6)
-- `CodeFixerAgent` - Fixes errors and bugs (uses GLM-4.6)
+- `SimpleCoderAgent` - HTML/CSS/JavaScript projects (uses Gemini 1.5 Flash)
+- `ComplexCoderAgent` - React/TypeScript/frameworks (uses Gemini 1.5 Flash)
+- `CodeModificationAgent` - Modifies existing code (uses Gemini 1.5 Flash)
+- `CodeFixerAgent` - Fixes errors and bugs (uses Gemini 1.5 Flash)
 
 **Code Review Specialists:**
-- `SecuritySentinelAgent` - Security vulnerability analysis (uses GPT-5-nano)
-- `PerformanceProfilerAgent` - Performance optimization (uses GPT-5-nano)
-- `BugHunterAgent` - Logic error detection (uses GPT-5-nano)
-- `QualityAssuranceAgent` - Best practices validation (uses GPT-5-nano)
+- `SecuritySentinelAgent` - Security vulnerability analysis (uses GPT-4o Mini)
+- `PerformanceProfilerAgent` - Performance optimization (uses GPT-4o Mini)
+- `BugHunterAgent` - Logic error detection (uses GPT-4o Mini)
+- `QualityAssuranceAgent` - Best practices validation (uses GPT-4o Mini)
 
 **Support Specialists:**
-- `TestCrafterAgent` - Test generation (uses GLM-4.6)
-- `DocWeaverAgent` - Documentation creation (uses GPT-5-nano)
-- `GitHubAgent` - Repository operations (uses GLM-4.6)
+- `TestCrafterAgent` - Test generation (uses Gemini 1.5 Flash)
+- `DocWeaverAgent` - Documentation creation (uses GPT-4o Mini)
+- `GitHubAgent` - Repository operations (uses Gemini 1.5 Flash)
 
 ### Key Services
 
@@ -161,9 +161,8 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 
 The project uses different models optimized for specific tasks:
 
-- **GLM-4.6:** Primary model for code generation (SimpleCoder, ComplexCoder, CodeModifier, TestCrafter, GitHubAgent)
-- **GPT-5-nano:** Efficient model for analysis and review (ChatAgent, Security, Performance, BugHunter, QA, Documentation)
-- **Fallback Support:** OpenAI GPT-4, Anthropic Claude, Google Gemini
+- **Gemini 1.5 Flash:** Primary model for code generation (SimpleCoder, ComplexCoder, CodeModifier, TestCrafter, GitHubAgent)
+- **GPT-4o Mini:** Efficient model for analysis and review (ChatAgent, Security, Performance, BugHunter, QA, Documentation)
 
 Models are configured in `backend/src/services/AIService.ts` with automatic fallback handling.
 
@@ -210,7 +209,7 @@ Run single test: `cd backend && npm test -- <test-pattern>`
 ## Environment Configuration
 
 Required environment variables are documented in the README. Key services:
-- **LLM Providers:** OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY
+- **LLM Providers:** OPENAI_API_KEY, GOOGLE_API_KEY
 - **Image Generation:** RUNWARE_API_KEY
 - **Database:** SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY
 - **Queue:** REDIS_URL

@@ -22,34 +22,34 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   splitView = true,
   className = '',
 }) => {
-  // Modern dark theme styles for diff viewer
+  // Modern light theme styles for diff viewer
   const customStyles = {
     variables: {
-      dark: {
-        diffViewerBackground: '#0a0a0a',
-        diffViewerColor: '#e5e7eb',
-        addedBackground: '#064e3b',
-        addedColor: '#34d399',
-        removedBackground: '#4c0519',
-        removedColor: '#fb7185',
-        wordAddedBackground: '#065f46',
-        wordRemovedBackground: '#881337',
-        addedGutterBackground: '#064e3b',
-        removedGutterBackground: '#4c0519',
-        gutterBackground: '#111827',
-        gutterBackgroundDark: '#0a0a0a',
-        highlightBackground: '#1f2937',
-        highlightGutterBackground: '#1f2937',
-        codeFoldGutterBackground: '#111827',
-        codeFoldBackground: '#0a0a0a',
-        emptyLineBackground: '#0a0a0a',
-        gutterColor: '#6b7280',
-        addedGutterColor: '#34d399',
-        removedGutterColor: '#fb7185',
-        codeFoldContentColor: '#9ca3af',
-        diffViewerTitleBackground: '#111827',
-        diffViewerTitleColor: '#e5e7eb',
-        diffViewerTitleBorderColor: '#374151',
+      light: {
+        diffViewerBackground: '#ffffff',
+        diffViewerColor: '#1f2937',
+        addedBackground: '#ecfdf5',
+        addedColor: '#059669',
+        removedBackground: '#fef2f2',
+        removedColor: '#dc2626',
+        wordAddedBackground: '#d1fae5',
+        wordRemovedBackground: '#fecaca',
+        addedGutterBackground: '#ecfdf5',
+        removedGutterBackground: '#fef2f2',
+        gutterBackground: '#f9fafb',
+        gutterBackgroundDark: '#f3f4f6',
+        highlightBackground: '#f3f4f6',
+        highlightGutterBackground: '#f3f4f6',
+        codeFoldGutterBackground: '#f9fafb',
+        codeFoldBackground: '#ffffff',
+        emptyLineBackground: '#ffffff',
+        gutterColor: '#9ca3af',
+        addedGutterColor: '#059669',
+        removedGutterColor: '#dc2626',
+        codeFoldContentColor: '#6b7280',
+        diffViewerTitleBackground: '#f9fafb',
+        diffViewerTitleColor: '#1f2937',
+        diffViewerTitleBorderColor: '#e5e7eb',
       },
     },
     line: {
@@ -103,7 +103,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
           newValue={newCode}
           splitView={splitView}
           compareMethod={DiffMethod.WORDS}
-          useDarkTheme={true}
+          useDarkTheme={false}
           styles={customStyles}
           leftTitle={undefined}
           rightTitle={undefined}

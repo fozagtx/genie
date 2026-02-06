@@ -8,6 +8,7 @@ import { DeployButton } from '../components/DeployButton';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
 import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2 } from 'lucide-react';
+import { GitHubPushButton } from '../components/GitHubPushButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
 import { useAuthContext } from '../contexts/AuthContext';
@@ -15,6 +16,7 @@ import { supabase } from '../lib/supabase';
 import { useRealtimeJob } from '../hooks/useRealtimeJob';
 import { useRealtimeJobsList } from '../hooks/useRealtimeJobsList';
 import { useSoundEffects } from '../hooks/useSoundEffects';
+import { useGitHubToken } from '../hooks/useGitHubToken';
 import apiClient from '../services/apiClient';
 import { uploadMultipleFiles, validateFile } from '../services/fileUploadService';
 import '../styles/theme.css';
@@ -32,7 +34,8 @@ export const TerminalPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('generation') || routeId; // Support both query param and route param
   const navigate = useNavigate();
-  const { user, session } = useAuthContext();
+  const { user } = useAuthContext();
+  const { githubContext: gitHubCtx } = useGitHubToken();
   const { showToast } = useUIStore();
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -729,38 +732,10 @@ export const TerminalPage: React.FC = () => {
       // Don't save user message here - let backend handle it via ChatMemoryManager
       console.log('✅ User message will be saved by backend via ChatMemoryManager');
 
-      // Debug session info
-      console.log('🔍 Session debug:', {
-        hasSession: !!session,
-        hasProviderToken: !!session?.provider_token,
-        hasGitHubToken: !!session?.user?.user_metadata?.github_token,
-        provider: session?.user?.app_metadata?.provider,
-        userMetadata: session?.user?.user_metadata,
-      });
-
-      // Extract GitHub context from session if available
-      let githubContext;
-      
-      // Try provider_token first (OAuth), then fallback to user_metadata token (PAT)
-      const githubToken = session?.provider_token || session?.user?.user_metadata?.github_token;
-      
-      if (githubToken) {
-        const username = session?.user?.user_metadata?.user_name || 
-                        session?.user?.user_metadata?.preferred_username ||
-                        session?.user?.user_metadata?.name ||
-                        'unknown';
-        const email = session?.user?.email;
-        
-        githubContext = {
-          token: githubToken,
-          username: username,
-          email: email,
-        };
-        
-        const tokenSource = session?.provider_token ? 'OAuth' : 'Personal Access Token';
-        console.log(`🔗 GitHub context detected (${tokenSource}):`, { username, email, hasToken: true });
-      } else {
-        console.log('⚠️ No GitHub token found. Please add your GitHub Personal Access Token in Settings.');
+      // Use consolidated GitHub token hook
+      const githubContext = gitHubCtx;
+      if (githubContext) {
+        console.log('🔗 GitHub context detected:', { username: githubContext.username, hasToken: true });
       }
 
       // 🔧 FIX: Only send files if this is the SAME session (not a new chat)
@@ -976,6 +951,127 @@ export const TerminalPage: React.FC = () => {
 
   const sessionGroups = groupSessionsByDate(filteredSessions);
 
+  const renderInputForm = () => (
+    <>
+      {selectedImages.length > 0 && (
+        <div className="selected-images-preview">
+          {selectedImages.map((image, index) => (
+            <div key={index} className="image-preview-item">
+              <img
+                src={URL.createObjectURL(image)}
+                alt={`Preview ${index + 1}`}
+                className="preview-thumbnail"
+              />
+              <button
+                type="button"
+                className="remove-image-btn"
+                onClick={() => handleRemoveImage(index)}
+                title="Remove image"
+              >
+                ×
+              </button>
+              <span className="image-name">{image.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={handleSendMessage} className="chat-input-form">
+        {/* Toolbar - Above input */}
+        <div className="chat-input-toolbar">
+          <div className="toolbar-left">
+            <button
+              type="button"
+              className={`toolbar-btn ${backgroundMode ? 'active' : ''}`}
+              onClick={() => {
+                setBackgroundMode(!backgroundMode);
+                playToggle();
+              }}
+              disabled={isProcessing}
+              title="Run in background - you can continue chatting while this processes"
+            >
+              <Wrench size={16} className="btn-icon" />
+              <span className="btn-text">Background</span>
+              {backgroundMode && <span className="active-indicator">●</span>}
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
+              multiple
+              onChange={handleImageSelect}
+              style={{ display: 'none' }}
+            />
+            <button
+              type="button"
+              className="toolbar-btn"
+              onClick={() => {
+                playClick();
+                handleImageButtonClick();
+              }}
+              disabled={isProcessing || uploadingImages}
+              title="Attach files (images, documents, code, etc.)"
+            >
+              <Paperclip size={16} className="btn-icon" />
+              <span className="btn-text">Attach</span>
+              {selectedImages.length > 0 && (
+                <span className="badge-count">{selectedImages.length}</span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Main Input */}
+        <div className="input-wrapper">
+          <input
+            type="text"
+            className="input chat-input"
+            value={chatInput}
+            onChange={(e) => {
+              setChatInput(e.target.value);
+              const now = Date.now();
+              if (now - lastTypeTimeRef.current > 100) {
+                playType();
+                lastTypeTimeRef.current = now;
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+              }
+            }}
+            placeholder="Describe a task: build a feature, review code, tighten security..."
+            disabled={isProcessing || uploadingImages}
+          />
+          <button
+            type="submit"
+            className="btn btn-primary btn-send"
+            disabled={isProcessing || uploadingImages || !chatInput.trim()}
+            onClick={() => playClick()}
+            title="Send message (Enter)"
+          >
+            <Send size={18} className="send-icon" />
+          </button>
+          {isProcessing && (
+            <button
+              type="button"
+              className="btn btn-danger btn-cancel"
+              onClick={() => {
+                playClick();
+                handleCancelMessage();
+              }}
+              title="Cancel request"
+            >
+              <Square size={16} className="cancel-icon" />
+            </button>
+          )}
+        </div>
+      </form>
+    </>
+  );
+
   return (
     <div className="terminal-page">
       {/* Left Sidebar - Chat History */}
@@ -1150,102 +1246,55 @@ export const TerminalPage: React.FC = () => {
             ? { flex: `0 0 ${100 - panelWidthPercent}%` }
             : undefined
         }>
-          <div className="chat-messages-container" onScroll={handleChatScroll}>
-            <div className="chat-messages">
-              {messages.length === 0 ? (
-                <div className="chat-empty">
-                  <div className="welcome-content">
-                    <h1 className="welcome-title">What should we code next?</h1>
-                    <p className="welcome-subtitle">
-                      Multi-agent routing, code reviews, and deployments in one clean workspace.
-                    </p>
-                    <div className="welcome-capabilities">
-                      <div className="capability-chip">Generate Code</div>
-                      <div className="capability-chip">Analyze &amp; Review</div>
-                      <div className="capability-chip">Refactor &amp; Optimize</div>
-                      <div className="capability-chip">Security Scan</div>
-                      <div className="capability-chip">Tests &amp; Docs</div>
-                    </div>
-                  </div>
+          {messages.length === 0 ? (
+            /* Empty state: centered welcome + input */
+            <div className="chat-empty-centered">
+              <div className="welcome-content">
+                <h1 className="welcome-title">What should we code next?</h1>
+                <p className="welcome-subtitle">
+                  Multi-agent routing, code reviews, and deployments in one clean workspace.
+                </p>
+                <div className="welcome-capabilities">
+                  <div className="capability-chip">Generate Code</div>
+                  <div className="capability-chip">Analyze &amp; Review</div>
+                  <div className="capability-chip">Refactor &amp; Optimize</div>
+                  <div className="capability-chip">Security Scan</div>
+                  <div className="capability-chip">Tests &amp; Docs</div>
                 </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`chat-message ${message.role}`}
-                  >
-                    <div className="message-header">
-                      <span className="message-icon ">
-                        {getAgentIcon(message.agent)}
-                      </span>
-                      <span className="message-agent ">
-                        [{(message.agent || 'system').toUpperCase()}]
-                      </span>
-                      {message.role === 'thought' && (
-                        <span className="message-role">(THINKING)</span>
-                      )}
-                      <span className="message-timestamp text-muted">
-                        {formatTimestamp(message.timestamp)}
-                      </span>
-                    </div>
-
-                    <div className="message-content">
-                      <span className="message-text">
-                        {message.content}
-                        {message.role === 'thought' && (
-                          <span className="typing-dots">
-                            <span>.</span>
-                            <span>.</span>
-                            <span>.</span>
-                          </span>
-                        )}
-                      </span>
-                    </div>
-
-                    {message.imageUrls && message.imageUrls.length > 0 && (
-                      <div className="message-images">
-                        {message.imageUrls.map((url, idx) => (
-                          <div key={idx} className="message-image-wrapper">
-                            <img src={url} alt={`Attachment ${idx + 1}`} className="message-image" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-
-              {/* Show realtime progress messages from agents */}
-              {isProcessing && progressMessages.length > 0 && (
-                <div className="agent-progress-container">
-                  {progressMessages.map((progress, idx) => (
-                    <div 
-                      key={`${progress.timestamp}_${idx}`}
-                      className={`agent-progress-message ${progress.status}`}
+              </div>
+              <div className="centered-input-wrapper">
+                {renderInputForm()}
+              </div>
+            </div>
+          ) : (
+            /* Active state: messages + bottom-pinned input */
+            <>
+              <div className="chat-messages-container" onScroll={handleChatScroll}>
+                <div className="chat-messages">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`chat-message ${message.role}`}
                     >
-                      <div className="progress-header">
-                        <span className="progress-icon ">
-                          {getAgentIcon(progress.agent)}
+                      <div className="message-header">
+                        <span className="message-icon ">
+                          {getAgentIcon(message.agent)}
                         </span>
-                        <span className="progress-agent ">
-                          [{progress.agent.toUpperCase()}]
+                        <span className="message-agent ">
+                          [{(message.agent || 'system').toUpperCase()}]
                         </span>
-                        <span className={`progress-status ${progress.status}`}>
-                          {progress.status === 'started' ? '⏳' : progress.status === 'completed' ? '✓' : '✗'}
-                        </span>
-                        <span className="progress-timestamp text-muted">
-                          {new Date(progress.timestamp).toLocaleTimeString('en-US', {
-                            hour12: false,
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                          })}
+                        {message.role === 'thought' && (
+                          <span className="message-role">(THINKING)</span>
+                        )}
+                        <span className="message-timestamp text-muted">
+                          {formatTimestamp(message.timestamp)}
                         </span>
                       </div>
-                      <div className="progress-content">
-                        <span className="progress-text">
-                          {progress.message}
-                          {progress.status === 'started' && (
+
+                      <div className="message-content">
+                        <span className="message-text">
+                          {message.content}
+                          {message.role === 'thought' && (
                             <span className="typing-dots">
                               <span>.</span>
                               <span>.</span>
@@ -1254,148 +1303,85 @@ export const TerminalPage: React.FC = () => {
                           )}
                         </span>
                       </div>
+
+                      {message.imageUrls && message.imageUrls.length > 0 && (
+                        <div className="message-images">
+                          {message.imageUrls.map((url, idx) => (
+                            <div key={idx} className="message-image-wrapper">
+                              <img src={url} alt={`Attachment ${idx + 1}`} className="message-image" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
+
+                  {/* Show realtime progress messages from agents */}
+                  {isProcessing && progressMessages.length > 0 && (
+                    <div className="agent-progress-container">
+                      {progressMessages.map((progress, idx) => (
+                        <div
+                          key={`${progress.timestamp}_${idx}`}
+                          className={`agent-progress-message ${progress.status}`}
+                        >
+                          <div className="progress-header">
+                            <span className="progress-icon ">
+                              {getAgentIcon(progress.agent)}
+                            </span>
+                            <span className="progress-agent ">
+                              [{progress.agent.toUpperCase()}]
+                            </span>
+                            <span className={`progress-status ${progress.status}`}>
+                              {progress.status === 'started' ? '⏳' : progress.status === 'completed' ? '✓' : '✗'}
+                            </span>
+                            <span className="progress-timestamp text-muted">
+                              {new Date(progress.timestamp).toLocaleTimeString('en-US', {
+                                hour12: false,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                              })}
+                            </span>
+                          </div>
+                          <div className="progress-content">
+                            <span className="progress-text">
+                              {progress.message}
+                              {progress.status === 'started' && (
+                                <span className="typing-dots">
+                                  <span>.</span>
+                                  <span>.</span>
+                                  <span>.</span>
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {isProcessing && progressMessages.length === 0 && (
+                    <div className="chat-streaming">
+                      <span className="streaming-icon ">◉</span>
+                      <span className="streaming-text">PROCESSING</span>
+                      <span className="streaming-dots">
+                        <span>.</span>
+                        <span>.</span>
+                        <span>.</span>
+                      </span>
+                    </div>
+                  )}
+
+                  <div ref={chatEndRef} />
                 </div>
-              )}
-
-              {isProcessing && progressMessages.length === 0 && (
-                <div className="chat-streaming">
-                  <span className="streaming-icon ">◉</span>
-                  <span className="streaming-text">PROCESSING</span>
-                  <span className="streaming-dots">
-                    <span>.</span>
-                    <span>.</span>
-                    <span>.</span>
-                  </span>
-                </div>
-              )}
-
-              <div ref={chatEndRef} />
-            </div>
-          </div>
-
-          {/* Chat Input */}
-          <div className="chat-input-section">
-            {selectedImages.length > 0 && (
-              <div className="selected-images-preview">
-                {selectedImages.map((image, index) => (
-                  <div key={index} className="image-preview-item">
-                    <img 
-                      src={URL.createObjectURL(image)} 
-                      alt={`Preview ${index + 1}`}
-                      className="preview-thumbnail"
-                    />
-                    <button
-                      type="button"
-                      className="remove-image-btn"
-                      onClick={() => handleRemoveImage(index)}
-                      title="Remove image"
-                    >
-                      ×
-                    </button>
-                    <span className="image-name">{image.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <form onSubmit={handleSendMessage} className="chat-input-form">
-              {/* Toolbar - Above input */}
-              <div className="chat-input-toolbar">
-                <div className="toolbar-left">
-                  <button
-                    type="button"
-                    className={`toolbar-btn ${backgroundMode ? 'active' : ''}`}
-                    onClick={() => {
-                      setBackgroundMode(!backgroundMode);
-                      playToggle();
-                    }}
-                    disabled={isProcessing}
-                    title="Run in background - you can continue chatting while this processes"
-                  >
-                    <Wrench size={16} className="btn-icon" />
-                    <span className="btn-text">Background</span>
-                    {backgroundMode && <span className="active-indicator">●</span>}
-                  </button>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
-                    multiple
-                    onChange={handleImageSelect}
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    type="button"
-                    className="toolbar-btn"
-                    onClick={() => {
-                      playClick();
-                      handleImageButtonClick();
-                    }}
-                    disabled={isProcessing || uploadingImages}
-                    title="Attach files (images, documents, code, etc.)"
-                  >
-                    <Paperclip size={16} className="btn-icon" />
-                    <span className="btn-text">Attach</span>
-                    {selectedImages.length > 0 && (
-                      <span className="badge-count">{selectedImages.length}</span>
-                    )}
-                  </button>
-                </div>
-
               </div>
 
-              {/* Main Input */}
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  className="input chat-input"
-                  value={chatInput}
-                  onChange={(e) => {
-                    setChatInput(e.target.value);
-                    // Play typing sound (throttled to avoid too many sounds)
-                    const now = Date.now();
-                    if (now - lastTypeTimeRef.current > 100) {
-                      playType();
-                      lastTypeTimeRef.current = now;
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage(e);
-                    }
-                  }}
-                  placeholder="Describe a task: build a feature, review code, tighten security..."
-                  disabled={isProcessing || uploadingImages}
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-send"
-                  disabled={isProcessing || uploadingImages || !chatInput.trim()}
-                  onClick={() => playClick()}
-                  title="Send message (Enter)"
-                >
-                  <Send size={18} className="send-icon" />
-                </button>
-                {isProcessing && (
-                  <button
-                    type="button"
-                    className="btn btn-danger btn-cancel"
-                    onClick={() => {
-                      playClick();
-                      handleCancelMessage();
-                    }}
-                    title="Cancel request"
-                  >
-                    <Square size={16} className="cancel-icon" />
-                  </button>
-                )}
+              {/* Chat Input - bottom pinned */}
+              <div className="chat-input-section">
+                {renderInputForm()}
               </div>
-            </form>
-          </div>
+            </>
+          )}
         </div>
 
         {/* Toggle button for right panel when hidden */}
@@ -1541,7 +1527,7 @@ export const TerminalPage: React.FC = () => {
             </div>
 
             {id && (
-              <div className="deploy-view" style={{ display: activeTab === 'deploy' ? 'block' : 'none' }}>
+              <div className="deploy-view" style={{ display: activeTab === 'deploy' ? 'flex' : 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="deploy-container">
                   <div className="deploy-content">
                     <h2 className="deploy-title">Deploy to Fly.io</h2>
@@ -1558,18 +1544,30 @@ export const TerminalPage: React.FC = () => {
                           setDeploymentData({ url, status: 'deployed' });
                         }}
                         onStatusChange={(status) => {
-                          // Map internal button status to deployment status
                           const statusMap: Record<string, 'pending' | 'deploying' | 'deployed' | 'failed'> = {
                             'idle': 'pending',
                             'deploying': 'deploying',
                             'success': 'deployed',
                             'error': 'failed',
                           };
-                          setDeploymentData({ 
-                            url: deploymentData.url, 
-                            status: statusMap[status] 
+                          setDeploymentData({
+                            url: deploymentData.url,
+                            status: statusMap[status]
                           });
                         }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="deploy-content" style={{ marginTop: '1.5rem' }}>
+                    <h2 className="deploy-title">Push to GitHub</h2>
+                    <p className="deploy-description">
+                      Push your code to a new or existing GitHub repository
+                    </p>
+                    <div className="deploy-button-wrapper">
+                      <GitHubPushButton
+                        files={generation.response.files}
+                        generationId={id}
                       />
                     </div>
                   </div>

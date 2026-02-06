@@ -9,7 +9,7 @@ export interface UploadFileResult {
 }
 
 /**
- * Supported file types for GPT-5-nano
+ * Supported file types for multimodal models
  * Based on OpenAI's official documentation
  */
 export const SUPPORTED_FILE_TYPES = {

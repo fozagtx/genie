@@ -92,9 +92,8 @@ export async function signInWithOAuth(provider: 'github' | 'google') {
     provider,
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
-      // Only request user:email scope for authentication
-      // Users will provide their own GitHub Personal Access Token for repo operations
-      scopes: provider === 'github' ? 'user:email' : undefined,
+      // Request repo scope for GitHub to enable pushing code to repositories
+      scopes: provider === 'github' ? 'repo,user:email' : undefined,
     },
   });
 

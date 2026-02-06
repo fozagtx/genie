@@ -9,7 +9,7 @@ import { z } from 'zod'
 export const EnvironmentConfigSchema = z.object({
   // OpenAI Configuration
   OPENAI_API_KEY: z.string().min(1, 'OpenAI API key is required'),
-  OPENAI_MODEL: z.string().default('glm-4.6'),
+  OPENAI_MODEL: z.string().default('gpt-4o-mini'),
   OPENAI_BASE_URL: z.string().url().optional(),
 
   // Supabase Configuration

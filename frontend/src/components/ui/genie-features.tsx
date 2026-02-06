@@ -73,7 +73,7 @@ export function GenieFeatures() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-4 text-white">
+          <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-4 text-foreground">
             Complete AI Development Platform
           </h2>
           <p className="font-sans text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -92,14 +92,14 @@ export function GenieFeatures() {
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="relative p-6 overflow-hidden rounded-xl border border-white/10 bg-neutral-900/50 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-neutral-900 group"
+              className="relative p-6 overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:border-foreground/20 hover:shadow-md group"
             >
               <div className="flex flex-col items-start gap-4">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 group-hover:from-purple-500/30 group-hover:to-blue-500/30 transition-all duration-300">
-                  <feature.icon className="h-6 w-6 text-white" />
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-border group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-all duration-300">
+                  <feature.icon className="h-6 w-6 text-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold mb-2 text-slate-50">{feature.title}</h3>
+                  <h3 className="font-heading text-lg font-bold mb-2 text-foreground">{feature.title}</h3>
                   <p className="font-sans text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               </div>

@@ -122,10 +122,10 @@ export function StaticHtmlPreview({ files, onError, onReady }: StaticHtmlPreview
 
   if (!isReady || !htmlContent) {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+      <div className="flex items-center justify-center h-full bg-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Preparing preview...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Preparing preview...</p>
         </div>
       </div>
     );

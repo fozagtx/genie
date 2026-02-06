@@ -60,12 +60,12 @@ export function ProjectWorkspace({
   });
 
   return (
-    <div className="project-workspace h-full flex flex-col bg-gray-900">
+    <div className="project-workspace h-full flex flex-col bg-card">
       {/* Error fix indicator */}
       {errorFix.isFixing && (
-        <div className="px-4 py-2 bg-blue-900/50 border-b border-blue-700 flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-blue-300">
+        <div className="px-4 py-2 bg-blue-50 border-b border-blue-200 flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-blue-700">
             🔧 Attempting to fix {errorFix.errorCount} error{errorFix.errorCount > 1 ? 's' : ''}...
             (Attempt #{errorFix.fixAttempts})
           </span>
