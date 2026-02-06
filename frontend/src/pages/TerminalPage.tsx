@@ -7,7 +7,7 @@ import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { DeployButton } from '../components/DeployButton';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2 } from 'lucide-react';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
 import { useAuthContext } from '../contexts/AuthContext';
@@ -89,12 +89,13 @@ export const TerminalPage: React.FC = () => {
 
   // Store
   const store = useGenerationStore();
-  const { 
-    currentGeneration, 
-    getGenerationById, 
-    updateGenerationFiles, 
+  const {
+    currentGeneration,
+    getGenerationById,
+    updateGenerationFiles,
     history,
-    startGenerationWithId
+    startGenerationWithId,
+    removeFromHistory
   } = store;
 
   // Get current generation if ID exists
@@ -646,9 +647,25 @@ export const TerminalPage: React.FC = () => {
   };
 
   const handleSelectChat = (chatId: string) => {
-    // � SIMPLE FIX: Just refresh the page like vanilla HTML does
-    // This ensures complete state reset and proper file loading
+    // Simple navigation with full state reset
     window.location.href = `/terminal/${chatId}`;
+  };
+
+  const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+
+    // Delete chat messages first (foreign key), then the generation
+    await supabase.from('chat_messages').delete().eq('generation_id', chatId);
+    await supabase.from('generations').delete().eq('id', chatId);
+
+    // Update local state
+    setChatSessions(prev => prev.filter(s => s.id !== chatId));
+    removeFromHistory(chatId);
+
+    // If we deleted the active chat, navigate to a fresh terminal
+    if (id === chatId) {
+      window.location.href = '/terminal';
+    }
   };
 
   // Send message - AI will auto-route to correct agent
@@ -987,10 +1004,15 @@ export const TerminalPage: React.FC = () => {
         </div>
 
         <div className="chat-sessions-list">
-          {sessionGroups.today.length > 0 && (
-            <div className="session-group">
-              <div className="group-label">TODAY</div>
-              {sessionGroups.today.map(session => (
+          {([
+            { label: 'TODAY', sessions: sessionGroups.today },
+            { label: 'YESTERDAY', sessions: sessionGroups.yesterday },
+            { label: 'LAST 7 DAYS', sessions: sessionGroups.lastWeek },
+            { label: 'OLDER', sessions: sessionGroups.older },
+          ] as const).filter(g => g.sessions.length > 0).map(group => (
+            <div className="session-group" key={group.label}>
+              <div className="group-label">{group.label}</div>
+              {group.sessions.map(session => (
                 <button
                   key={session.id}
                   className={`chat-session-item ${id === session.id ? 'active' : ''}`}
@@ -1004,70 +1026,18 @@ export const TerminalPage: React.FC = () => {
                     <div className="session-title">{session.title}</div>
                     <div className="session-preview">{session.preview}</div>
                   </div>
+                  <span
+                    className="session-delete"
+                    role="button"
+                    aria-label="Delete chat"
+                    onClick={(e) => handleDeleteChat(e, session.id)}
+                  >
+                    <Trash2 size={14} />
+                  </span>
                 </button>
               ))}
             </div>
-          )}
-
-          {sessionGroups.yesterday.length > 0 && (
-            <div className="session-group">
-              <div className="group-label">YESTERDAY</div>
-              {sessionGroups.yesterday.map(session => (
-                <button
-                  key={session.id}
-                  className={`chat-session-item ${id === session.id ? 'active' : ''}`}
-                  onClick={() => {
-                    playClick();
-                    handleSelectChat(session.id);
-                  }}
-                >
-                  <MessageSquare className="session-icon" size={14} />
-                  <div className="session-content">
-                    <div className="session-title">{session.title}</div>
-                    <div className="session-preview">{session.preview}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {sessionGroups.lastWeek.length > 0 && (
-            <div className="session-group">
-              <div className="group-label">LAST 7 DAYS</div>
-              {sessionGroups.lastWeek.map(session => (
-                <button
-                  key={session.id}
-                  className={`chat-session-item ${id === session.id ? 'active' : ''}`}
-                  onClick={() => handleSelectChat(session.id)}
-                >
-                  <MessageSquare className="session-icon" size={14} />
-                  <div className="session-content">
-                    <div className="session-title">{session.title}</div>
-                    <div className="session-preview">{session.preview}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {sessionGroups.older.length > 0 && (
-            <div className="session-group">
-              <div className="group-label">OLDER</div>
-              {sessionGroups.older.map(session => (
-                <button
-                  key={session.id}
-                  className={`chat-session-item ${id === session.id ? 'active' : ''}`}
-                  onClick={() => handleSelectChat(session.id)}
-                >
-                  <MessageSquare className="session-icon" size={14} />
-                  <div className="session-content">
-                    <div className="session-title">{session.title}</div>
-                    <div className="session-preview">{session.preview}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+          ))}
         </div>
 
         <div className="sidebar-footer">
