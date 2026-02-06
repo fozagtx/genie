@@ -63,6 +63,7 @@ export const TerminalPage: React.FC = () => {
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
   const [showRepoPicker, setShowRepoPicker] = useState(false);
   const [repoPickerSearch, setRepoPickerSearch] = useState('');
+  const [showRepoModal, setShowRepoModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
     const saved = localStorage.getItem('genie-sidebar-visible');
@@ -1320,6 +1321,114 @@ export const TerminalPage: React.FC = () => {
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Repo Modal - fullscreen overlay with backdrop blur */}
+      {showRepoModal && (
+        <div className="repo-modal-overlay" onClick={() => setShowRepoModal(false)}>
+          <div className="repo-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="repo-modal-header">
+              <div className="repo-modal-title-row">
+                <Github size={20} />
+                <span className="repo-modal-title">Your Repositories</span>
+              </div>
+              <button
+                className="repo-modal-close"
+                onClick={() => setShowRepoModal(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="repo-modal-search">
+              <Search size={15} className="repo-modal-search-icon" />
+              <input
+                type="text"
+                className="repo-modal-search-input"
+                placeholder="Search your repos..."
+                value={repoSearchQuery}
+                onChange={(e) => setRepoSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="repo-modal-list">
+              {reposLoading ? (
+                <div className="repo-modal-empty">Loading repos...</div>
+              ) : githubRepos && githubRepos.length > 0 ? (
+                (repoSearchQuery
+                  ? githubRepos.filter(r =>
+                      r.name.toLowerCase().includes(repoSearchQuery.toLowerCase()) ||
+                      (r.description && r.description.toLowerCase().includes(repoSearchQuery.toLowerCase()))
+                    )
+                  : githubRepos.slice(0, 15)
+                ).map((repo) => (
+                  <div key={repo.id} className="repo-modal-item">
+                    <div className="repo-modal-item-info">
+                      <span className="repo-modal-item-name">{repo.fullName}</span>
+                      <div className="repo-modal-item-badges">
+                        {repo.private && <span className="repo-private-badge">Private</span>}
+                        {repo.language && <span className="repo-lang-badge">{repo.language}</span>}
+                      </div>
+                      {repo.description && (
+                        <span className="repo-modal-item-desc">{repo.description}</span>
+                      )}
+                    </div>
+                    <div className="repo-modal-item-actions">
+                      <button
+                        className="repo-action-btn review"
+                        onClick={() => {
+                          playClick();
+                          setShowRepoModal(false);
+                          setChatInput(`Review the code in the GitHub repo "${repo.fullName}" for best practices, security, and performance`);
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }}
+                        disabled={isProcessing}
+                        title="Code Review"
+                      >
+                        <Shield size={14} />
+                        Review
+                      </button>
+                      <button
+                        className="repo-action-btn bugfix"
+                        onClick={() => {
+                          playClick();
+                          setShowRepoModal(false);
+                          setChatInput(`Find and fix bugs in the GitHub repo "${repo.fullName}"`);
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }}
+                        disabled={isProcessing}
+                        title="Bug Fix"
+                      >
+                        <Bug size={14} />
+                        Bug Fix
+                      </button>
+                      <button
+                        className="repo-action-btn select"
+                        onClick={() => {
+                          playClick();
+                          setSelectedRepo(repo);
+                          setShowRepoModal(false);
+                        }}
+                        title="Select this repo"
+                      >
+                        Select
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="repo-modal-empty">
+                  {repoSearchQuery ? 'No repos match your search' : 'No repositories found'}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Background Jobs Panel */}
       {showBackgroundJobs && (
@@ -1391,83 +1500,20 @@ export const TerminalPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* GitHub Repo Card - search repos for code review / bug fix */}
+              {/* GitHub Repo trigger button */}
               {isGitHubConnected && (
-                <div className="repo-action-card">
-                  <div className="repo-card-header">
-                    <Github size={18} />
-                    <span>Your Repositories</span>
-                  </div>
-                  <div className="repo-search-row">
-                    <Search size={14} className="repo-search-icon" />
-                    <input
-                      type="text"
-                      className="repo-search-input"
-                      placeholder="Search repos..."
-                      value={repoSearchQuery}
-                      onChange={(e) => setRepoSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  <div className="repo-list">
-                    {reposLoading ? (
-                      <div className="repo-list-empty">Loading repos...</div>
-                    ) : githubRepos && githubRepos.length > 0 ? (
-                      (repoSearchQuery
-                        ? githubRepos.filter(r =>
-                            r.name.toLowerCase().includes(repoSearchQuery.toLowerCase()) ||
-                            (r.description && r.description.toLowerCase().includes(repoSearchQuery.toLowerCase()))
-                          )
-                        : githubRepos.slice(0, 8)
-                      ).map((repo) => (
-                        <div key={repo.id} className="repo-item">
-                          <div className="repo-item-info">
-                            <span className="repo-item-name">{repo.name}</span>
-                            {repo.private && <span className="repo-private-badge">Private</span>}
-                            {repo.language && <span className="repo-lang-badge">{repo.language}</span>}
-                          </div>
-                          <div className="repo-item-actions">
-                            <button
-                              className="repo-action-btn review"
-                              onClick={() => {
-                                playClick();
-                                setChatInput(`Review the code in the GitHub repo "${repo.fullName}" for best practices, security, and performance`);
-                                setTimeout(() => {
-                                  const form = document.querySelector('.chat-input-form') as HTMLFormElement;
-                                  form?.requestSubmit();
-                                }, 100);
-                              }}
-                              disabled={isProcessing}
-                              title="Code Review"
-                            >
-                              <Shield size={14} />
-                              Review
-                            </button>
-                            <button
-                              className="repo-action-btn bugfix"
-                              onClick={() => {
-                                playClick();
-                                setChatInput(`Find and fix bugs in the GitHub repo "${repo.fullName}"`);
-                                setTimeout(() => {
-                                  const form = document.querySelector('.chat-input-form') as HTMLFormElement;
-                                  form?.requestSubmit();
-                                }, 100);
-                              }}
-                              disabled={isProcessing}
-                              title="Bug Fix"
-                            >
-                              <Bug size={14} />
-                              Bug Fix
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="repo-list-empty">
-                        {repoSearchQuery ? 'No repos match your search' : 'No repositories found'}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <button
+                  className="repo-modal-trigger"
+                  onClick={() => {
+                    playClick();
+                    setRepoSearchQuery('');
+                    setShowRepoModal(true);
+                  }}
+                  disabled={isProcessing}
+                >
+                  <Github size={18} />
+                  <span>Browse Repositories</span>
+                </button>
               )}
 
               <div className="centered-input-wrapper">
