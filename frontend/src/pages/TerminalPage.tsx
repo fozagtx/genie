@@ -6,7 +6,7 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug, Search, X } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Wrench, Settings, LogOut, Paperclip, Square, Trash2, Github, Shield, Bug, Search, X, Send, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
@@ -1204,7 +1204,7 @@ export const TerminalPage: React.FC = () => {
   return (
     <div className="terminal-page">
       {/* Left Sidebar - Chat History */}
-      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`} style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
+      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`} style={isSidebarVisible ? { width: sidebarWidth, minWidth: sidebarWidth } : undefined}>
         <div className="sidebar-header">
           <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <img src="/lo.png" alt="Genie" style={{ height: 24, width: 24 }} />
@@ -1277,17 +1277,6 @@ export const TerminalPage: React.FC = () => {
             <FileText className="icon" size={16} />
             <span className="text">DOCS</span>
           </button>
-          <button
-            className="btn-telegram"
-            onClick={() => {
-              playClick();
-              window.open('https://t.me/genie_ai_bot', '_blank', 'noopener,noreferrer');
-            }}
-            title="Open Telegram Bot"
-          >
-            <Send className="icon" size={16} />
-            <span className="text">TELEGRAM BOT</span>
-          </button>
           <button className="btn-jobs" onClick={() => {
             playClick();
             setShowBackgroundJobs(!showBackgroundJobs);
@@ -1344,14 +1333,14 @@ export const TerminalPage: React.FC = () => {
       <div className="terminal-main-content" ref={mainContentRef}>
         {/* Menu toggle button for mobile */}
         <button
-          className="btn-menu-toggle"
+          className={`btn-menu-toggle ${isSidebarVisible ? 'sidebar-open' : ''}`}
           onClick={() => {
             playClick();
             setIsSidebarVisible(!isSidebarVisible);
           }}
-          title="Toggle menu (Ctrl+B)"
+          title={isSidebarVisible ? 'Close sidebar (Ctrl+B)' : 'Open sidebar (Ctrl+B)'}
         >
-          <Menu size={20} />
+          {isSidebarVisible ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
         </button>
 
         {/* Mobile action bar - Settings and Logout buttons for mobile */}
@@ -1700,7 +1689,6 @@ export const TerminalPage: React.FC = () => {
               <div className="code-editor-wrapper">
                 {selectedFile && (
                   <div className="active-file-tab">
-                    <span className="file-icon">📄</span>
                     <span className="file-name">{selectedFile.path}</span>
                     {hasUnsavedChanges && <span className="unsaved-indicator">●</span>}
                     <button
