@@ -29,44 +29,44 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
 
-    // Modern light theme
-    monaco.editor.defineTheme('genie-light', {
-      base: 'vs',
+    // Dark theme for better code visibility
+    monaco.editor.defineTheme('genie-dark', {
+      base: 'vs-dark',
       inherit: true,
       rules: [
-        { token: 'comment', foreground: '6b7280', fontStyle: 'italic' },
-        { token: 'keyword', foreground: '7c3aed', fontStyle: 'bold' },
-        { token: 'string', foreground: '059669' },
-        { token: 'number', foreground: 'd97706' },
-        { token: 'type', foreground: '2563eb' },
-        { token: 'class', foreground: '2563eb', fontStyle: 'bold' },
-        { token: 'function', foreground: '059669' },
-        { token: 'variable', foreground: '1f2937' },
-        { token: 'constant', foreground: 'd97706' },
-        { token: 'operator', foreground: '6b7280' },
-        { token: 'delimiter', foreground: '9ca3af' },
+        { token: 'comment', foreground: '6A9955', fontStyle: 'italic' },
+        { token: 'keyword', foreground: 'C586C0' },
+        { token: 'string', foreground: 'CE9178' },
+        { token: 'number', foreground: 'B5CEA8' },
+        { token: 'type', foreground: '4EC9B0' },
+        { token: 'class', foreground: '4EC9B0', fontStyle: 'bold' },
+        { token: 'function', foreground: 'DCDCAA' },
+        { token: 'variable', foreground: '9CDCFE' },
+        { token: 'constant', foreground: '4FC1FF' },
+        { token: 'operator', foreground: 'D4D4D4' },
+        { token: 'delimiter', foreground: '808080' },
       ],
       colors: {
-        'editor.background': '#ffffff',
-        'editor.foreground': '#1f2937',
-        'editor.lineHighlightBackground': '#f9fafb',
-        'editor.selectionBackground': '#dbeafe',
-        'editor.inactiveSelectionBackground': '#f3f4f6',
-        'editorCursor.foreground': '#2563eb',
-        'editorWhitespace.foreground': '#e5e7eb',
-        'editorIndentGuide.background': '#e5e7eb',
-        'editorIndentGuide.activeBackground': '#d1d5db',
-        'editorLineNumber.foreground': '#9ca3af',
-        'editorLineNumber.activeForeground': '#6b7280',
-        'editorBracketMatch.background': '#dbeafe',
-        'editorBracketMatch.border': '#2563eb',
-        'scrollbarSlider.background': '#d1d5db80',
-        'scrollbarSlider.hoverBackground': '#9ca3af80',
-        'scrollbarSlider.activeBackground': '#6b728080',
+        'editor.background': '#1e1e1e',
+        'editor.foreground': '#d4d4d4',
+        'editor.lineHighlightBackground': '#2a2d2e',
+        'editor.selectionBackground': '#264f78',
+        'editor.inactiveSelectionBackground': '#3a3d41',
+        'editorCursor.foreground': '#aeafad',
+        'editorWhitespace.foreground': '#3b3b3b',
+        'editorIndentGuide.background': '#404040',
+        'editorIndentGuide.activeBackground': '#707070',
+        'editorLineNumber.foreground': '#858585',
+        'editorLineNumber.activeForeground': '#c6c6c6',
+        'editorBracketMatch.background': '#0064001a',
+        'editorBracketMatch.border': '#888888',
+        'scrollbarSlider.background': '#4e4e4e80',
+        'scrollbarSlider.hoverBackground': '#64646480',
+        'scrollbarSlider.activeBackground': '#7e7e7e80',
       },
     })
 
-    monaco.editor.setTheme('genie-light')
+    monaco.editor.setTheme('genie-dark')
 
     editor.updateOptions({
       fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",

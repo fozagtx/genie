@@ -6,7 +6,7 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Search } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Wrench, Settings, LogOut, Paperclip, Square, Trash2, Github, Shield, Bug, Search, X, Send, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
 import { ReviewRepoDialog } from '../components/ReviewRepoDialog';
 import { CreatePrButton } from '../components/CreatePrButton';
@@ -18,6 +18,7 @@ import { useRealtimeJob } from '../hooks/useRealtimeJob';
 import { useRealtimeJobsList } from '../hooks/useRealtimeJobsList';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import { useGitHubToken } from '../hooks/useGitHubToken';
+import { useGitHubRepos, GitHubRepo } from '../hooks/useGitHubRepos';
 import apiClient from '../services/apiClient';
 import { uploadMultipleFiles, validateFile } from '../services/fileUploadService';
 import '../styles/theme.css';
@@ -36,7 +37,8 @@ export const TerminalPage: React.FC = () => {
   const id = searchParams.get('generation') || routeId; // Support both query param and route param
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const { githubContext: gitHubCtx } = useGitHubToken();
+  const { githubContext: gitHubCtx, isConnected: isGitHubConnected } = useGitHubToken();
+  const { data: githubRepos, isLoading: reposLoading } = useGitHubRepos();
   const { showToast } = useUIStore();
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,6 +66,11 @@ export const TerminalPage: React.FC = () => {
   const [isPreviewPanelVisible, setIsPreviewPanelVisible] = useState(true);
   const [backgroundMode, setBackgroundMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [repoSearchQuery, setRepoSearchQuery] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
+  const [showRepoPicker, setShowRepoPicker] = useState(false);
+  const [repoPickerSearch, setRepoPickerSearch] = useState('');
+  const [showRepoModal, setShowRepoModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
     const saved = localStorage.getItem('genie-sidebar-visible');
@@ -703,11 +710,14 @@ export const TerminalPage: React.FC = () => {
     e.preventDefault();
     if (!chatInput.trim() || isProcessing) return;
 
-    const userMessage = chatInput.trim();
+    // Prepend repo context if a repo is selected
+    const repoPrefix = selectedRepo ? `[Repo: ${selectedRepo.fullName}] ` : '';
+    const userMessage = repoPrefix + chatInput.trim();
     const imagesToUpload = [...selectedImages];
-    
+
     setChatInput('');
     setSelectedImages([]);
+    setSelectedRepo(null);
     setIsProcessing(true);
     
     let sessionId = id; // Declare outside try block so it's available in catch
@@ -854,9 +864,14 @@ export const TerminalPage: React.FC = () => {
     }
   };
 
-  const getAgentIcon = (agent: string) => {
+  const getAgentIcon = (agent: string): React.ReactNode => {
+    if (agent === 'User') {
+      const initial = user?.email?.charAt(0)?.toUpperCase() || 'U';
+      return (
+        <span className="user-avatar-icon">{initial}</span>
+      );
+    }
     const icons: Record<string, string> = {
-      'User': '👤',
       'LeadEngineer': '◆',
       'CodeGenerator': '▣',
       'BugHunter': '▲',
@@ -864,7 +879,7 @@ export const TerminalPage: React.FC = () => {
       'PerformanceProfiler': '◉',
       'TestCrafter': '◎',
       'DocWeaver': '◐',
-      'ChatAgent': '🤖',
+      'ChatAgent': '●',
       'System': '⚙',
     };
     return icons[agent] || '●';
@@ -1036,6 +1051,15 @@ export const TerminalPage: React.FC = () => {
 
   const sessionGroups = groupSessionsByDate(filteredSessions);
 
+  const filteredPickerRepos = React.useMemo(() => {
+    if (!githubRepos) return [];
+    if (!repoPickerSearch) return githubRepos.slice(0, 20);
+    return githubRepos.filter(r =>
+      r.name.toLowerCase().includes(repoPickerSearch.toLowerCase()) ||
+      (r.description && r.description.toLowerCase().includes(repoPickerSearch.toLowerCase()))
+    );
+  }, [githubRepos, repoPickerSearch]);
+
   const renderInputForm = () => (
     <>
       {selectedImages.length > 0 && (
@@ -1062,67 +1086,87 @@ export const TerminalPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="chat-input-form">
-        {/* Toolbar - Above input */}
-        <div className="chat-input-toolbar">
-          <div className="toolbar-left">
-            <button
-              type="button"
-              className={`toolbar-btn ${backgroundMode ? 'active' : ''}`}
-              onClick={() => {
-                setBackgroundMode(!backgroundMode);
-                playToggle();
-              }}
-              disabled={isProcessing}
-              title="Run in background - you can continue chatting while this processes"
-            >
-              <Wrench size={16} className="btn-icon" />
-              <span className="btn-text">Background</span>
-              {backgroundMode && <span className="active-indicator">●</span>}
-            </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
+          multiple
+          onChange={handleImageSelect}
+          style={{ display: 'none' }}
+        />
 
+        {/* Selected repo chip - shown above the input row */}
+        {selectedRepo && (
+          <div className="selected-repo-chip">
+            <Github size={13} />
+            <span className="selected-repo-name">{selectedRepo.fullName}</span>
             <button
               type="button"
-              className="toolbar-btn"
-              onClick={() => {
-                playClick();
-                setReviewDialogOpen(true);
-              }}
-              disabled={isProcessing}
-              title="Review code from a GitHub repository"
+              className="selected-repo-remove"
+              onClick={() => setSelectedRepo(null)}
+              title="Remove repo"
             >
-              <Search size={16} className="btn-icon" />
-              <span className="btn-text">Review Repo</span>
-            </button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
-              multiple
-              onChange={handleImageSelect}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => {
-                playClick();
-                handleImageButtonClick();
-              }}
-              disabled={isProcessing || uploadingImages}
-              title="Attach files (images, documents, code, etc.)"
-            >
-              <Paperclip size={16} className="btn-icon" />
-              <span className="btn-text">Attach</span>
-              {selectedImages.length > 0 && (
-                <span className="badge-count">{selectedImages.length}</span>
-              )}
+              <X size={12} />
             </button>
           </div>
-        </div>
+        )}
 
-        {/* Main Input */}
+        {/* Input row with repo picker, attach, bg toggle, text input, send */}
         <div className="input-wrapper">
+          {isGitHubConnected && (
+            <button
+              type="button"
+              className={`input-repo-btn ${selectedRepo ? 'active' : ''}`}
+              onClick={() => {
+                playClick();
+                setShowRepoPicker(!showRepoPicker);
+                setRepoPickerSearch('');
+              }}
+              disabled={isProcessing}
+              title={selectedRepo ? `Repo: ${selectedRepo.name}` : 'Select a GitHub repo'}
+            >
+              <Github size={18} />
+            </button>
+          )}
+          <button
+            type="button"
+            className="input-attach-btn"
+            onClick={() => {
+              playClick();
+              handleImageButtonClick();
+            }}
+            disabled={isProcessing || uploadingImages}
+            title="Attach files"
+          >
+            <Paperclip size={18} />
+            {selectedImages.length > 0 && (
+              <span className="attach-badge">{selectedImages.length}</span>
+            )}
+          </button>
+          <button
+            type="button"
+            className={`input-bg-btn ${backgroundMode ? 'active' : ''}`}
+            onClick={() => {
+              setBackgroundMode(!backgroundMode);
+              playToggle();
+            }}
+            disabled={isProcessing}
+            title="Run in background"
+          >
+            <Wrench size={16} />
+          </button>
+          <button
+            type="button"
+            className="input-bg-btn"
+            onClick={() => {
+              playClick();
+              setReviewDialogOpen(true);
+            }}
+            disabled={isProcessing}
+            title="Review code from a GitHub repository"
+          >
+            <Search size={16} />
+          </button>
           <input
             type="text"
             className="input chat-input"
@@ -1141,7 +1185,7 @@ export const TerminalPage: React.FC = () => {
                 handleSendMessage(e);
               }
             }}
-            placeholder="Describe a task: build a feature, review code, tighten security..."
+            placeholder={selectedRepo ? `What do you want to do with ${selectedRepo.name}?` : 'Describe a task: build a feature, review code, tighten security...'}
             disabled={isProcessing || uploadingImages}
           />
           <button
@@ -1167,6 +1211,70 @@ export const TerminalPage: React.FC = () => {
             </button>
           )}
         </div>
+
+        {/* Repo Picker Dropdown */}
+        {showRepoPicker && (
+          <>
+          <div className="repo-picker-backdrop" onClick={() => setShowRepoPicker(false)} />
+          <div className="repo-picker-dropdown">
+            <div className="repo-picker-header">
+              <span className="repo-picker-title">Select Repository</span>
+              <button
+                type="button"
+                className="repo-picker-close"
+                onClick={() => setShowRepoPicker(false)}
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <div className="repo-picker-search">
+              <Search size={14} className="repo-picker-search-icon" />
+              <input
+                type="text"
+                className="repo-picker-search-input"
+                placeholder="Search your repos..."
+                value={repoPickerSearch}
+                onChange={(e) => setRepoPickerSearch(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="repo-picker-list">
+              {reposLoading ? (
+                <div className="repo-picker-empty">Loading...</div>
+              ) : filteredPickerRepos.length > 0 ? (
+                filteredPickerRepos.map((repo) => (
+                  <button
+                    key={repo.id}
+                    type="button"
+                    className={`repo-picker-item ${selectedRepo?.id === repo.id ? 'selected' : ''}`}
+                    onClick={() => {
+                      playClick();
+                      setSelectedRepo(repo);
+                      setShowRepoPicker(false);
+                    }}
+                  >
+                    <Github size={14} className="repo-picker-item-icon" />
+                    <div className="repo-picker-item-info">
+                      <span className="repo-picker-item-name">{repo.name}</span>
+                      {repo.description && (
+                        <span className="repo-picker-item-desc">{repo.description}</span>
+                      )}
+                    </div>
+                    <div className="repo-picker-item-meta">
+                      {repo.private && <span className="repo-picker-badge">Private</span>}
+                      {repo.language && <span className="repo-picker-lang">{repo.language}</span>}
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <div className="repo-picker-empty">
+                  {repoPickerSearch ? 'No repos match' : 'No repositories found'}
+                </div>
+              )}
+            </div>
+          </div>
+          </>
+        )}
       </form>
     </>
   );
@@ -1174,7 +1282,7 @@ export const TerminalPage: React.FC = () => {
   return (
     <div className="terminal-page">
       {/* Left Sidebar - Chat History */}
-      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`} style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
+      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`} style={isSidebarVisible ? { width: sidebarWidth, minWidth: sidebarWidth } : undefined}>
         <div className="sidebar-header">
           <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <img src="/lo.png" alt="Genie" style={{ height: 24, width: 24 }} />
@@ -1247,17 +1355,6 @@ export const TerminalPage: React.FC = () => {
             <FileText className="icon" size={16} />
             <span className="text">DOCS</span>
           </button>
-          <button
-            className="btn-telegram"
-            onClick={() => {
-              playClick();
-              window.open('https://t.me/genie_ai_bot', '_blank', 'noopener,noreferrer');
-            }}
-            title="Open Telegram Bot"
-          >
-            <Send className="icon" size={16} />
-            <span className="text">TELEGRAM BOT</span>
-          </button>
           <button className="btn-jobs" onClick={() => {
             playClick();
             setShowBackgroundJobs(!showBackgroundJobs);
@@ -1301,6 +1398,114 @@ export const TerminalPage: React.FC = () => {
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Repo Modal - fullscreen overlay with backdrop blur */}
+      {showRepoModal && (
+        <div className="repo-modal-overlay" onClick={() => setShowRepoModal(false)}>
+          <div className="repo-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="repo-modal-header">
+              <div className="repo-modal-title-row">
+                <Github size={20} />
+                <span className="repo-modal-title">Your Repositories</span>
+              </div>
+              <button
+                className="repo-modal-close"
+                onClick={() => setShowRepoModal(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="repo-modal-search">
+              <Search size={15} className="repo-modal-search-icon" />
+              <input
+                type="text"
+                className="repo-modal-search-input"
+                placeholder="Search your repos..."
+                value={repoSearchQuery}
+                onChange={(e) => setRepoSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="repo-modal-list">
+              {reposLoading ? (
+                <div className="repo-modal-empty">Loading repos...</div>
+              ) : githubRepos && githubRepos.length > 0 ? (
+                (repoSearchQuery
+                  ? githubRepos.filter(r =>
+                      r.name.toLowerCase().includes(repoSearchQuery.toLowerCase()) ||
+                      (r.description && r.description.toLowerCase().includes(repoSearchQuery.toLowerCase()))
+                    )
+                  : githubRepos.slice(0, 15)
+                ).map((repo) => (
+                  <div key={repo.id} className="repo-modal-item">
+                    <div className="repo-modal-item-info">
+                      <span className="repo-modal-item-name">{repo.fullName}</span>
+                      <div className="repo-modal-item-badges">
+                        {repo.private && <span className="repo-private-badge">Private</span>}
+                        {repo.language && <span className="repo-lang-badge">{repo.language}</span>}
+                      </div>
+                      {repo.description && (
+                        <span className="repo-modal-item-desc">{repo.description}</span>
+                      )}
+                    </div>
+                    <div className="repo-modal-item-actions">
+                      <button
+                        className="repo-action-btn review"
+                        onClick={() => {
+                          playClick();
+                          setShowRepoModal(false);
+                          setChatInput(`Review the code in the GitHub repo "${repo.fullName}" for best practices, security, and performance`);
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }}
+                        disabled={isProcessing}
+                        title="Code Review"
+                      >
+                        <Shield size={14} />
+                        Review
+                      </button>
+                      <button
+                        className="repo-action-btn bugfix"
+                        onClick={() => {
+                          playClick();
+                          setShowRepoModal(false);
+                          setChatInput(`Find and fix bugs in the GitHub repo "${repo.fullName}"`);
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }}
+                        disabled={isProcessing}
+                        title="Bug Fix"
+                      >
+                        <Bug size={14} />
+                        Bug Fix
+                      </button>
+                      <button
+                        className="repo-action-btn select"
+                        onClick={() => {
+                          playClick();
+                          setSelectedRepo(repo);
+                          setShowRepoModal(false);
+                        }}
+                        title="Select this repo"
+                      >
+                        Select
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="repo-modal-empty">
+                  {repoSearchQuery ? 'No repos match your search' : 'No repositories found'}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Background Jobs Panel */}
       {showBackgroundJobs && (
@@ -1314,14 +1519,14 @@ export const TerminalPage: React.FC = () => {
       <div className="terminal-main-content" ref={mainContentRef}>
         {/* Menu toggle button for mobile */}
         <button
-          className="btn-menu-toggle"
+          className={`btn-menu-toggle ${isSidebarVisible ? 'sidebar-open' : ''}`}
           onClick={() => {
             playClick();
             setIsSidebarVisible(!isSidebarVisible);
           }}
-          title="Toggle menu (Ctrl+B)"
+          title={isSidebarVisible ? 'Close sidebar (Ctrl+B)' : 'Open sidebar (Ctrl+B)'}
         >
-          <Menu size={20} />
+          {isSidebarVisible ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
         </button>
 
         {/* Mobile action bar - Settings and Logout buttons for mobile */}
@@ -1371,6 +1576,23 @@ export const TerminalPage: React.FC = () => {
                   <div className="capability-chip">Tests &amp; Docs</div>
                 </div>
               </div>
+
+              {/* GitHub Repo trigger button */}
+              {isGitHubConnected && (
+                <button
+                  className="repo-modal-trigger"
+                  onClick={() => {
+                    playClick();
+                    setRepoSearchQuery('');
+                    setShowRepoModal(true);
+                  }}
+                  disabled={isProcessing}
+                >
+                  <Github size={18} />
+                  <span>Browse Repositories</span>
+                </button>
+              )}
+
               <div className="centered-input-wrapper">
                 {renderInputForm()}
               </div>
@@ -1601,10 +1823,9 @@ export const TerminalPage: React.FC = () => {
               <div className="code-editor-wrapper">
                 {selectedFile && (
                   <div className="active-file-tab">
-                    <span className="file-icon">📄</span>
                     <span className="file-name">{selectedFile.path}</span>
                     {hasUnsavedChanges && <span className="unsaved-indicator">●</span>}
-                    <button 
+                    <button
                       className="save-file-button"
                       onClick={handleSaveFile}
                       disabled={!hasUnsavedChanges || isSaving}
@@ -1615,6 +1836,56 @@ export const TerminalPage: React.FC = () => {
                   </div>
                 )}
                 <div className="code-editor-container">
+                  {/* Floating action buttons on editor */}
+                  <div className="editor-floating-actions">
+                    <button
+                      className="editor-action-btn github-push-btn"
+                      onClick={() => {
+                        playClick();
+                        setActiveTab('deploy');
+                      }}
+                      title="Push to Repo"
+                    >
+                      <Github size={18} />
+                      <span className="action-tooltip">Push to Repo</span>
+                    </button>
+                    <button
+                      className="editor-action-btn code-review-btn"
+                      onClick={() => {
+                        playClick();
+                        if (!isProcessing && generation?.response?.files && generation.response.files.length > 0) {
+                          setChatInput('Review this code for best practices, security, and performance');
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }
+                      }}
+                      disabled={isProcessing || !generation?.response?.files?.length}
+                      title="Code Review"
+                    >
+                      <Shield size={18} />
+                      <span className="action-tooltip">Code Review</span>
+                    </button>
+                    <button
+                      className="editor-action-btn bug-fix-btn"
+                      onClick={() => {
+                        playClick();
+                        if (!isProcessing && generation?.response?.files && generation.response.files.length > 0) {
+                          setChatInput('Find and fix bugs in this code');
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }
+                      }}
+                      disabled={isProcessing || !generation?.response?.files?.length}
+                      title="Bug Fix"
+                    >
+                      <Bug size={18} />
+                      <span className="action-tooltip">Bug Fix</span>
+                    </button>
+                  </div>
                   <CodeEditor
                     value={selectedFile?.content || '// Select a file from the sidebar'}
                     onChange={handleCodeChange}

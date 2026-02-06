@@ -1,7 +1,6 @@
 import { supabase } from '../storage/SupabaseClient';
 import { chatQueue } from '../services/ChatQueue';
 import { randomUUID } from 'crypto';
-import { getTelegramBot } from '../services/TelegramBotService';
 import {
   emitJobStarted,
   emitJobProgress,
@@ -240,23 +239,6 @@ export class SimpleJobProcessor {
             );
             await emitJobsListUpdate(job.user_id);
             
-            // Send Telegram notification if chat_id is available
-            const telegramChatId = job.context?.telegram_chat_id;
-            if (telegramChatId) {
-              try {
-                const telegramBot = getTelegramBot();
-                await telegramBot.sendJobCompletionNotification(
-                  telegramChatId,
-                  job.id,
-                  job.session_id,
-                  true,
-                  chatJob.result?.summary || 'Your request has been completed successfully!'
-                );
-              } catch (error: any) {
-                console.error('⚠️ Failed to send Telegram notification:', error.message);
-              }
-            }
-            
           } else if (chatJob.status === 'error') {
             throw new Error(chatJob.error || 'Chat job failed');
           }
@@ -311,22 +293,6 @@ export class SimpleJobProcessor {
       );
       await emitJobsListUpdate(job.user_id);
       
-      // Send Telegram notification if chat_id is available
-      const telegramChatId = job.context?.telegram_chat_id;
-      if (telegramChatId) {
-        try {
-          const telegramBot = getTelegramBot();
-          await telegramBot.sendJobCompletionNotification(
-            telegramChatId,
-            job.id,
-            job.session_id,
-            false,
-            `Error: ${error.message}`
-          );
-        } catch (notifError: any) {
-          console.error('⚠️ Failed to send Telegram notification:', notifError.message);
-        }
-      }
     }
   }
   
