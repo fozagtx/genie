@@ -19,13 +19,26 @@
 }
 
 .chat-history-sidebar {
-  width: 260px;
-  min-width: 260px;
   background: hsl(var(--sidebar-background));
   border-right: 1px solid hsl(var(--sidebar-border));
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-resize-handle {
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle:active {
+  background: hsl(var(--primary) / 0.3);
 }
 
 .sidebar-header {
@@ -737,7 +750,6 @@
 
 .input-wrapper:focus-within {
   border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
 }
 
 .input-prefix {

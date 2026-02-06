@@ -4,7 +4,6 @@ import { AgentMessage } from '../components/AgentChat';
 import { CodeEditor } from '../components/CodeEditor';
 import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
-import { DeployButton } from '../components/DeployButton';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
 import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2 } from 'lucide-react';
@@ -63,6 +62,11 @@ export const TerminalPage: React.FC = () => {
     const saved = localStorage.getItem('genie-sidebar-visible');
     return saved ? JSON.parse(saved) : false;
   });
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('genie-sidebar-width');
+    return saved ? Number(saved) : 260;
+  });
+  const isSidebarResizing = useRef(false);
   const [panelWidthPercent, setPanelWidthPercent] = useState(50); // code panel width as percentage of main area
   const isResizing = useRef(false);
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -78,11 +82,6 @@ export const TerminalPage: React.FC = () => {
   }>>([]);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   
-  // Deployment State
-  const [deploymentData, setDeploymentData] = useState<{
-    url: string | null;
-    status: 'pending' | 'deploying' | 'deployed' | 'failed' | null;
-  }>({ url: null, status: null });
   
 
   
@@ -374,6 +373,33 @@ export const TerminalPage: React.FC = () => {
     document.addEventListener('mouseup', onMouseUp);
   }, []);
 
+  // Sidebar resize handler
+  const handleSidebarResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isSidebarResizing.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!isSidebarResizing.current) return;
+      const newWidth = Math.min(480, Math.max(200, moveEvent.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const onMouseUp = () => {
+      isSidebarResizing.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      // Persist width
+      localStorage.setItem('genie-sidebar-width', String(sidebarWidth));
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, [sidebarWidth]);
+
   // Load existing session if ID is provided
   useEffect(() => {
     if (!id) {
@@ -486,12 +512,6 @@ export const TerminalPage: React.FC = () => {
           // Non-critical error, continue
         }
         
-        if (generationData.deployment_status) {
-          setDeploymentData({
-            url: generationData.preview_url,
-            status: generationData.deployment_status,
-          });
-        }
         
       } catch (error) {
         console.error('Failed to load session:', error);
@@ -1075,9 +1095,10 @@ export const TerminalPage: React.FC = () => {
   return (
     <div className="terminal-page">
       {/* Left Sidebar - Chat History */}
-      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`}>
+      <div className={`chat-history-sidebar ${isSidebarVisible ? 'visible' : ''}`} style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
         <div className="sidebar-header">
           <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+            <img src="/lo.png" alt="Genie" style={{ height: 24, width: 24 }} />
             <span className="logo-text">Genie</span>
           </div>
           <button className="btn-new-chat" onClick={() => {
@@ -1189,6 +1210,15 @@ export const TerminalPage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Sidebar Resize Handle */}
+      {isSidebarVisible && (
+        <div
+          className="sidebar-resize-handle"
+          onMouseDown={handleSidebarResizeStart}
+          title="Drag to resize sidebar"
+        />
+      )}
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
@@ -1433,7 +1463,7 @@ export const TerminalPage: React.FC = () => {
                   setActiveTab('deploy');
                 }}
               >
-                Deploy
+                GitHub
               </button>
               <button 
                 className="btn-close-panel"
@@ -1530,36 +1560,6 @@ export const TerminalPage: React.FC = () => {
               <div className="deploy-view" style={{ display: activeTab === 'deploy' ? 'flex' : 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="deploy-container">
                   <div className="deploy-content">
-                    <h2 className="deploy-title">Deploy to Fly.io</h2>
-                    <p className="deploy-description">
-                      Deploy your application to production hosting on Fly.io
-                    </p>
-                    <div className="deploy-button-wrapper">
-                      <DeployButton
-                        projectId={id}
-                        files={generation.response.files}
-                        initialDeploymentUrl={deploymentData.url}
-                        initialDeploymentStatus={deploymentData.status}
-                        onDeployComplete={(url: string) => {
-                          setDeploymentData({ url, status: 'deployed' });
-                        }}
-                        onStatusChange={(status) => {
-                          const statusMap: Record<string, 'pending' | 'deploying' | 'deployed' | 'failed'> = {
-                            'idle': 'pending',
-                            'deploying': 'deploying',
-                            'success': 'deployed',
-                            'error': 'failed',
-                          };
-                          setDeploymentData({
-                            url: deploymentData.url,
-                            status: statusMap[status]
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="deploy-content" style={{ marginTop: '1.5rem' }}>
                     <h2 className="deploy-title">Push to GitHub</h2>
                     <p className="deploy-description">
                       Push your code to a new or existing GitHub repository

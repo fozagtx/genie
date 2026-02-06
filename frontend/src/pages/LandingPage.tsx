@@ -16,9 +16,12 @@ export const LandingPage: React.FC = () => {
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-rose-50">
       {/* Minimal header */}
       <header className="flex w-full items-center justify-between px-8 py-6">
-        <span className="text-lg font-semibold tracking-tight text-foreground">
-          Genie
-        </span>
+        <div className="flex items-center gap-2">
+          <img src="/lo.png" alt="Genie" className="h-7 w-7" />
+          <span className="text-lg font-semibold tracking-tight text-foreground">
+            Genie
+          </span>
+        </div>
         <button
           onClick={() => navigate(user ? '/terminal' : '/login')}
           className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
