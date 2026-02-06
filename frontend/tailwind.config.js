@@ -4,20 +4,68 @@ export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
   	extend: {
+  		fontFamily: {
+  			sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
+  			mono: ['SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', 'monospace'],
+  		},
   		animation: {
-  			spotlight: 'spotlight 2s ease .75s 1 forwards'
+  			spotlight: 'spotlight 2s ease .75s 1 forwards',
+  			'fade-in-slide': 'fadeInSlide 0.3s ease-out',
+  			'slide-in-right': 'slideInRight 0.3s ease-out',
+  			'fade-out': 'fadeOut 0.3s ease-out forwards',
+  			'fade-in': 'fadeIn 0.2s ease-out',
+  			'slide-in': 'slideIn 0.3s ease-out',
+  			blink: 'blink 1s step-end infinite',
+  			'dot-pulse': 'dotPulse 1.5s infinite',
+  			'typing-dot': 'typingDot 1.4s infinite ease-in-out',
+  			'progress-fill': 'progressFill 1.5s ease-out forwards',
+  			'status-pulse': 'statusPulse 2s ease-in-out infinite',
   		},
   		keyframes: {
   			spotlight: {
-  				'0%': {
-  					opacity: 0,
-  					transform: 'translate(-72%, -62%) scale(0.5)'
-  				},
-  				'100%': {
-  					opacity: 1,
-  					transform: 'translate(-50%,-40%) scale(1)'
-  				}
-  			}
+  				'0%': { opacity: 0, transform: 'translate(-72%, -62%) scale(0.5)' },
+  				'100%': { opacity: 1, transform: 'translate(-50%,-40%) scale(1)' },
+  			},
+  			fadeInSlide: {
+  				'0%': { opacity: 0, transform: 'translateY(8px)' },
+  				'100%': { opacity: 1, transform: 'translateY(0)' },
+  			},
+  			slideInRight: {
+  				'0%': { transform: 'translateX(400px)', opacity: 0 },
+  				'100%': { transform: 'translateX(0)', opacity: 1 },
+  			},
+  			fadeOut: {
+  				'0%': { opacity: 1 },
+  				'100%': { opacity: 0, transform: 'translateX(400px)' },
+  			},
+  			fadeIn: {
+  				'0%': { opacity: 0 },
+  				'100%': { opacity: 1 },
+  			},
+  			slideIn: {
+  				'0%': { opacity: 0, transform: 'translateY(-20px)' },
+  				'100%': { opacity: 1, transform: 'translateY(0)' },
+  			},
+  			blink: {
+  				'0%, 100%': { opacity: 1 },
+  				'50%': { opacity: 0 },
+  			},
+  			dotPulse: {
+  				'0%, 80%, 100%': { opacity: 0.3, transform: 'scale(0.8)' },
+  				'40%': { opacity: 1, transform: 'scale(1)' },
+  			},
+  			typingDot: {
+  				'0%, 80%, 100%': { transform: 'scale(0)', opacity: 0.4 },
+  				'40%': { transform: 'scale(1)', opacity: 1 },
+  			},
+  			progressFill: {
+  				'0%': { width: '0%' },
+  				'100%': { width: '100%' },
+  			},
+  			statusPulse: {
+  				'0%, 100%': { opacity: 1 },
+  				'50%': { opacity: 0.6 },
+  			},
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

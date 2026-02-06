@@ -4,7 +4,7 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import { Send, Paperclip } from 'lucide-react';
 import { Button } from './ui/button';
-import './ChatInput.css';
+
 
 export interface ChatInputMessage {
   text: string;

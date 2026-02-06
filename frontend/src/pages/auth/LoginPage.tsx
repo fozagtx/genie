@@ -39,8 +39,8 @@ export const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-slate-900">Welcome back</h1>
-          <p className="text-slate-500">Sign in to continue to Genie</p>
+          <h1 className="mb-2 text-4xl font-bold text-foreground">Welcome back</h1>
+          <p className="text-muted-foreground">Sign in to continue to Genie</p>
         </div>
 
         <Card>
@@ -52,7 +52,7 @@ export const LoginPage: React.FC = () => {
             )}
 
             <Button
-              className="w-full rounded-full bg-black text-white hover:bg-black/90"
+              className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               size="lg"
               onClick={handleGithubLogin}
               disabled={loading}

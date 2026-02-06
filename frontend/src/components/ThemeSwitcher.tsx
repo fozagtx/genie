@@ -1,6 +1,6 @@
 import React from 'react'
 import { Moon } from 'lucide-react'
-import './ThemeSwitcher.css'
+
 
 interface ThemeSwitcherProps {
   variant?: 'default' | 'compact'

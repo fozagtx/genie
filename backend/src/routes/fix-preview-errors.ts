@@ -23,7 +23,7 @@ const fixPreviewErrorsSchema = z.object({
   errors: z.array(
     z.object({
       type: z.string(),
-      message: z.string(),
+      message: z.string().optional().default('Unknown error'),
       stack: z.string().optional(),
       file: z.string().optional(),
       line: z.number().optional(),

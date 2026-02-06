@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSoundEffects } from '../hooks/useSoundEffects';
-import './FileTree.css';
+
 
 interface FileTreeProps {
   files: Array<{ path: string; content: string }>;

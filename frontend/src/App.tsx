@@ -50,7 +50,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="app">
+        <div className="min-h-screen bg-background text-foreground">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />

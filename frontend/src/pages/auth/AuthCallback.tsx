@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { Card, CardContent } from '../../components/ui/card'
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
-import './AuthCallback.css'
 
 export const AuthCallback: React.FC = () => {
   const [status, setStatus] = useState('processing')

@@ -6,7 +6,7 @@ import { GenieSplineDemo } from '../components/ui/genie-spline-demo'
 
 export const ShowcasePage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <GenieHero />
 
@@ -17,7 +17,7 @@ export const ShowcasePage: React.FC = () => {
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
               Interactive 3D Experience
             </h2>
-            <p className="text-lg text-slate-400 max-w-3xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Immerse yourself in the future of AI development with interactive 3D visualizations.
             </p>
           </div>
@@ -32,13 +32,13 @@ export const ShowcasePage: React.FC = () => {
       <GenieAgentsSection />
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-16 bg-black">
+      <footer className="border-t border-white/10 py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4 text-white">
               Ready to Transform Your Development?
             </h2>
-            <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               Join thousands of developers already using Genie AI to accelerate their development workflow.
             </p>
             <a

@@ -5,7 +5,7 @@ import apiClient from '../services/apiClient';
 import { X, User, Settings, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import './SettingsModal.css';
+
 
 interface SettingsModalProps {
   isOpen: boolean;

@@ -9,7 +9,6 @@ import {
   getAcceptString,
 } from '../services/fileUploadService';
 import '../styles/theme.css';
-import './ImageUpload.css';
 
 export interface UploadedFile {
   url: string;

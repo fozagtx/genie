@@ -47,20 +47,20 @@ export enum AgentRole {
 
 /**
  * Default models for different agent types
- * Coding agents use glm-4.6 for better code quality
- * Non-coding agents use gpt-5-nano-2025-08-07 for efficiency
+ * Coding agents use gemini-1.5-flash for fast, quality code generation
+ * Non-coding agents use gpt-4o-mini for efficiency
  */
 const DEFAULT_MODELS = {
-  // Coding agents - use glm-4.6 for better quality
-  [AgentRole.LEAD_ENGINEER]: 'glm-4.6',
-  [AgentRole.SPEC_INTERPRETER]: 'glm-4.6',
-  [AgentRole.CODE_GENERATOR]: 'glm-4.6',
-  [AgentRole.TEST_CRAFTER]: 'glm-4.6',
-  // Non-coding agents - use gpt-5-nano-2025-08-07 for efficiency
-  [AgentRole.BUG_HUNTER]: 'gpt-5-nano-2025-08-07',
-  [AgentRole.SECURITY_SENTINEL]: 'gpt-5-nano-2025-08-07',
-  [AgentRole.PERFORMANCE_PROFILER]: 'gpt-5-nano-2025-08-07',
-  [AgentRole.DOC_WEAVER]: 'gpt-5-nano-2025-08-07',
+  // Coding agents - use gemini-1.5-flash for fast, quality code generation
+  [AgentRole.LEAD_ENGINEER]: 'gemini-1.5-flash',
+  [AgentRole.SPEC_INTERPRETER]: 'gemini-1.5-flash',
+  [AgentRole.CODE_GENERATOR]: 'gemini-1.5-flash',
+  [AgentRole.TEST_CRAFTER]: 'gemini-1.5-flash',
+  // Non-coding agents - use gpt-4o-mini for efficiency
+  [AgentRole.BUG_HUNTER]: 'gpt-4o-mini',
+  [AgentRole.SECURITY_SENTINEL]: 'gpt-4o-mini',
+  [AgentRole.PERFORMANCE_PROFILER]: 'gpt-4o-mini',
+  [AgentRole.DOC_WEAVER]: 'gpt-4o-mini',
 }
 
 /**
@@ -102,7 +102,7 @@ export class AgentFactory {
    */
   async createAgent(config: AgentConfig): Promise<Agent> {
     const builder = AgentBuilder.create(config.name)
-      .withModel(config.model || 'glm-4.6')
+      .withModel(config.model || 'gemini-1.5-flash')
       .withInstruction(config.systemPrompt)
 
     // Register tools if specified
@@ -341,7 +341,7 @@ export class AgentFactory {
     const config = this.getRoleConfig(role)
     return {
       name: config.name,
-      model: config.model || 'glm-4.6',
+      model: config.model || 'gemini-1.5-flash',
       description: config.systemPrompt,
       tools: config.tools || [],
     }

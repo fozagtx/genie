@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 import { Header } from './Header'
-import './Layout.css'
 
 interface LayoutProps {
   children: ReactNode
@@ -9,9 +8,9 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
   return (
-    <div className={`app-layout ${className}`}>
+    <div className={`min-h-screen bg-background text-foreground ${className}`}>
       <Header />
-      <main className="layout-main">
+      <main className="mx-auto max-w-[1400px] px-4 pb-4 md:px-6 lg:px-8">
         {children}
       </main>
     </div>

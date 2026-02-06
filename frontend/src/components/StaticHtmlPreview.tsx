@@ -30,10 +30,13 @@ export function StaticHtmlPreview({ files, onError, onReady }: StaticHtmlPreview
 
       let html = htmlFile.content;
 
-      // Inject CSS if found
+      // Remove external CSS link tags that we're about to inline (prevents double-loading)
       if (cssFile) {
+        // Remove link tags that reference CSS files we're inlining
+        html = html.replace(/<link[^>]*href=["'][^"']*(?:styles?\.css|\.css)["'][^>]*\/?>/gi, '');
+
         const cssTag = `<style>\n${cssFile.content}\n</style>`;
-        
+
         // Try to inject in <head> if exists, otherwise before </body>
         if (html.includes('</head>')) {
           html = html.replace('</head>', `${cssTag}\n</head>`);
@@ -44,10 +47,14 @@ export function StaticHtmlPreview({ files, onError, onReady }: StaticHtmlPreview
         }
       }
 
-      // Inject JS if found
+      // Remove external script tags that we're about to inline (prevents double-loading and 'Unexpected token <' errors)
       if (jsFile) {
+        // Remove script tags that reference JS files we're inlining
+        html = html.replace(/<script[^>]*src=["'][^"']*(?:scripts?\.js|\.js)["'][^>]*><\/script>/gi, '');
+        html = html.replace(/<script[^>]*src=["'][^"']*(?:scripts?\.js|\.js)["'][^>]*\/>/gi, '');
+
         const jsTag = `<script>\n${jsFile.content}\n</script>`;
-        
+
         // Inject before </body> if exists, otherwise at the end
         if (html.includes('</body>')) {
           html = html.replace('</body>', `${jsTag}\n</body>`);

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Loader2 } from 'lucide-react'
-import './StatusIndicator.css'
+
 
 export type StatusType = 'idle' | 'loading' | 'success' | 'error' | 'warning'
 

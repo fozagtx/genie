@@ -83,7 +83,7 @@ export function GenieAgentsSection() {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="agents" ref={ref} className="py-24 relative overflow-hidden bg-black">
+    <section id="agents" ref={ref} className="py-24 relative overflow-hidden bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -94,7 +94,7 @@ export function GenieAgentsSection() {
           <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-4 text-white">
             Specialized AI Agents
           </h2>
-          <p className="font-sans text-lg text-slate-400 max-w-3xl mx-auto">
+          <p className="font-sans text-lg text-muted-foreground max-w-3xl mx-auto">
             Your virtual development team powered by specialized AI agents for every aspect of software development.
           </p>
         </motion.div>
@@ -136,7 +136,7 @@ const AgentCard = ({ agent }: { agent: typeof agents[0] }) => {
         </div>
         <div>
           <h3 className="font-heading text-xl font-bold text-slate-50">{agent.title}</h3>
-          <p className="font-sans text-sm text-slate-400">{agent.description}</p>
+          <p className="font-sans text-sm text-muted-foreground">{agent.description}</p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 mt-auto">

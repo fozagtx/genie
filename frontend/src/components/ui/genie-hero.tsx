@@ -16,7 +16,7 @@ export function GenieHero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"></div>
 
@@ -59,7 +59,7 @@ export function GenieHero() {
           <motion.p
             variants={itemVariants}
             transition={{ duration: 0.8 }}
-            className="font-sans text-lg text-slate-400 mb-10 max-w-2xl mx-auto"
+            className="font-sans text-lg text-muted-foreground mb-10 max-w-2xl mx-auto"
           >
             Your Virtual Development Team Powered by Specialized AI Agents.
             Generate, review, and deploy code with multi-agent AI intelligence.

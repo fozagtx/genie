@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StatusIndicator } from './StatusIndicator'
 import { useUIStore } from '../stores/uiStore'
-import './AgentChat.css'
+
 
 export interface AgentMessage {
   id: string

@@ -65,7 +65,7 @@ export function GenieFeatures() {
   };
 
   return (
-    <section id="features" ref={ref} className="py-24 relative bg-black overflow-hidden">
+    <section id="features" ref={ref} className="py-24 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ export function GenieFeatures() {
           <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-4 text-white">
             Complete AI Development Platform
           </h2>
-          <p className="font-sans text-lg text-slate-400 max-w-3xl mx-auto">
+          <p className="font-sans text-lg text-muted-foreground max-w-3xl mx-auto">
             Everything you need for modern software development, powered by specialized AI agents
             working together as your virtual development team.
           </p>
@@ -100,7 +100,7 @@ export function GenieFeatures() {
                 </div>
                 <div>
                   <h3 className="font-heading text-lg font-bold mb-2 text-slate-50">{feature.title}</h3>
-                  <p className="font-sans text-sm text-slate-400 leading-relaxed">{feature.description}</p>
+                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               </div>
             </motion.div>

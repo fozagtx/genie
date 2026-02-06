@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import apiClient from '../services/apiClient';
 import { useRealtimeDeployment } from '../hooks/useRealtimeDeployment';
-import './DeployButton.css';
+
 
 interface DeployButtonProps {
   projectId: string;

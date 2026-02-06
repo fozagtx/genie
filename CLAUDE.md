@@ -149,7 +149,6 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 - GitHub MCP Server (`mcp-servers/github/`) - 40+ GitHub API tools
 - WebContainer API - Browser-based code preview
 - Telegram Bot Service - Mobile access interface
-- VAPI Integration - Voice command processing
 
 ### State Management
 
@@ -216,7 +215,6 @@ Required environment variables are documented in the README. Key services:
 - **Database:** SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY
 - **Queue:** REDIS_URL
 - **GitHub:** GITHUB_TOKEN (optional, for enhanced features)
-- **Voice:** VAPI_API_KEY (optional, for voice commands)
 
 ## Deployment Notes
 

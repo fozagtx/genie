@@ -5,7 +5,7 @@ import { useUIStore } from '../stores/uiStore';
 import { useRealtimeJobsList } from '../hooks/useRealtimeJobsList';
 import { X, RefreshCw, Wifi } from 'lucide-react';
 import { Button } from './ui/button';
-import './BackgroundJobsPanel.css';
+
 
 interface BackgroundJobsPanelProps {
   onClose: () => void;

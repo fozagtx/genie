@@ -33,8 +33,8 @@ export const SignupPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-slate-900">Get started</h1>
-          <p className="text-slate-500">Create your account to start building with Genie</p>
+          <h1 className="mb-2 text-4xl font-bold text-foreground">Get started</h1>
+          <p className="text-muted-foreground">Create your account to start building with Genie</p>
         </div>
 
         <Card>
@@ -46,7 +46,7 @@ export const SignupPage: React.FC = () => {
             )}
 
             <Button
-              className="w-full rounded-full bg-black text-white hover:bg-black/90"
+              className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               size="lg"
               onClick={handleGithubSignup}
               disabled={loading}
@@ -66,7 +66,7 @@ export const SignupPage: React.FC = () => {
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <button onClick={() => navigate('/login')} className="font-semibold text-slate-900 hover:text-slate-700">
+              <button onClick={() => navigate('/login')} className="font-semibold text-foreground hover:text-foreground/80">
                 Sign in
               </button>
             </p>

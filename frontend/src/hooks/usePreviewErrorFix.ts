@@ -132,8 +132,8 @@ export function usePreviewErrorFix(options: UsePreviewErrorFixOptions) {
         generationId,
         currentFiles,
         errors: errorsToFix.map(e => ({
-          type: e.type,
-          message: e.message,
+          type: e.type || 'runtime',
+          message: e.message || 'Unknown error',
           stack: e.stack,
           file: e.file,
           line: e.line,

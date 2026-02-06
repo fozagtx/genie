@@ -7,7 +7,7 @@ import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { DeployButton } from '../components/DeployButton';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { VapiCallAgent } from '../components/VapiCallAgent';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square } from 'lucide-react';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
 import { useAuthContext } from '../contexts/AuthContext';
@@ -56,7 +56,10 @@ export const TerminalPage: React.FC = () => {
   const [backgroundMode, setBackgroundMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
+    const saved = localStorage.getItem('genie-sidebar-visible');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [panelWidthPercent, setPanelWidthPercent] = useState(50); // code panel width as percentage of main area
   const isResizing = useRef(false);
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -174,7 +177,25 @@ export const TerminalPage: React.FC = () => {
     };
   }, [isSidebarVisible]);
 
-  // 🔧 AUTO-HIDE panel when chat has no files
+  // Persist sidebar state to localStorage
+  useEffect(() => {
+    localStorage.setItem('genie-sidebar-visible', JSON.stringify(isSidebarVisible));
+  }, [isSidebarVisible]);
+
+  // Keyboard shortcut for sidebar toggle (Ctrl/Cmd + B)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        setIsSidebarVisible((prev: boolean) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // AUTO-HIDE panel when chat has no files
   useEffect(() => {
     const hasFiles = generation?.response?.files && generation.response.files.length > 0;
     if (!hasFiles) {
@@ -950,7 +971,7 @@ export const TerminalPage: React.FC = () => {
             playClick();
             handleNewChat();
           }}>
-            <span className="icon">✚</span>
+            <Plus className="icon" size={16} />
             <span className="text">NEW CHAT</span>
           </button>
         </div>
@@ -978,7 +999,7 @@ export const TerminalPage: React.FC = () => {
                     handleSelectChat(session.id);
                   }}
                 >
-                  <span className="session-icon">💬</span>
+                  <MessageSquare className="session-icon" size={14} />
                   <div className="session-content">
                     <div className="session-title">{session.title}</div>
                     <div className="session-preview">{session.preview}</div>
@@ -1000,7 +1021,7 @@ export const TerminalPage: React.FC = () => {
                     handleSelectChat(session.id);
                   }}
                 >
-                  <span className="session-icon">💬</span>
+                  <MessageSquare className="session-icon" size={14} />
                   <div className="session-content">
                     <div className="session-title">{session.title}</div>
                     <div className="session-preview">{session.preview}</div>
@@ -1019,7 +1040,7 @@ export const TerminalPage: React.FC = () => {
                   className={`chat-session-item ${id === session.id ? 'active' : ''}`}
                   onClick={() => handleSelectChat(session.id)}
                 >
-                  <span className="session-icon">💬</span>
+                  <MessageSquare className="session-icon" size={14} />
                   <div className="session-content">
                     <div className="session-title">{session.title}</div>
                     <div className="session-preview">{session.preview}</div>
@@ -1038,7 +1059,7 @@ export const TerminalPage: React.FC = () => {
                   className={`chat-session-item ${id === session.id ? 'active' : ''}`}
                   onClick={() => handleSelectChat(session.id)}
                 >
-                  <span className="session-icon">💬</span>
+                  <MessageSquare className="session-icon" size={14} />
                   <div className="session-content">
                     <div className="session-title">{session.title}</div>
                     <div className="session-preview">{session.preview}</div>
@@ -1057,25 +1078,25 @@ export const TerminalPage: React.FC = () => {
               navigate('/docs');
             }}
           >
-            <span className="icon">📄</span>
+            <FileText className="icon" size={16} />
             <span className="text">DOCS</span>
           </button>
-          <button 
-            className="btn-telegram" 
+          <button
+            className="btn-telegram"
             onClick={() => {
               playClick();
               window.open('https://t.me/genie_ai_bot', '_blank', 'noopener,noreferrer');
             }}
             title="Open Telegram Bot"
           >
-            <span className="icon">📱</span>
+            <Send className="icon" size={16} />
             <span className="text">TELEGRAM BOT</span>
           </button>
           <button className="btn-jobs" onClick={() => {
             playClick();
             setShowBackgroundJobs(!showBackgroundJobs);
           }}>
-            <span className="icon">🔧</span>
+            <Wrench className="icon" size={16} />
             <span className="text">JOBS</span>
             {activeJobsCount > 0 && (
               <span className="badge-count">{activeJobsCount}</span>
@@ -1085,11 +1106,11 @@ export const TerminalPage: React.FC = () => {
             playClick();
             setShowSettings(!showSettings);
           }}>
-            <span className="icon">⚙</span>
+            <Settings className="icon" size={16} />
             <span className="text">SETTINGS</span>
           </button>
-          <button 
-            className="btn-logout" 
+          <button
+            className="btn-logout"
             onClick={async () => {
               playClick();
               await supabase.auth.signOut();
@@ -1097,7 +1118,7 @@ export const TerminalPage: React.FC = () => {
             }}
             title="Logout"
           >
-            <span className="icon">🚪</span>
+            <LogOut className="icon" size={16} />
             <span className="text">LOGOUT</span>
           </button>
         </div>
@@ -1123,9 +1144,9 @@ export const TerminalPage: React.FC = () => {
             playClick();
             setIsSidebarVisible(!isSidebarVisible);
           }}
-          title="Toggle menu"
+          title="Toggle menu (Ctrl+B)"
         >
-          ☰
+          <Menu size={20} />
         </button>
 
         {/* Mobile action bar - Settings and Logout buttons for mobile */}
@@ -1140,7 +1161,7 @@ export const TerminalPage: React.FC = () => {
           >
             ⚙
           </button> */}
-            <button 
+            <button
             className="mobile-action-btn mobile-logout-btn"
             style={{ paddingTop: '0.5rem' }}
             onClick={async () => {
@@ -1150,7 +1171,7 @@ export const TerminalPage: React.FC = () => {
             }}
             title="Logout"
             >
-            🚪
+            <LogOut size={18} />
             </button>
         </div>
         {/* Chat Interface */}
@@ -1199,7 +1220,6 @@ export const TerminalPage: React.FC = () => {
                     </div>
 
                     <div className="message-content">
-                      <span className="message-prefix">&gt;&gt;</span>
                       <span className="message-text">
                         {message.content}
                         {message.role === 'thought' && (
@@ -1253,7 +1273,6 @@ export const TerminalPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="progress-content">
-                        <span className="message-prefix">&gt;&gt;</span>
                         <span className="progress-text">
                           {progress.message}
                           {progress.status === 'started' && (
@@ -1315,7 +1334,7 @@ export const TerminalPage: React.FC = () => {
               {/* Toolbar - Above input */}
               <div className="chat-input-toolbar">
                 <div className="toolbar-left">
-                  <button 
+                  <button
                     type="button"
                     className={`toolbar-btn ${backgroundMode ? 'active' : ''}`}
                     onClick={() => {
@@ -1325,7 +1344,7 @@ export const TerminalPage: React.FC = () => {
                     disabled={isProcessing}
                     title="Run in background - you can continue chatting while this processes"
                   >
-                    <span className="btn-icon">🔧</span>
+                    <Wrench size={16} className="btn-icon" />
                     <span className="btn-text">Background</span>
                     {backgroundMode && <span className="active-indicator">●</span>}
                   </button>
@@ -1338,7 +1357,7 @@ export const TerminalPage: React.FC = () => {
                     onChange={handleImageSelect}
                     style={{ display: 'none' }}
                   />
-                  <button 
+                  <button
                     type="button"
                     className="toolbar-btn"
                     onClick={() => {
@@ -1348,7 +1367,7 @@ export const TerminalPage: React.FC = () => {
                     disabled={isProcessing || uploadingImages}
                     title="Attach files (images, documents, code, etc.)"
                   >
-                    <span className="btn-icon">📎</span>
+                    <Paperclip size={16} className="btn-icon" />
                     <span className="btn-text">Attach</span>
                     {selectedImages.length > 0 && (
                       <span className="badge-count">{selectedImages.length}</span>
@@ -1356,15 +1375,10 @@ export const TerminalPage: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="toolbar-right">
-                  {/* VAPI Voice Call Button */}
-                  <VapiCallAgent compact={true} />
-                </div>
               </div>
 
               {/* Main Input */}
               <div className="input-wrapper">
-                <span className="input-prefix">&gt;&gt;</span>
                 <input
                   type="text"
                   className="input chat-input"
@@ -1387,18 +1401,18 @@ export const TerminalPage: React.FC = () => {
                   placeholder="Describe a task: build a feature, review code, tighten security..."
                   disabled={isProcessing || uploadingImages}
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn btn-primary btn-send"
                   disabled={isProcessing || uploadingImages || !chatInput.trim()}
                   onClick={() => playClick()}
                   title="Send message (Enter)"
                 >
-                  <span className="send-icon">►</span>
+                  <Send size={18} className="send-icon" />
                 </button>
                 {isProcessing && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn btn-danger btn-cancel"
                     onClick={() => {
                       playClick();
@@ -1406,7 +1420,7 @@ export const TerminalPage: React.FC = () => {
                     }}
                     title="Cancel request"
                   >
-                    <span className="cancel-icon">⏸</span>
+                    <Square size={16} className="cancel-icon" />
                   </button>
                 )}
               </div>
@@ -1438,32 +1452,32 @@ export const TerminalPage: React.FC = () => {
         {generation?.response?.files && generation.response.files.length > 0 && isPreviewPanelVisible && (
           <div className="code-preview-panel" style={{ flex: `0 0 ${panelWidthPercent}%` }}>
             <div className="tabs">
-              <button 
-                className={activeTab === 'source' ? 'active' : ''} 
+              <button
+                className={activeTab === 'source' ? 'active' : ''}
                 onClick={() => {
                   playTabSwitch();
                   setActiveTab('source');
                 }}
               >
-                SOURCE CODE
+                Source code
               </button>
-              <button 
-                className={activeTab === 'preview' ? 'active' : ''} 
+              <button
+                className={activeTab === 'preview' ? 'active' : ''}
                 onClick={() => {
                   playTabSwitch();
                   setActiveTab('preview');
                 }}
               >
-                PREVIEW
+                Preview
               </button>
-              <button 
-                className={activeTab === 'deploy' ? 'active' : ''} 
+              <button
+                className={activeTab === 'deploy' ? 'active' : ''}
                 onClick={() => {
                   playTabSwitch();
                   setActiveTab('deploy');
                 }}
               >
-                DEPLOY
+                Deploy
               </button>
               <button 
                 className="btn-close-panel"

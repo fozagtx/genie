@@ -7,7 +7,7 @@ import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
-import './SettingsPage.css'
+import { Switch } from '../components/ui/switch'
 
 export const SettingsPage: React.FC = () => {
   const { user } = useAuth()
@@ -124,7 +124,7 @@ export const SettingsPage: React.FC = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="settings-page">
+        <div className="mx-auto max-w-[1200px] p-6">
           <p className="text-muted-foreground">Loading settings...</p>
         </div>
       </Layout>
@@ -133,10 +133,10 @@ export const SettingsPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="settings-page">
+      <div className="mx-auto max-w-[1200px] p-6 max-md:p-4">
         <h1 className="text-2xl font-semibold text-foreground mb-6">Settings</h1>
 
-        <div className="settings-grid">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(380px,1fr))] gap-6 max-md:grid-cols-1">
           {/* Account Section */}
           <Card>
             <CardContent className="pt-6">
@@ -186,34 +186,26 @@ export const SettingsPage: React.FC = () => {
             <CardContent className="pt-6">
               <h2 className="text-base font-semibold text-foreground mb-4">Preferences</h2>
               <div className="space-y-3">
-                <div className="preference-item">
-                  <div className="preference-info">
-                    <div className="preference-title">Auto-scroll Chat</div>
-                    <div className="preference-desc">Automatically scroll to new messages</div>
+                <div className="flex items-center justify-between gap-4 rounded-lg p-3 transition-colors hover:bg-muted/50">
+                  <div className="flex-1">
+                    <div className="text-sm text-foreground">Auto-scroll Chat</div>
+                    <div className="text-xs text-muted-foreground">Automatically scroll to new messages</div>
                   </div>
-                  <label className="preference-toggle">
-                    <input
-                      type="checkbox"
-                      checked={preferences.autoScrollChat}
-                      onChange={() => handlePreferenceChange('autoScrollChat')}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
+                  <Switch
+                    checked={preferences.autoScrollChat}
+                    onCheckedChange={() => handlePreferenceChange('autoScrollChat')}
+                  />
                 </div>
 
-                <div className="preference-item">
-                  <div className="preference-info">
-                    <div className="preference-title">Sound Effects</div>
-                    <div className="preference-desc">Play sounds for notifications</div>
+                <div className="flex items-center justify-between gap-4 rounded-lg p-3 transition-colors hover:bg-muted/50">
+                  <div className="flex-1">
+                    <div className="text-sm text-foreground">Sound Effects</div>
+                    <div className="text-xs text-muted-foreground">Play sounds for notifications</div>
                   </div>
-                  <label className="preference-toggle">
-                    <input
-                      type="checkbox"
-                      checked={preferences.soundEffects}
-                      onChange={() => handlePreferenceChange('soundEffects')}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
+                  <Switch
+                    checked={preferences.soundEffects}
+                    onCheckedChange={() => handlePreferenceChange('soundEffects')}
+                  />
                 </div>
               </div>
             </CardContent>
