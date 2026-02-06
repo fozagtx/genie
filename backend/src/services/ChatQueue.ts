@@ -904,7 +904,7 @@ class ChatQueueManager {
           content: jobResult.summary,
           metadata: {
             agent: specialistAgent,
-            filesModified: jobResult.files.length,
+            filesModified: jobResult.files?.length || 0,
             isReviewWorkflow,
             suggestions: jobResult.suggestions,
           },
