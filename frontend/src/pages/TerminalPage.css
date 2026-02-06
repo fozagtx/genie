@@ -10,8 +10,33 @@
 }
 
 /* Left Sidebar - Chat History */
+
+/* Sidebar toggle button - visible on all screen sizes */
 .btn-menu-toggle {
-  display: none;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.btn-menu-toggle:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.btn-menu-toggle.sidebar-open {
+  color: hsl(var(--foreground));
 }
 
 .mobile-action-bar {
@@ -25,6 +50,16 @@
   flex-direction: column;
   overflow: hidden;
   flex-shrink: 0;
+  transition: width 0.2s ease, min-width 0.2s ease, border 0.2s ease;
+}
+
+/* Desktop: collapse sidebar when not visible (only above mobile breakpoint) */
+@media (min-width: 769px) {
+  .chat-history-sidebar:not(.visible) {
+    width: 0 !important;
+    min-width: 0 !important;
+    border-right: none;
+  }
 }
 
 .sidebar-resize-handle {
@@ -217,7 +252,6 @@
 
 .btn-docs,
 .btn-jobs,
-.btn-telegram,
 .btn-settings,
 .btn-logout {
   width: 100%;
@@ -238,7 +272,6 @@
 
 .btn-docs:hover,
 .btn-jobs:hover,
-.btn-telegram:hover,
 .btn-settings:hover {
   background: hsl(var(--sidebar-accent));
   color: hsl(var(--sidebar-foreground));
@@ -251,7 +284,6 @@
 }
 
 .btn-jobs .icon,
-.btn-telegram .icon,
 .btn-settings .icon,
 .btn-logout .icon {
   font-size: 1.1rem;
@@ -1921,17 +1953,7 @@
 
   .btn-menu-toggle {
     position: fixed;
-    top: 10px;
-    left: 10px;
     z-index: 1001;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: hsl(var(--foreground));
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    display: block;
   }
 
   .mobile-action-bar {

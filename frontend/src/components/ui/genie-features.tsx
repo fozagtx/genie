@@ -31,8 +31,8 @@ const features = [
   },
   {
     icon: MessageCircle,
-    title: "4 Access Channels",
-    description: "Web Terminal, Telegram Bot, Voice Commands, and Background Jobs.",
+    title: "3 Access Channels",
+    description: "Web Terminal, Voice Commands, and Background Jobs.",
   },
   {
     icon: FileText,

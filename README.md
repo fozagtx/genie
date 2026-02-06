@@ -10,7 +10,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 
-[Live Demo](https://genie-ai.vercel.app) | [Documentation](https://genie-ai.vercel.app/docs) | [Telegram Bot](https://t.me/genie_ai_bot)
+[Live Demo](https://genie-ai.vercel.app) | [Documentation](https://genie-ai.vercel.app/docs)
 
 </div>
 
@@ -24,7 +24,7 @@
 
 - **10+ Specialized AI Agents** - From HTML/CSS to React/TypeScript
 - **AI Image Generation** - Powered by Runware API for visual assets
-- **4 Access Channels** - Web Terminal, Telegram Bot, Voice Commands, Background Jobs
+- **3 Access Channels** - Web Terminal, Voice Commands, Background Jobs
 - **GitHub MCP Integration** - 40+ tools for complete repository operations
 - **Real-Time Preview** - WebContainer-powered live preview and deployment
 
@@ -112,9 +112,8 @@ cd frontend && npm run dev
 ### Backend Deployment (Render)
 
 - Deploy the backend as a Render Web Service using the provided `render.yaml` (auto-runs `npm install` then `npm run start --workspace backend`).
-- Set environment variables in Render: `GOOGLE_API_KEY` (Gemini), `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `REDIS_URL`, and `FRONTEND_URL` (point to your frontend origin). Optional: `RUNWARE_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GENIE_BOT_GITHUB_TOKEN`.
+- Set environment variables in Render: `GOOGLE_API_KEY` (Gemini), `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `REDIS_URL`, and `FRONTEND_URL` (point to your frontend origin). Optional: `RUNWARE_API_KEY`, `GENIE_BOT_GITHUB_TOKEN`.
 - Render sets `PORT` automatically; the health check path is `/api/status`.
-- Telegram webhooks now auto-detect `RENDER_EXTERNAL_URL` if `APP_URL`/`BACKEND_URL` are not provided.
 
 ---
 
@@ -156,6 +155,6 @@ Built with [ADK-TS](https://adk.iqai.com), [Runware](https://runware.ai), [Supab
 
 <div align="center">
 
-[Website](https://genie-ai.vercel.app) • [Documentation](https://genie-ai.vercel.app/docs) • [GitHub](https://github.com/zaikaman/genie) • [Telegram](https://t.me/genie_ai_bot)
+[Website](https://genie-ai.vercel.app) • [Documentation](https://genie-ai.vercel.app/docs) • [GitHub](https://github.com/zaikaman/genie)
 
 </div>
