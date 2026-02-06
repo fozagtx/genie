@@ -6,7 +6,7 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug, Search } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug, Search, X } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
@@ -60,6 +60,9 @@ export const TerminalPage: React.FC = () => {
   const [backgroundMode, setBackgroundMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [repoSearchQuery, setRepoSearchQuery] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
+  const [showRepoPicker, setShowRepoPicker] = useState(false);
+  const [repoPickerSearch, setRepoPickerSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
     const saved = localStorage.getItem('genie-sidebar-visible');
@@ -699,11 +702,14 @@ export const TerminalPage: React.FC = () => {
     e.preventDefault();
     if (!chatInput.trim() || isProcessing) return;
 
-    const userMessage = chatInput.trim();
+    // Prepend repo context if a repo is selected
+    const repoPrefix = selectedRepo ? `[Repo: ${selectedRepo.fullName}] ` : '';
+    const userMessage = repoPrefix + chatInput.trim();
     const imagesToUpload = [...selectedImages];
-    
+
     setChatInput('');
     setSelectedImages([]);
+    setSelectedRepo(null);
     setIsProcessing(true);
     
     let sessionId = id; // Declare outside try block so it's available in catch
@@ -979,6 +985,15 @@ export const TerminalPage: React.FC = () => {
 
   const sessionGroups = groupSessionsByDate(filteredSessions);
 
+  const filteredPickerRepos = React.useMemo(() => {
+    if (!githubRepos) return [];
+    if (!repoPickerSearch) return githubRepos.slice(0, 20);
+    return githubRepos.filter(r =>
+      r.name.toLowerCase().includes(repoPickerSearch.toLowerCase()) ||
+      (r.description && r.description.toLowerCase().includes(repoPickerSearch.toLowerCase()))
+    );
+  }, [githubRepos, repoPickerSearch]);
+
   const renderInputForm = () => (
     <>
       {selectedImages.length > 0 && (
@@ -1014,8 +1029,39 @@ export const TerminalPage: React.FC = () => {
           style={{ display: 'none' }}
         />
 
-        {/* Input row with attach, bg toggle, text input, send */}
+        {/* Selected repo chip - shown above the input row */}
+        {selectedRepo && (
+          <div className="selected-repo-chip">
+            <Github size={13} />
+            <span className="selected-repo-name">{selectedRepo.fullName}</span>
+            <button
+              type="button"
+              className="selected-repo-remove"
+              onClick={() => setSelectedRepo(null)}
+              title="Remove repo"
+            >
+              <X size={12} />
+            </button>
+          </div>
+        )}
+
+        {/* Input row with repo picker, attach, bg toggle, text input, send */}
         <div className="input-wrapper">
+          {isGitHubConnected && (
+            <button
+              type="button"
+              className={`input-repo-btn ${selectedRepo ? 'active' : ''}`}
+              onClick={() => {
+                playClick();
+                setShowRepoPicker(!showRepoPicker);
+                setRepoPickerSearch('');
+              }}
+              disabled={isProcessing}
+              title={selectedRepo ? `Repo: ${selectedRepo.name}` : 'Select a GitHub repo'}
+            >
+              <Github size={18} />
+            </button>
+          )}
           <button
             type="button"
             className="input-attach-btn"
@@ -1061,7 +1107,7 @@ export const TerminalPage: React.FC = () => {
                 handleSendMessage(e);
               }
             }}
-            placeholder="Describe a task: build a feature, review code, tighten security..."
+            placeholder={selectedRepo ? `What do you want to do with ${selectedRepo.name}?` : 'Describe a task: build a feature, review code, tighten security...'}
             disabled={isProcessing || uploadingImages}
           />
           <button
@@ -1087,6 +1133,70 @@ export const TerminalPage: React.FC = () => {
             </button>
           )}
         </div>
+
+        {/* Repo Picker Dropdown */}
+        {showRepoPicker && (
+          <>
+          <div className="repo-picker-backdrop" onClick={() => setShowRepoPicker(false)} />
+          <div className="repo-picker-dropdown">
+            <div className="repo-picker-header">
+              <span className="repo-picker-title">Select Repository</span>
+              <button
+                type="button"
+                className="repo-picker-close"
+                onClick={() => setShowRepoPicker(false)}
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <div className="repo-picker-search">
+              <Search size={14} className="repo-picker-search-icon" />
+              <input
+                type="text"
+                className="repo-picker-search-input"
+                placeholder="Search your repos..."
+                value={repoPickerSearch}
+                onChange={(e) => setRepoPickerSearch(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="repo-picker-list">
+              {reposLoading ? (
+                <div className="repo-picker-empty">Loading...</div>
+              ) : filteredPickerRepos.length > 0 ? (
+                filteredPickerRepos.map((repo) => (
+                  <button
+                    key={repo.id}
+                    type="button"
+                    className={`repo-picker-item ${selectedRepo?.id === repo.id ? 'selected' : ''}`}
+                    onClick={() => {
+                      playClick();
+                      setSelectedRepo(repo);
+                      setShowRepoPicker(false);
+                    }}
+                  >
+                    <Github size={14} className="repo-picker-item-icon" />
+                    <div className="repo-picker-item-info">
+                      <span className="repo-picker-item-name">{repo.name}</span>
+                      {repo.description && (
+                        <span className="repo-picker-item-desc">{repo.description}</span>
+                      )}
+                    </div>
+                    <div className="repo-picker-item-meta">
+                      {repo.private && <span className="repo-picker-badge">Private</span>}
+                      {repo.language && <span className="repo-picker-lang">{repo.language}</span>}
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <div className="repo-picker-empty">
+                  {repoPickerSearch ? 'No repos match' : 'No repositories found'}
+                </div>
+              )}
+            </div>
+          </div>
+          </>
+        )}
       </form>
     </>
   );
