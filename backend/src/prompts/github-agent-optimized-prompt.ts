@@ -639,7 +639,7 @@ PROBLEMS:
        },
        { 
          path: "src/config/ai.ts", 
-         findText: "fallbackModels: ['gemini-1.5-flash']",
+         findText: "fallbackModels: ['gemini-2.5-flash']",
          replaceWith: "fallbackModels: []  // No fallback, only gemini-2.5-pro"
        },
        { 
@@ -649,7 +649,7 @@ PROBLEMS:
        },
        { 
          path: "src/services/gemini.ts", 
-         findText: "if (error) { return 'gemini-1.5-flash' }",
+         findText: "if (error) { return 'gemini-2.5-flash' }",
          replaceWith: "if (error) { throw error }  // No fallback"
        },
        

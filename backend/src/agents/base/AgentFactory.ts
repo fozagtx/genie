@@ -47,15 +47,15 @@ export enum AgentRole {
 
 /**
  * Default models for different agent types
- * Coding agents use gemini-1.5-flash for fast, quality code generation
+ * Coding agents use gemini-2.5-flash for fast, quality code generation
  * Non-coding agents use gpt-4o-mini for efficiency
  */
 const DEFAULT_MODELS = {
-  // Coding agents - use gemini-1.5-flash for fast, quality code generation
-  [AgentRole.LEAD_ENGINEER]: 'gemini-1.5-flash',
-  [AgentRole.SPEC_INTERPRETER]: 'gemini-1.5-flash',
-  [AgentRole.CODE_GENERATOR]: 'gemini-1.5-flash',
-  [AgentRole.TEST_CRAFTER]: 'gemini-1.5-flash',
+  // Coding agents - use gemini-2.5-flash for fast, quality code generation
+  [AgentRole.LEAD_ENGINEER]: 'gemini-2.5-flash',
+  [AgentRole.SPEC_INTERPRETER]: 'gemini-2.5-flash',
+  [AgentRole.CODE_GENERATOR]: 'gemini-2.5-flash',
+  [AgentRole.TEST_CRAFTER]: 'gemini-2.5-flash',
   // Non-coding agents - use gpt-4o-mini for efficiency
   [AgentRole.BUG_HUNTER]: 'gpt-4o-mini',
   [AgentRole.SECURITY_SENTINEL]: 'gpt-4o-mini',
@@ -102,7 +102,7 @@ export class AgentFactory {
    */
   async createAgent(config: AgentConfig): Promise<Agent> {
     const builder = AgentBuilder.create(config.name)
-      .withModel(config.model || 'gemini-1.5-flash')
+      .withModel(config.model || 'gemini-2.5-flash')
       .withInstruction(config.systemPrompt)
 
     // Register tools if specified
@@ -341,7 +341,7 @@ export class AgentFactory {
     const config = this.getRoleConfig(role)
     return {
       name: config.name,
-      model: config.model || 'gemini-1.5-flash',
+      model: config.model || 'gemini-2.5-flash',
       description: config.systemPrompt,
       tools: config.tools || [],
     }

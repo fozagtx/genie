@@ -31,9 +31,9 @@
 ### Agent Architecture
 
 **Code Generation:**
-- **Simple Coder** (Gemini 1.5 Flash) - HTML/CSS/JavaScript projects
-- **Complex Coder** (Gemini 1.5 Flash) - React/TypeScript applications
-- **Code Modifier** (Gemini 1.5 Flash) - Bug fixes and feature additions
+- **Simple Coder** (Gemini 2.5 Flash) - HTML/CSS/JavaScript projects
+- **Complex Coder** (Gemini 2.5 Flash) - React/TypeScript applications
+- **Code Modifier** (Gemini 2.5 Flash) - Bug fixes and feature additions
 
 **Code Review:**
 - **Security Sentinel** (GPT-4o Mini) - Vulnerability scanning
@@ -43,9 +43,9 @@
 
 **Support:**
 - **Chat Agent** (GPT-4o Mini) - Request routing and conversation
-- **Test Crafter** (Gemini 1.5 Flash) - Test generation
+- **Test Crafter** (Gemini 2.5 Flash) - Test generation
 - **Doc Weaver** (GPT-4o Mini) - Documentation creation
-- **GitHub Agent** (Gemini 1.5 Flash) - Repository operations
+- **GitHub Agent** (Gemini 2.5 Flash) - Repository operations
 
 ---
 
@@ -53,7 +53,7 @@
 
 **Frontend:** React 18.2, TypeScript 5.3, Vite, Tailwind CSS, Monaco Editor, WebContainer API
 **Backend:** Node.js 20.x, Express.js, TypeScript, Socket.io, Bull, Redis, ADK-TS
-**AI Models:** Gemini 1.5 Flash (coding), GPT-4o Mini (analysis), OpenAI GPT-4o, Google Gemini
+**AI Models:** Gemini 2.5 Flash (coding), GPT-4o Mini (analysis), OpenAI GPT-4o, Google Gemini
 **Storage:** Supabase (PostgreSQL + Storage), Redis
 **Deployment:** Vercel (frontend), Render (backend), Fly.io (generated projects)
 

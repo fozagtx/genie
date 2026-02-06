@@ -19,11 +19,11 @@ async function testVendorADK() {
 		console.log("❌ Error:", error.message);
 	}
 
-	// Test: gemini-1.5-flash model
-	console.log("\nTest: gemini-1.5-flash model (Google)");
+	// Test: gemini-2.5-flash model
+	console.log("\nTest: gemini-2.5-flash model (Google)");
 	try {
-		const model = LLMRegistry.newLLM("gemini-1.5-flash");
-		console.log("✅ Created LLM for gemini-1.5-flash:", model.model);
+		const model = LLMRegistry.newLLM("gemini-2.5-flash");
+		console.log("✅ Created LLM for gemini-2.5-flash:", model.model);
 	} catch (error: any) {
 		console.log("❌ Error:", error.message);
 	}

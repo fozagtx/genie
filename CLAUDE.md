@@ -112,10 +112,10 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 - `LeadEngineerAgent` - Coordinates complex multi-agent tasks
 
 **Code Generation Specialists:**
-- `SimpleCoderAgent` - HTML/CSS/JavaScript projects (uses Gemini 1.5 Flash)
-- `ComplexCoderAgent` - React/TypeScript/frameworks (uses Gemini 1.5 Flash)
-- `CodeModificationAgent` - Modifies existing code (uses Gemini 1.5 Flash)
-- `CodeFixerAgent` - Fixes errors and bugs (uses Gemini 1.5 Flash)
+- `SimpleCoderAgent` - HTML/CSS/JavaScript projects (uses Gemini 2.5 Flash)
+- `ComplexCoderAgent` - React/TypeScript/frameworks (uses Gemini 2.5 Flash)
+- `CodeModificationAgent` - Modifies existing code (uses Gemini 2.5 Flash)
+- `CodeFixerAgent` - Fixes errors and bugs (uses Gemini 2.5 Flash)
 
 **Code Review Specialists:**
 - `SecuritySentinelAgent` - Security vulnerability analysis (uses GPT-4o Mini)
@@ -124,9 +124,9 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 - `QualityAssuranceAgent` - Best practices validation (uses GPT-4o Mini)
 
 **Support Specialists:**
-- `TestCrafterAgent` - Test generation (uses Gemini 1.5 Flash)
+- `TestCrafterAgent` - Test generation (uses Gemini 2.5 Flash)
 - `DocWeaverAgent` - Documentation creation (uses GPT-4o Mini)
-- `GitHubAgent` - Repository operations (uses Gemini 1.5 Flash)
+- `GitHubAgent` - Repository operations (uses Gemini 2.5 Flash)
 
 ### Key Services
 
@@ -161,7 +161,7 @@ The platform follows a multi-agent architecture where specialized AI agents hand
 
 The project uses different models optimized for specific tasks:
 
-- **Gemini 1.5 Flash:** Primary model for code generation (SimpleCoder, ComplexCoder, CodeModifier, TestCrafter, GitHubAgent)
+- **Gemini 2.5 Flash:** Primary model for code generation (SimpleCoder, ComplexCoder, CodeModifier, TestCrafter, GitHubAgent)
 - **GPT-4o Mini:** Efficient model for analysis and review (ChatAgent, Security, Performance, BugHunter, QA, Documentation)
 
 Models are configured in `backend/src/services/AIService.ts` with automatic fallback handling.

@@ -59,15 +59,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Load generation history from Supabase after authentication
       if (session?.user) {
         console.log('[AuthProvider] User authenticated, loading history from backend...');
-        console.log('[AuthProvider] Session info:', {
-          provider: session.user.app_metadata?.provider,
-          hasProviderToken: !!session.provider_token,
-          providerTokenLength: session.provider_token?.length || 0,
-          userMetadata: session.user.user_metadata,
-        });
         loadHistoryFromBackend().catch((error) => {
           console.error('[AuthProvider] Failed to load history:', error);
         });
+
+        // Persist GitHub OAuth provider_token on initial load if available
+        if (
+          session.provider_token &&
+          session.user.app_metadata?.provider === 'github' &&
+          !session.user.user_metadata?.github_token
+        ) {
+          supabase.auth.updateUser({
+            data: { github_token: session.provider_token },
+          }).catch(() => {});
+        }
       }
     });
 
@@ -85,6 +90,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
         loadHistoryFromBackend().catch((error) => {
           console.error('[AuthProvider] Failed to load history:', error);
         });
+
+        // Persist GitHub OAuth provider_token to user_metadata so it survives page refreshes
+        if (
+          session.provider_token &&
+          session.user.app_metadata?.provider === 'github'
+        ) {
+          console.log('[AuthProvider] Saving GitHub provider_token to user metadata...');
+          supabase.auth.updateUser({
+            data: { github_token: session.provider_token },
+          }).then(({ error: updateError }) => {
+            if (updateError) {
+              console.error('[AuthProvider] Failed to save GitHub token:', updateError);
+            } else {
+              console.log('[AuthProvider] GitHub token saved to user metadata');
+            }
+          });
+        }
       }
 
       // Clear history when user signs out
