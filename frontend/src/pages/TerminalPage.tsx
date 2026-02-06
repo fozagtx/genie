@@ -6,7 +6,7 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Github, Shield, Bug } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
@@ -847,9 +847,14 @@ export const TerminalPage: React.FC = () => {
     }
   };
 
-  const getAgentIcon = (agent: string) => {
+  const getAgentIcon = (agent: string): React.ReactNode => {
+    if (agent === 'User') {
+      const initial = user?.email?.charAt(0)?.toUpperCase() || 'U';
+      return (
+        <span className="user-avatar-icon">{initial}</span>
+      );
+    }
     const icons: Record<string, string> = {
-      'User': '👤',
       'LeadEngineer': '◆',
       'CodeGenerator': '▣',
       'BugHunter': '▲',
@@ -857,7 +862,7 @@ export const TerminalPage: React.FC = () => {
       'PerformanceProfiler': '◉',
       'TestCrafter': '◎',
       'DocWeaver': '◐',
-      'ChatAgent': '🤖',
+      'ChatAgent': '●',
       'System': '⚙',
     };
     return icons[agent] || '●';
@@ -997,53 +1002,44 @@ export const TerminalPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="chat-input-form">
-        {/* Toolbar - Above input */}
-        <div className="chat-input-toolbar">
-          <div className="toolbar-left">
-            <button
-              type="button"
-              className={`toolbar-btn ${backgroundMode ? 'active' : ''}`}
-              onClick={() => {
-                setBackgroundMode(!backgroundMode);
-                playToggle();
-              }}
-              disabled={isProcessing}
-              title="Run in background - you can continue chatting while this processes"
-            >
-              <Wrench size={16} className="btn-icon" />
-              <span className="btn-text">Background</span>
-              {backgroundMode && <span className="active-indicator">●</span>}
-            </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
+          multiple
+          onChange={handleImageSelect}
+          style={{ display: 'none' }}
+        />
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".docx,.html,.md,.pdf,.tex,.txt,.csv,.json,.xml,.xlsx,.pptx,.c,.cpp,.css,.java,.js,.php,.py,.rb,.ts,.tsx,.jsx,.go,.rs,.swift,.gif,.jpg,.jpeg,.png,.webp,.tar,.zip"
-              multiple
-              onChange={handleImageSelect}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => {
-                playClick();
-                handleImageButtonClick();
-              }}
-              disabled={isProcessing || uploadingImages}
-              title="Attach files (images, documents, code, etc.)"
-            >
-              <Paperclip size={16} className="btn-icon" />
-              <span className="btn-text">Attach</span>
-              {selectedImages.length > 0 && (
-                <span className="badge-count">{selectedImages.length}</span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Main Input */}
+        {/* Input row with attach, bg toggle, text input, send */}
         <div className="input-wrapper">
+          <button
+            type="button"
+            className="input-attach-btn"
+            onClick={() => {
+              playClick();
+              handleImageButtonClick();
+            }}
+            disabled={isProcessing || uploadingImages}
+            title="Attach files"
+          >
+            <Paperclip size={18} />
+            {selectedImages.length > 0 && (
+              <span className="attach-badge">{selectedImages.length}</span>
+            )}
+          </button>
+          <button
+            type="button"
+            className={`input-bg-btn ${backgroundMode ? 'active' : ''}`}
+            onClick={() => {
+              setBackgroundMode(!backgroundMode);
+              playToggle();
+            }}
+            disabled={isProcessing}
+            title="Run in background"
+          >
+            <Wrench size={16} />
+          </button>
           <input
             type="text"
             className="input chat-input"
@@ -1514,7 +1510,7 @@ export const TerminalPage: React.FC = () => {
                     <span className="file-icon">📄</span>
                     <span className="file-name">{selectedFile.path}</span>
                     {hasUnsavedChanges && <span className="unsaved-indicator">●</span>}
-                    <button 
+                    <button
                       className="save-file-button"
                       onClick={handleSaveFile}
                       disabled={!hasUnsavedChanges || isSaving}
@@ -1525,6 +1521,56 @@ export const TerminalPage: React.FC = () => {
                   </div>
                 )}
                 <div className="code-editor-container">
+                  {/* Floating action buttons on editor */}
+                  <div className="editor-floating-actions">
+                    <button
+                      className="editor-action-btn github-push-btn"
+                      onClick={() => {
+                        playClick();
+                        setActiveTab('deploy');
+                      }}
+                      title="Push to Repo"
+                    >
+                      <Github size={18} />
+                      <span className="action-tooltip">Push to Repo</span>
+                    </button>
+                    <button
+                      className="editor-action-btn code-review-btn"
+                      onClick={() => {
+                        playClick();
+                        if (!isProcessing && generation?.response?.files && generation.response.files.length > 0) {
+                          setChatInput('Review this code for best practices, security, and performance');
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }
+                      }}
+                      disabled={isProcessing || !generation?.response?.files?.length}
+                      title="Code Review"
+                    >
+                      <Shield size={18} />
+                      <span className="action-tooltip">Code Review</span>
+                    </button>
+                    <button
+                      className="editor-action-btn bug-fix-btn"
+                      onClick={() => {
+                        playClick();
+                        if (!isProcessing && generation?.response?.files && generation.response.files.length > 0) {
+                          setChatInput('Find and fix bugs in this code');
+                          setTimeout(() => {
+                            const form = document.querySelector('.chat-input-form') as HTMLFormElement;
+                            form?.requestSubmit();
+                          }, 100);
+                        }
+                      }}
+                      disabled={isProcessing || !generation?.response?.files?.length}
+                      title="Bug Fix"
+                    >
+                      <Bug size={18} />
+                      <span className="action-tooltip">Bug Fix</span>
+                    </button>
+                  </div>
                   <CodeEditor
                     value={selectedFile?.content || '// Select a file from the sidebar'}
                     onChange={handleCodeChange}
