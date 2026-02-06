@@ -408,54 +408,67 @@
 
 /* Chat Message */
 .chat-message {
-  padding: 0.85rem 1rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid hsl(var(--border));
-  border-left: 3px solid hsl(var(--border));
-  border-radius: 1rem;
-  animation: slideIn 0.2s ease-out;
-  transition: all 0.15s ease;
-  background: hsl(var(--card));
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
+  border: none;
+  border-left: 2px solid transparent;
+  border-radius: 0.375rem;
+  animation: slideIn 0.15s ease-out;
+  transition: background 0.1s ease;
+  background: transparent;
   color: hsl(var(--foreground));
 }
 
 .chat-message:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: hsl(var(--muted) / 0.3);
 }
 
 .chat-message.user {
   border-left-color: #22c55e;
-  background: rgba(34, 197, 94, 0.08);
 }
 
 .chat-message.agent {
   border-left-color: #6366f1;
-  background: rgba(99, 102, 241, 0.08);
 }
 
 .chat-message.system {
   border-left-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.08);
 }
 
 .chat-message.thought {
   border-left-color: hsl(var(--muted-foreground));
-  background: hsl(var(--muted) / 0.5);
-  opacity: 0.8;
+  opacity: 0.7;
   font-style: italic;
 }
 
 .message-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-  font-size: 0.85rem;
+  gap: 0.375rem;
+  margin-bottom: 0.125rem;
+  font-size: 0.8rem;
 }
 
 .message-icon {
-  font-size: 1.2rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 .message-agent {
@@ -492,8 +505,9 @@
 
 .message-content {
   display: flex;
-  gap: 0.5rem;
-  line-height: 1.6;
+  gap: 0.375rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
 .message-prefix {
@@ -584,8 +598,8 @@
 /* Chat Input Section */
 .chat-input-section {
   flex-shrink: 0;
-  padding: 1rem 1.25rem 1.5rem;
-  background: hsl(var(--card));
+  padding: 0.75rem 1rem 1rem;
+  background: transparent;
   border-top: 1px solid hsl(var(--border));
 }
 
@@ -648,16 +662,9 @@
   gap: 0.5rem;
 }
 
-/* Chat Input Toolbar */
+/* Chat Input Toolbar - hidden, buttons moved into input */
 .chat-input-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.45rem 0.5rem;
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.9rem;
-  gap: 0.75rem;
+  display: none;
 }
 
 .toolbar-left,
@@ -740,12 +747,82 @@
 .input-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem;
+  gap: 0.25rem;
+  padding: 0.3rem 0.35rem 0.3rem 0.5rem;
   background: hsl(var(--secondary));
   border: 1px solid hsl(var(--border));
   border-radius: 999px;
   transition: all 0.15s ease;
+}
+
+.input-attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.input-attach-btn:hover:not(:disabled) {
+  color: hsl(var(--foreground));
+  background: hsl(var(--accent));
+}
+
+.input-attach-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.input-attach-btn .attach-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  background: #8b5cf6;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-bg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.input-bg-btn:hover:not(:disabled) {
+  color: hsl(var(--foreground));
+  background: hsl(var(--accent));
+}
+
+.input-bg-btn.active {
+  color: #10b981;
+}
+
+.input-bg-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .input-wrapper:focus-within {
@@ -1029,8 +1106,16 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
   background: hsl(var(--card));
+}
+
+.code-editor-wrapper .code-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .active-file-tab {
@@ -1088,6 +1173,105 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.code-editor-container .code-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+/* Hide redundant header/footer in terminal page editor */
+.code-editor-container .code-editor > .px-4.py-2\.5 {
+  display: none;
+}
+
+.code-editor-container .code-editor > .px-4.py-1\.5 {
+  display: none;
+}
+
+/* Floating action buttons on the editor */
+.editor-floating-actions {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+}
+
+.editor-action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: rgba(30, 30, 30, 0.8);
+  color: #d4d4d4;
+  backdrop-filter: blur(4px);
+}
+
+.editor-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(50, 50, 50, 0.95);
+  color: #fff;
+}
+
+.editor-action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.editor-action-btn .action-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  padding: 4px 10px;
+  background: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.editor-action-btn:hover .action-tooltip {
+  opacity: 1;
+}
+
+.github-push-btn {
+  color: #fff;
+  background: rgba(24, 24, 24, 0.9);
+}
+
+.github-push-btn:hover:not(:disabled) {
+  background: #000;
+  color: #fff;
+}
+
+.code-review-btn:hover:not(:disabled) {
+  color: #60a5fa;
+}
+
+.bug-fix-btn:hover:not(:disabled) {
+  color: #f87171;
 }
 
 /* Preview View */

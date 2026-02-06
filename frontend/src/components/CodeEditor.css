@@ -8,10 +8,23 @@
   flex-direction: column;
   min-height: 0;
   width: 100%;
+  height: 100%;
 }
 
 .editor-container > div {
   width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure Monaco content is visible with proper contrast */
+.editor-container .monaco-editor,
+.editor-container .monaco-editor .overflow-guard {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.editor-container .monaco-editor .lines-content {
+  color: #1f2937;
 }
 
 /* Monaco scrollbar */
