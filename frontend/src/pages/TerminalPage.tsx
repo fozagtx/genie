@@ -37,7 +37,7 @@ export const TerminalPage: React.FC = () => {
   const id = searchParams.get('generation') || routeId; // Support both query param and route param
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const { githubContext: gitHubCtx, isConnected: isGitHubConnected } = useGitHubToken();
+  const { githubContext: gitHubCtx, isConnected: isGitHubConnected, token: gitHubToken } = useGitHubToken();
   const { data: githubRepos, isLoading: reposLoading } = useGitHubRepos();
   const { showToast } = useUIStore();
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -710,8 +710,9 @@ export const TerminalPage: React.FC = () => {
     e.preventDefault();
     if (!chatInput.trim() || isProcessing) return;
 
-    // Prepend repo context if a repo is selected
-    const repoPrefix = selectedRepo ? `[Repo: ${selectedRepo.fullName}] ` : '';
+    // Capture the selected repo before clearing state
+    const repoForRequest = selectedRepo;
+    const repoPrefix = repoForRequest ? `[Repo: ${repoForRequest.fullName}] ` : '';
     const userMessage = repoPrefix + chatInput.trim();
     const imagesToUpload = [...selectedImages];
 
@@ -777,8 +778,54 @@ export const TerminalPage: React.FC = () => {
 
       // 🔧 FIX: Only send files if this is the SAME session (not a new chat)
       // For new chat sessions, always send empty array to prevent file leakage from previous sessions
-      const files = (!isNewSession && generation?.response?.files) ? generation.response.files : [];
-      
+      let files = (!isNewSession && generation?.response?.files) ? generation.response.files : [];
+
+      // 🔧 KEY FIX: When a repo is selected, fetch its code files so review agents get real code
+      if (repoForRequest && gitHubToken && files.length === 0) {
+        const [owner, repoName] = repoForRequest.fullName.split('/');
+        console.log(`📂 Fetching files from ${repoForRequest.fullName} for review...`);
+        try {
+          // Step 1: Get repo tree
+          const treeRes = await apiClient.request({
+            method: 'GET',
+            url: `/api/github/repos/${owner}/${repoName}/tree`,
+            headers: { 'x-github-token': gitHubToken },
+          });
+          if (treeRes.success && treeRes.data?.files) {
+            // Step 2: Auto-select code files (same extensions as ReviewRepoDialog)
+            const codeExts = ['.ts', '.tsx', '.js', '.jsx', '.py', '.go', '.rs', '.java', '.rb', '.php', '.css', '.scss', '.html', '.vue', '.svelte', '.c', '.cpp', '.h', '.cs', '.swift', '.kt'];
+            const codePaths: string[] = [];
+            let totalSize = 0;
+            for (const file of treeRes.data.files) {
+              const ext = '.' + file.path.split('.').pop()?.toLowerCase();
+              if (codeExts.includes(ext)) {
+                totalSize += file.size;
+                if (totalSize > 500 * 1024) break;
+                codePaths.push(file.path);
+              }
+            }
+            if (codePaths.length > 0) {
+              // Step 3: Fetch file contents
+              const filesRes = await apiClient.request({
+                method: 'POST',
+                url: `/api/github/repos/${owner}/${repoName}/files`,
+                headers: { 'x-github-token': gitHubToken },
+                data: { files: codePaths.slice(0, 50) },
+              });
+              if (filesRes.success && filesRes.data?.files?.length > 0) {
+                files = filesRes.data.files;
+                console.log(`✅ Fetched ${files.length} code files from ${repoForRequest.fullName}`);
+                // Store for PR creation
+                setLastReviewRepoInfo({ owner, repo: repoName });
+                setLastReviewFiles(files);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('⚠️ Failed to fetch repo files, proceeding without:', err);
+        }
+      }
+
       console.log(`📦 Session context:`, {
         isNewSession,
         hasGeneration: !!generation,
@@ -786,7 +833,7 @@ export const TerminalPage: React.FC = () => {
         requestedSessionId: sessionId,
         filesCount: files.length
       });
-      
+
       const chatRequest: any = {
         generationId: sessionId,
         message: userMessage,
@@ -794,7 +841,7 @@ export const TerminalPage: React.FC = () => {
         ...(!isNewSession && generation?.response?.targetLanguage && { language: generation.response.targetLanguage }),
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
         githubContext,
-        currentFiles: files, // Empty array for new sessions, existing files for current session
+        currentFiles: files, // Repo files when repo selected, generation files otherwise
         backgroundMode, // Include background mode flag
       };
 
