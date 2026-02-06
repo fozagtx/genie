@@ -31,6 +31,18 @@ export const AuthCallback: React.FC = () => {
           if (sessionError) throw sessionError
 
           if (data.session) {
+            // Check if this was a repo scope upgrade
+            const isRepoGrant = sessionStorage.getItem('genie_grant_repo');
+            if (isRepoGrant && data.session.provider_token) {
+              sessionStorage.removeItem('genie_grant_repo');
+              await supabase.auth.updateUser({
+                data: {
+                  github_token: data.session.provider_token,
+                  github_repo_granted: true,
+                },
+              });
+            }
+
             setStatus('success')
             setMessage('Authentication successful! Redirecting...')
 
@@ -51,6 +63,18 @@ export const AuthCallback: React.FC = () => {
 
           if (sessionError || !data.session) {
             throw new Error('No valid session found')
+          }
+
+          // Check if this was a repo scope upgrade
+          const isRepoGrant2 = sessionStorage.getItem('genie_grant_repo');
+          if (isRepoGrant2 && data.session.provider_token) {
+            sessionStorage.removeItem('genie_grant_repo');
+            await supabase.auth.updateUser({
+              data: {
+                github_token: data.session.provider_token,
+                github_repo_granted: true,
+              },
+            });
           }
 
           setStatus('success')

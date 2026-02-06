@@ -790,6 +790,39 @@ class ApiClient {
     return response.data
   }
 
+  // Create a pull request with file changes
+  async createPullRequest(request: {
+    owner: string
+    repo: string
+    title: string
+    body?: string
+    files: Array<{ path: string; content: string }>
+    baseBranch?: string
+    branchName?: string
+  }): Promise<ApiResponse<{
+    prUrl: string
+    prNumber: number
+    branchName: string
+  }>> {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const githubToken = session?.provider_token || session?.user?.user_metadata?.github_token
+
+      const response = await this.client.post('/api/github/pull-request', request, {
+        headers: githubToken ? { 'x-github-token': githubToken } : {},
+      })
+      return response.data
+    } catch (error: any) {
+      console.error('[apiClient] createPullRequest error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to create pull request',
+      }
+    }
+  }
+
   // ========== Background Jobs APIs ==========
   
   // Get user's background jobs

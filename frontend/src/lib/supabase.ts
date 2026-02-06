@@ -92,8 +92,26 @@ export async function signInWithOAuth(provider: 'github' | 'google') {
     provider,
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
-      // Request repo scope for GitHub to enable pushing code to repositories
-      scopes: provider === 'github' ? 'repo,user:email' : undefined,
+      // Only request minimal scope on sign-in — repo access granted separately
+      scopes: provider === 'github' ? 'user:email' : undefined,
+    },
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Grant GitHub repository access (separate from sign-in)
+ * Triggers a new OAuth flow that requests repo scope
+ */
+export async function grantGitHubRepoAccess() {
+  sessionStorage.setItem('genie_grant_repo', 'true');
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      scopes: 'repo,user:email',
     },
   });
 

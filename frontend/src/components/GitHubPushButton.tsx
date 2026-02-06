@@ -21,6 +21,7 @@ import {
 } from './ui/tabs'
 import { useGitHubToken } from '../hooks/useGitHubToken'
 import { useGitHubRepos, GitHubRepo } from '../hooks/useGitHubRepos'
+import { GrantRepoAccessButton } from './GrantRepoAccessButton'
 import apiClient from '../services/apiClient'
 
 interface GitHubPushButtonProps {
@@ -31,7 +32,7 @@ interface GitHubPushButtonProps {
 type PushState = 'idle' | 'pushing' | 'success' | 'error'
 
 export function GitHubPushButton({ files }: GitHubPushButtonProps) {
-  const { token, isConnected } = useGitHubToken()
+  const { token, isConnected, hasRepoAccess } = useGitHubToken()
   const { data: repos, isLoading: reposLoading } = useGitHubRepos()
 
   const [open, setOpen] = useState(false)
@@ -134,10 +135,14 @@ export function GitHubPushButton({ files }: GitHubPushButtonProps) {
           Connect your GitHub account to push code to repositories.
         </p>
         <p className="text-xs text-muted-foreground">
-          Log out and sign back in with GitHub to grant repository access.
+          Sign in with GitHub to get started.
         </p>
       </div>
     )
+  }
+
+  if (!hasRepoAccess) {
+    return <GrantRepoAccessButton />
   }
 
   return (

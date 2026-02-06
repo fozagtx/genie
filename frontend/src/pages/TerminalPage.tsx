@@ -6,8 +6,10 @@ import { FileTree } from '../components/FileTree';
 import { ProjectWorkspace } from '../components/ProjectWorkspace';
 import { SettingsModal } from '../components/SettingsModal';
 import { BackgroundJobsPanel } from '../components/BackgroundJobsPanel';
-import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, FileText, Send, Wrench, Settings, LogOut, Menu, Paperclip, Square, Trash2, Search } from 'lucide-react';
 import { GitHubPushButton } from '../components/GitHubPushButton';
+import { ReviewRepoDialog } from '../components/ReviewRepoDialog';
+import { CreatePrButton } from '../components/CreatePrButton';
 import { useGenerationStore } from '../stores/generationStore';
 import { useUIStore } from '../stores/uiStore';
 import { useAuthContext } from '../contexts/AuthContext';
@@ -46,6 +48,11 @@ export const TerminalPage: React.FC = () => {
   const [showBackgroundJobs, setShowBackgroundJobs] = useState(false);
   const [activeJobsCount, setActiveJobsCount] = useState(0);
   
+  // Review Repo State
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [lastReviewRepoInfo, setLastReviewRepoInfo] = useState<{ owner: string; repo: string } | null>(null);
+  const [lastReviewFiles, setLastReviewFiles] = useState<Array<{ path: string; content: string }>>([]);
+
   // UI State
   const [chatInput, setChatInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<{ path: string; content: string } | null>(null);
@@ -891,6 +898,64 @@ export const TerminalPage: React.FC = () => {
     showToast('info', 'Chat request cancelled', 3000);
   };
 
+  // Handle review repo files callback
+  const handleReviewRepoFiles = async (
+    files: Array<{ path: string; content: string }>,
+    repoInfo: { owner: string; repo: string }
+  ) => {
+    setLastReviewRepoInfo(repoInfo);
+    setLastReviewFiles(files);
+
+    const reviewMessage = `Review the code from ${repoInfo.owner}/${repoInfo.repo} (${files.length} files). Check for bugs, security issues, performance problems, and code quality.`;
+
+    // Create user message
+    const userAgentMessage: AgentMessage = {
+      id: `msg_${Date.now()}_user`,
+      agent: 'User',
+      role: 'user',
+      content: reviewMessage,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userAgentMessage]);
+    setIsProcessing(true);
+
+    let sessionId = id;
+    const isNewSession = !sessionId;
+
+    try {
+      if (isNewSession) {
+        sessionId = crypto.randomUUID();
+        navigate(`/terminal/${sessionId}`, { replace: true });
+      }
+
+      const githubContext = gitHubCtx;
+      const chatRequest: any = {
+        generationId: sessionId,
+        message: reviewMessage,
+        currentFiles: files, // <-- the key fix: send actual repo files
+        githubContext,
+        backgroundMode: false,
+      };
+
+      const chatResponse = await apiClient.chat(chatRequest);
+      if (!chatResponse.success || !chatResponse.data?.jobId) {
+        throw new Error(chatResponse.error || 'Chat request failed');
+      }
+
+      setCurrentJobId(chatResponse.data.jobId);
+    } catch (error: any) {
+      const errorMessage: AgentMessage = {
+        id: `msg_${Date.now()}_error`,
+        agent: 'System',
+        role: 'system',
+        content: `Error: ${error.message || 'Failed to submit review request.'}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      setIsProcessing(false);
+    }
+  };
+
   const formatTimestamp = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
       hour12: false,
@@ -1013,6 +1078,20 @@ export const TerminalPage: React.FC = () => {
               <Wrench size={16} className="btn-icon" />
               <span className="btn-text">Background</span>
               {backgroundMode && <span className="active-indicator">●</span>}
+            </button>
+
+            <button
+              type="button"
+              className="toolbar-btn"
+              onClick={() => {
+                playClick();
+                setReviewDialogOpen(true);
+              }}
+              disabled={isProcessing}
+              title="Review code from a GitHub repository"
+            >
+              <Search size={16} className="btn-icon" />
+              <span className="btn-text">Review Repo</span>
             </button>
 
             <input
@@ -1343,6 +1422,17 @@ export const TerminalPage: React.FC = () => {
                           ))}
                         </div>
                       )}
+
+                      {/* Show "Create PR" button after agent review messages when repo context exists */}
+                      {message.role === 'agent' && lastReviewRepoInfo && lastReviewFiles.length > 0 && message === messages[messages.length - 1] && !isProcessing && (
+                        <div className="mt-2">
+                          <CreatePrButton
+                            files={lastReviewFiles}
+                            reviewSummary={message.content}
+                            repoInfo={lastReviewRepoInfo}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
 
@@ -1577,6 +1667,12 @@ export const TerminalPage: React.FC = () => {
           </div>
         )}
       </div>
+      {/* Review Repo Dialog */}
+      <ReviewRepoDialog
+        open={reviewDialogOpen}
+        onOpenChange={setReviewDialogOpen}
+        onReviewFiles={handleReviewRepoFiles}
+      />
     </div>
   );
 };

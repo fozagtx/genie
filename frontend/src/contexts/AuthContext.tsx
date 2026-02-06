@@ -97,8 +97,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
           session.user.app_metadata?.provider === 'github'
         ) {
           console.log('[AuthProvider] Saving GitHub provider_token to user metadata...');
+          const isRepoGrant = sessionStorage.getItem('genie_grant_repo');
+          const updateData: Record<string, unknown> = { github_token: session.provider_token };
+          if (isRepoGrant) {
+            updateData.github_repo_granted = true;
+            sessionStorage.removeItem('genie_grant_repo');
+          }
           supabase.auth.updateUser({
-            data: { github_token: session.provider_token },
+            data: updateData,
           }).then(({ error: updateError }) => {
             if (updateError) {
               console.error('[AuthProvider] Failed to save GitHub token:', updateError);
