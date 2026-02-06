@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { CheckCircle2, XCircle } from 'lucide-react'
+import { XCircle } from 'lucide-react'
 
 export const AuthCallback: React.FC = () => {
   const [status, setStatus] = useState('processing')
