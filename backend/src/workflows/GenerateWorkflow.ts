@@ -635,7 +635,7 @@ export class GenerateWorkflow {
         confidence: 0.5,
         agentThoughts,
         requirements: null,
-        summary: `Generated a starter project based on your request. The AI agent encountered an issue (${error.message}), so a template was created instead.`,
+        summary: `Code generation failed: ${error.message}. Please try again or rephrase your request.`,
       }
     }
   }
@@ -1733,27 +1733,23 @@ Remember:
 `
         : '';
 
-    return `${errorFeedback}
+    // Build conversation context (if any) as internal-only context
+    const conversationContext = request.conversationHistory
+      ? `[INTERNAL CONTEXT - DO NOT OUTPUT ANY OF THIS IN YOUR GENERATED CODE]\nPrior conversation for understanding user intent only:\n${request.conversationHistory}\n[END INTERNAL CONTEXT]\n\n`
+      : ''
 
-=== RECENT CONVERSATION ===
-${request.conversationHistory || ''}
-=== END HISTORY ===
+    const codebaseContext =
+      request.currentFiles && request.currentFiles.length > 0
+        ? `\nExisting files (${request.currentFiles.length}):\n${request.currentFiles
+            .map(
+              (file: any) =>
+                `File: ${file.path}\n\`\`\`\n${file.content.substring(0, 500)}${file.content.length > 500 ? '...' : ''}\n\`\`\``
+            )
+            .join('\n\n')}`
+        : ''
 
-USER REQUEST: ${request.prompt}
-${imageInfo}
-${request.projectContext ? `\nPROJECT CONTEXT:\n${request.projectContext}` : ''}
-
-CURRENT CODEBASE (${request.currentFiles?.length || 0} files):
-${
-  request.currentFiles && request.currentFiles.length > 0
-    ? request.currentFiles
-        .map(
-          (file: any) =>
-            `File: ${file.path}\n\`\`\`\n${file.content.substring(0, 500)}${file.content.length > 500 ? '...' : ''}\n\`\`\``
-        )
-        .join('\n\n')
-    : 'No existing code'
-}`;
+    return `${errorFeedback}${conversationContext}${request.prompt}
+${imageInfo}${request.projectContext ? `\nProject context:\n${request.projectContext}` : ''}${codebaseContext}`;
   }
 
   private async generateTests(request: any): Promise<any> {
@@ -2314,177 +2310,91 @@ MIT
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safePrompt}</title>
+  <title>Generation Failed</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>${safePrompt}</h1>
-      <p>Welcome to your new site. Customize it however you like!</p>
-    </header>
-    <main>
-      <section class="hero">
-        <h2>Get Started</h2>
-        <p>Edit the files in the source tab to build your project.</p>
-        <button id="cta-btn" class="btn-primary">Learn More</button>
-      </section>
-      <section class="features">
-        <div class="feature-card">
-          <h3>Fast</h3>
-          <p>Lightweight and performant by default.</p>
-        </div>
-        <div class="feature-card">
-          <h3>Responsive</h3>
-          <p>Looks great on any screen size.</p>
-        </div>
-        <div class="feature-card">
-          <h3>Customizable</h3>
-          <p>Easy to extend and modify.</p>
-        </div>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; ${new Date().getFullYear()} ${safePrompt}. All rights reserved.</p>
-    </footer>
+    <div class="error-icon">&#9888;</div>
+    <h1>Code Generation Failed</h1>
+    <p class="message">The AI agent was unable to generate code for your request:</p>
+    <blockquote class="request">${safePrompt}</blockquote>
+    <p class="hint">This can happen due to a temporary issue. Please try again or rephrase your request.</p>
+    <button id="retry-btn" class="btn-retry" onclick="window.parent.postMessage({type:'retry'},'*')">Try Again</button>
   </div>
-  <script src="script.js"></script>
 </body>
 </html>`,
         },
         {
           path: 'styles.css',
-          content: `/* Reset & Base */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          content: `*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: #1a1a2e;
-  background: #f8f9fa;
+  color: #e2e8f0;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Header */
-header {
+  max-width: 520px;
   text-align: center;
-  padding: 3rem 0 2rem;
+  padding: 2rem;
 }
 
-header h1 {
-  font-size: 2.5rem;
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #f59e0b;
+}
+
+h1 {
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-header p {
-  color: #6c757d;
-  font-size: 1.1rem;
-}
-
-/* Hero */
-.hero {
-  text-align: center;
-  padding: 3rem 2rem;
-  margin: 2rem 0;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-}
-
-.hero h2 {
-  font-size: 1.75rem;
   margin-bottom: 0.75rem;
+  color: #f1f5f9;
 }
 
-.hero p {
-  color: #6c757d;
+.message {
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.request {
+  background: #1e293b;
+  border-left: 3px solid #6366f1;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.hint {
+  color: #64748b;
+  font-size: 0.9rem;
   margin-bottom: 1.5rem;
 }
 
-.btn-primary {
-  display: inline-block;
-  padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.btn-retry {
+  padding: 0.6rem 1.5rem;
+  background: #6366f1;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: background 0.2s;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-/* Features */
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.feature-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  transition: transform 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-}
-
-.feature-card h3 {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-  color: #667eea;
-}
-
-.feature-card p {
-  color: #6c757d;
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  padding: 2rem 0;
-  margin-top: 3rem;
-  border-top: 1px solid #e9ecef;
-  color: #6c757d;
-  font-size: 0.9rem;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  header h1 { font-size: 1.75rem; }
-  .hero { padding: 2rem 1rem; }
+.btn-retry:hover {
+  background: #4f46e5;
 }`,
-        },
-        {
-          path: 'script.js',
-          content: `// Main application script
-document.addEventListener('DOMContentLoaded', () => {
-  const ctaBtn = document.getElementById('cta-btn');
-  if (ctaBtn) {
-    ctaBtn.addEventListener('click', () => {
-      alert('Welcome! Start editing the source files to build your project.');
-    });
-  }
-});`,
         },
       ]
     }
@@ -2587,17 +2497,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 function App() {
   return (
-    <div className="app">
-      <header>
-        <h1>${safePrompt}</h1>
-        <p>Welcome to your new project. Edit the source files to get started!</p>
-      </header>
-      <main>
-        <section className="hero">
-          <h2>Get Started</h2>
-          <p>This is a starter template. Customize it to build your application.</p>
-        </section>
-      </main>
+    <div className="error-page">
+      <div className="error-icon">&#9888;</div>
+      <h1>Code Generation Failed</h1>
+      <p className="message">The AI agent was unable to generate code for your request:</p>
+      <blockquote className="request">${safePrompt}</blockquote>
+      <p className="hint">This can happen due to a temporary issue. Please try again or rephrase your request.</p>
     </div>
   )
 }
@@ -2611,43 +2516,35 @@ export default App`,
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: #1a1a2e;
-  background: #f8f9fa;
+  color: #e2e8f0;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
-.app {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-header {
+.error-page {
+  max-width: 520px;
   text-align: center;
-  margin-bottom: 3rem;
+  padding: 2rem;
 }
 
-header h1 {
-  font-size: 2.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.error-icon { font-size: 3rem; margin-bottom: 1rem; color: #f59e0b; }
+h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; color: #f1f5f9; }
+.message { color: #94a3b8; margin-bottom: 1rem; }
+
+.request {
+  background: #1e293b;
+  border-left: 3px solid #6366f1;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+  font-style: italic;
 }
 
-header p {
-  color: #6c757d;
-  margin-top: 0.5rem;
-}
-
-.hero {
-  text-align: center;
-  padding: 3rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-}
-
-.hero h2 { margin-bottom: 0.75rem; }
-.hero p { color: #6c757d; }`,
+.hint { color: #64748b; font-size: 0.9rem; }`,
       },
     ]
   }
